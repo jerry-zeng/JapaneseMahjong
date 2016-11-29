@@ -1,5 +1,5 @@
 ﻿
-public class GameSettings 
+public static class GameSettings 
 {
     // 食断.
     public static bool UseKuitan = true;
@@ -10,8 +10,9 @@ public class GameSettings
     // 局の最大値
     public static int Kyoku_Max = 7; //3.
 
+    public static int PlayerCount = 4;
+
     // 持ち点の初期値
     public readonly static int TENBOU_INIT = 25000;
 
-    public readonly static int PlayerCount = 4;
 }

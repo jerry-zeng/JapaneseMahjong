@@ -6,205 +6,203 @@
 public class Hai 
 {
     #region Const
-    /** 一萬 */
+    // 一萬 
     public readonly static int ID_WAN_1 = 0;
-    /** 二萬 */
+    // 二萬 
     public readonly static int ID_WAN_2 = 1;
-    /** 三萬 */
+    // 三萬 
     public readonly static int ID_WAN_3 = 2;
-    /** 四萬 */
+    // 四萬 
     public readonly static int ID_WAN_4 = 3;
-    /** 五萬 */
+    // 五萬 
     public readonly static int ID_WAN_5 = 4;
-    /** 六萬 */
+    // 六萬 
     public readonly static int ID_WAN_6 = 5;
-    /** 七萬 */
+    // 七萬 
     public readonly static int ID_WAN_7 = 6;
-    /** 八萬 */
+    // 八萬 
     public readonly static int ID_WAN_8 = 7;
-    /** 九萬 */
+    // 九萬 
     public readonly static int ID_WAN_9 = 8;
 
-    /** 一筒 */
+    // 一筒 
     public readonly static int ID_PIN_1 = 9;
-    /** 二筒 */
+    // 二筒 
     public readonly static int ID_PIN_2 = 10;
-    /** 三筒 */
+    // 三筒 
     public readonly static int ID_PIN_3 = 11;
-    /** 四筒 */
+    // 四筒 
     public readonly static int ID_PIN_4 = 12;
-    /** 五筒 */
+    // 五筒 
     public readonly static int ID_PIN_5 = 13;
-    /** 六筒 */
+    // 六筒 
     public readonly static int ID_PIN_6 = 14;
-    /** 七筒 */
+    // 七筒 
     public readonly static int ID_PIN_7 = 15;
-    /** 八筒 */
+    // 八筒 
     public readonly static int ID_PIN_8 = 16;
-    /** 九筒 */
+    // 九筒 
     public readonly static int ID_PIN_9 = 17;
 
-    /** 一索 */
+    // 一索 
     public readonly static int ID_SOU_1 = 18;
-    /** 二索 */
+    // 二索 
     public readonly static int ID_SOU_2 = 19;
-    /** 三索 */
+    // 三索 
     public readonly static int ID_SOU_3 = 20;
-    /** 四索 */
+    // 四索 
     public readonly static int ID_SOU_4 = 21;
-    /** 五索 */
+    // 五索 
     public readonly static int ID_SOU_5 = 22;
-    /** 六索 */
+    // 六索 
     public readonly static int ID_SOU_6 = 23;
-    /** 七索 */
+    // 七索 
     public readonly static int ID_SOU_7 = 24;
-    /** 八索 */
+    // 八索 
     public readonly static int ID_SOU_8 = 25;
-    /** 九索 */
+    // 九索 
     public readonly static int ID_SOU_9 = 26;
 
-    /** 東 */
+    // 東 
     public readonly static int ID_TON = 27;
-    /** 南 */
+    // 南 
     public readonly static int ID_NAN = 28;
-    /** 西 */
+    // 西 
     public readonly static int ID_SYA = 29;
-    /** 北 */
+    // 北 
     public readonly static int ID_PE = 30;
 
-    /** 白 */
+    // 白 
     public readonly static int ID_HAKU = 31;
-    /** 發 */
+    // 發 
     public readonly static int ID_HATSU = 32;
-    /** 中 */
+    // 中 
     public readonly static int ID_CHUN = 33;
 
-    /** IDの最大値 */
+    // IDの最大値 
     public readonly static int ID_MAX = ID_CHUN;
 
-    /** IDの最小値 */
+    // IDの最小値 
     public readonly static int ID_MIN = ID_WAN_1;
 
-    /** IDの個数の最小値 */
+    // IDの個数の最小値 
     public readonly static int ID_ITEM_MIN = ID_WAN_1;
 
-    /** IDの個数の最大値 */
+    // IDの個数の最大値 
     public readonly static int ID_ITEM_MAX = ID_MAX + 1;
 
 
-    /** 1 */
+    // 1 
     public readonly static int NUM_1 = 1;
-    /** 2 */
+    // 2 
     public readonly static int NUM_2 = 2;
-    /** 3 */
+    // 3 
     public readonly static int NUM_3 = 3;
-    /** 4 */
+    // 4 
     public readonly static int NUM_4 = 4;
-    /** 5 */
+    // 5 
     public readonly static int NUM_5 = 5;
-    /** 6 */
+    // 6 
     public readonly static int NUM_6 = 6;
-    /** 7 */
+    // 7 
     public readonly static int NUM_7 = 7;
-    /** 8 */
+    // 8 
     public readonly static int NUM_8 = 8;
-    /** 9 */
+    // 9 
     public readonly static int NUM_9 = 9;
 
-    /** 一萬 */
+    // 一萬 
     public readonly static int NUM_WAN_1 = 1;
-    /** 二萬 */
+    // 二萬 
     public readonly static int NUM_WAN_2 = 2;
-    /** 三萬 */
+    // 三萬 
     public readonly static int NUM_WAN_3 = 3;
-    /** 四萬 */
+    // 四萬 
     public readonly static int NUM_WAN_4 = 4;
-    /** 五萬 */
+    // 五萬 
     public readonly static int NUM_WAN_5 = 5;
-    /** 六萬 */
+    // 六萬 
     public readonly static int NUM_WAN_6 = 6;
-    /** 七萬 */
+    // 七萬 
     public readonly static int NUM_WAN_7 = 7;
-    /** 八萬 */
+    // 八萬 
     public readonly static int NUM_WAN_8 = 8;
-    /** 九萬 */
+    // 九萬 
     public readonly static int NUM_WAN_9 = 9;
 
-    /** 一筒 */
+    // 一筒 
     public readonly static int NUM_PIN_1 = 1;
-    /** 二筒 */
+    // 二筒 
     public readonly static int NUN_PIN_2 = 2;
-    /** 三筒 */
+    // 三筒 
     public readonly static int NUM_PIN_3 = 3;
-    /** 四筒 */
+    // 四筒 
     public readonly static int NUM_PIN_4 = 4;
-    /** 五筒 */
+    // 五筒 
     public readonly static int NUM_PIN_5 = 5;
-    /** 六筒 */
+    // 六筒 
     public readonly static int NUM_PIN_6 = 6;
-    /** 七筒 */
+    // 七筒 
     public readonly static int NUM_PIN_7 = 7;
-    /** 八筒 */
+    // 八筒 
     public readonly static int NUM_PIN_8 = 8;
-    /** 九筒 */
+    // 九筒 
     public readonly static int NUM_PIN_9 = 9;
 
-    /** 一索 */
+    // 一索 
     public readonly static int NUM_SOU_1 = 1;
-    /** 二索 */
+    // 二索 
     public readonly static int NUM_SOU_2 = 2;
-    /** 三索 */
+    // 三索 
     public readonly static int NUM_SOU_3 = 3;
-    /** 四索 */
+    // 四索 
     public readonly static int NUM_SOU_4 = 4;
-    /** 五索 */
+    // 五索 
     public readonly static int NUM_SOU_5 = 5;
-    /** 六索 */
+    // 六索 
     public readonly static int NUM_SOU_6 = 6;
-    /** 七索 */
+    // 七索 
     public readonly static int NUM_SOU_7 = 7;
-    /** 八索 */
+    // 八索 
     public readonly static int NUM_SOU_8 = 8;
-    /** 九索 */
+    // 九索 
     public readonly static int NUM_SOU_9 = 9;
 
-    /** 東 */
+    // 東 
     public readonly static int NUM_TON = 1;
-    /** 南 */
+    // 南 
     public readonly static int NUM_NAN = 2;
-    /** 西 */
+    // 西 
     public readonly static int NUM_SHA = 3;
-    /** 北 */
+    // 北 
     public readonly static int NUM_PE = 4;
 
-    /** 白 */
+    // 白 
     public readonly static int NUM_HAKU = 1;
-    /** 發 */
+    // 發 
     public readonly static int NUM_HATSU = 2;
-    /** 中 */
+    // 中 
     public readonly static int NUM_CHUN = 3;
 
-    /*
-     * 種類
-     */
-    /** 萬子 */
+
+    // 萬子 
     public readonly static int KIND_WAN = 0x00000010;
-    /** 筒子 */
+    // 筒子 
     public readonly static int KIND_PIN = 0x00000020;
-    /** 索子 */
+    // 索子 
     public readonly static int KIND_SOU = 0x00000040;
 
-    /** 風牌 */
+    // 風牌 
     public readonly static int KIND_FON = 0x00000100;
-    /** 三元牌 */
+    // 三元牌 
     public readonly static int KIND_SANGEN = 0x00000200;
 
-    /** 数牌 */
+    // 数牌 
     public readonly static int KIND_SHUU = KIND_WAN | KIND_PIN | KIND_SOU;
-    /** 字牌 */
+    // 字牌 
     public readonly static int KIND_TSUU = KIND_FON | KIND_SANGEN;
 
-    /** 番号の配列 */
+    // 番号の配列 
     private readonly static int[] NUMS = 
     {
         // 萬子
@@ -219,7 +217,7 @@ public class Hai
         NUM_HAKU, NUM_HATSU, NUM_CHUN 
     };
 
-    /** 種類の配列 */
+    // 種類の配列 
     private readonly static int[] KINDS = 
     {
         // 萬子
@@ -234,7 +232,7 @@ public class Hai
         KIND_SANGEN, KIND_SANGEN, KIND_SANGEN 
     };
 
-    /** 一九牌フラグ(flag)の配列 */
+    // 一九牌フラグ(flag)の配列 
     private readonly static bool[] IS_ICHIKYUUS = 
     {
         // 萬子
@@ -249,7 +247,7 @@ public class Hai
         false, false, false 
     };
 
-    /** 字牌フラグ(flag)の配列 */
+    // 字牌フラグ(flag)の配列 
     private readonly static bool[] IS_TSUUS = 
     {
         // 萬子
@@ -264,7 +262,7 @@ public class Hai
         true, true, true 
     };
 
-    /** ネクスト牌のIDの配列 */
+    // ネクスト牌のIDの配列 
     private readonly static int[] NEXT_HAI_IDS = 
     {
         // 萬子
@@ -282,8 +280,6 @@ public class Hai
 
 
     private int _id = -1;
-
-    // 赤ドラ
     private bool _isRed = false;
 
 
@@ -324,15 +320,12 @@ public class Hai
         get{ return _id; }
     }
 
-    /**
-     * IDを取得する。
-     */
     public int getID()
     {
         return _id;
     }
 
-    /** 赤ドラ */
+    // 赤ドラ
     public void setRed( bool a_red ) {
         this._isRed = a_red;
     }
@@ -341,66 +334,74 @@ public class Hai
     }
 
 
-    /**
-     * 番号を取得する。
-     */
+    /// <summary>
+    /// 番号を取得する.
+    /// </summary>
+
     public int getNum()
     {
         return NUMS[_id];
     }
 
-    /**
-     * 種類を取得する。
-     */
+    /// <summary>
+    /// 種類を取得する.
+    /// </summary>
+
     public int getKind()
     {
         return KINDS[_id];
     }
 
-    /**
-     * NK(番号と種類のOR)を取得する。
-     */
+    /// <summary>
+    /// NK(番号と種類のOR)を取得する.
+    /// </summary>
+
     public int getNumKind()
     {
         return NUMS[_id] | KINDS[_id];
     }
 
-    /**
-     * 一九牌フラグを取得する。
-     */
+    /// <summary>
+    /// 一九牌フラグを取得する.
+    /// </summary>
+
     public bool isIchikyuu()
     {
         return IS_ICHIKYUUS[_id];
     }
 
-    /**
-     * 字牌フラグ(flag)を取得する。
-     */
+    /// <summary>
+    /// 字牌フラグ(flag)を取得する.
+    /// </summary>
+
     public bool isTsuu()
     {
         return IS_TSUUS[_id];
     }
 
-    /**
-     * 一九、字牌 フラグを取得する。
-     */
+    /// <summary>
+    /// 一九、字牌 フラグを取得する
+    /// </summary>
+
     public bool isYaochuu()
     {
         return IS_ICHIKYUUS[_id] | IS_TSUUS[_id];
     }
 
-    /**
-     * ネクスト(next)牌のIDを取得する。
-     */
+    /// <summary>
+    /// Gets the next hai identifier.
+    /// </summary>
+
     public int getNextHaiId()
     {
         return NEXT_HAI_IDS[_id];
     }
 
 
-    /**
-     * 字牌フラグを取得する。
-     */
+    /// <summary>
+    /// 字牌フラグを取得する.
+    /// </summary>
+
     public static bool isTsuu(int numKind)
     {
         return (numKind & KIND_TSUU) != 0;
