@@ -1,39 +1,38 @@
 ﻿
 public class GameInfo : Info 
 {
-    protected PlayerAction mPlayerAction;
+    protected PlayerAction _playerAction;
 
     public GameInfo(Mahjong game, PlayerAction playerAction) : base(game) {
         this.setPlayerAction(playerAction);
     }
 
     public Hai[] getUraDoraHais() {
-        return game.getUraDoras();
+        return _game.getUraDoras();
     }
 
-    public int getManKaze() {
-        return game.getManKaze();
+    public EKaze getManKaze() {
+        return _game.getManKaze();
     }
 
     public void setPlayerAction(PlayerAction playerAction) {
-        this.mPlayerAction = playerAction;
+        this._playerAction = playerAction;
     }
     public PlayerAction getPlayerAction() {
-        return mPlayerAction;
+        return _playerAction;
     }
 
-    /**
-     * 起家のプレイヤーインデックスを取得する。
-     */
+
+    // 起家のプレイヤーインデックスを取得する
     public int getChiichaIndex() {
-        return game.getChiichaIndex();
+        return _game.getChiichaIndex();
     }
 
     public AgariInfo getAgariInfo() {
-        return game.getAgariInfo();
+        return _game.getAgariInfo();
     }
 
     public bool[] getTenpai() {
-        return game.getTenpai();
+        return _game.getTenpai();
     }
 }

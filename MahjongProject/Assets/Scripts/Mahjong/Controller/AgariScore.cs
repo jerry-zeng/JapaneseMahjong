@@ -1,4 +1,5 @@
-﻿public class AgariInfo 
+﻿
+public class AgariInfo 
 {
     public int m_han;
     public int m_fu;
@@ -7,32 +8,34 @@
     public int m_agariScore;
 }
 
+/// <summary>
+/// Agari(あがり) = 胡牌.
+/// </summary>
 
-/**
- * Agari(あがり) = 胡牌.
- */
 public class AgariScore 
 {
-
     #region internal classes.
-    public class Score {
-        public int m_oyaRon;
-        public int m_oyaTsumo;
-        public int m_koRon;
-        public int m_koTsumo;
+    public class Score
+    {
+        // おや:亲，
+        public int _oyaRon;
+        public int _oyaTsumo;
+        // こ:子
+        public int _koRon;
+        public int _koTsumo;
 
-        public Score(Score a_score) {
-            this.m_oyaRon = a_score.m_oyaRon;
-            this.m_oyaTsumo = a_score.m_oyaTsumo;
-            this.m_koRon = a_score.m_koRon;
-            this.m_koTsumo = a_score.m_koTsumo;
+        public Score(Score score) {
+            this._oyaRon = score._oyaRon;
+            this._oyaTsumo = score._oyaTsumo;
+            this._koRon = score._koRon;
+            this._koTsumo = score._koTsumo;
         }
 
-        public Score(int a_oyaRon, int a_oyaTsumo, int a_koRon, int a_koTsumo) {
-            this.m_oyaRon = a_oyaRon;
-            this.m_oyaTsumo = a_oyaTsumo;
-            this.m_koRon = a_koRon;
-            this.m_koTsumo = a_koTsumo;
+        public Score(int oyaRon, int oyaTsumo, int koRon, int koTsumo) {
+            this._oyaRon = oyaRon;
+            this._oyaTsumo = oyaTsumo;
+            this._koRon = koRon;
+            this._koTsumo = koTsumo;
         }
     }
     #endregion internal classes.
@@ -56,82 +59,84 @@ public class AgariScore
         {new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000),new Score(48000,16000,32000, 8000)}
     };
 
-    private Score m_scoreWork;
-    private CountFormat countFormat;
+    private Score _scoreWork;
+    private CountFormat _countFormat;
 
     public AgariScore() {
-        countFormat = new CountFormat();
+        _countFormat = new CountFormat();
     }
 
-    /**
-     * 符を計算します。
-     */
-    public int countHu(Tehai tehai, Hai addHai, Combi combi, Yaku yaku, AgariSetting setting) {
+
+    // 符を計算します
+    public int countHu(Tehai tehai, Hai addHai, Combi combi, Yaku yaku, AgariSetting setting)
+    {
         int countHu = 20;
         Hai[] checkHais;
 
         //七対子の場合は２５符
-        //      if(yaku.checkTeetoitu() == true){
-        //          return 25;
-        //      }
+        //if(yaku.checkTeetoitu() == true){
+        //    return 25;
+        //}
 
         //頭の牌を取得
-        Hai atamaHai = new Hai(Hai.NumKindToID(combi.m_atamaNumKind));
+        Hai atamaHai = new Hai(Hai.NumKindToID(combi._atamaNumKind));
 
         // ３元牌なら２符追加
-        if (atamaHai.getKind() == Hai.KIND_SANGEN) {
+        if (atamaHai.getKind() == Hai.KIND_SANGEN)
             countHu += 2;
-        }
 
         // 場風なら２符追加
-        if( (atamaHai.getID() - Hai.ID_TON) == setting.getBakaze() ) {
+        if( (atamaHai.ID - Hai.ID_TON) == (int)setting.getBakaze() )
             countHu += 2;
-        }
 
         // 自風なら２符追加
-        if( (atamaHai.getID() - Hai.ID_TON) == setting.getJikaze() ) {
+        if( (atamaHai.ID - Hai.ID_TON) == (int)setting.getJikaze() )
             countHu += 2;
-        }
 
         //平和が成立する場合は、待ちによる２符追加よりも優先される
-        if( yaku.checkPinfu() == false ){
+        if( yaku.checkPinfu() == false )
+        {
             // 単騎待ちの場合２符追加
-            if(addHai.getNumKind() == combi.m_atamaNumKind){
+            if(addHai.getNumKind() == combi._atamaNumKind)
                 countHu += 2;
-            }
 
             // 嵌張待ちの場合２符追加
-            //数牌の２～８かどうか判定
-            if(addHai.isYaochuu() == false){
-                for(int i = 0 ; i < combi.m_shunNum ; i++){
-                    if((addHai.getNumKind()-1) == combi.m_shunNumKinds[i]){
+            // 数牌の２～８かどうか判定
+            if(addHai.isYaochuu() == false)
+            {
+                for(int i = 0 ; i < combi._shunNum ; i++)
+                {
+                    if((addHai.getNumKind()-1) == combi._shunNumKinds[i])
                         countHu += 2;
-                    }
                 }
             }
 
             // 辺張待ち(3)の場合２符追加
-            if( (addHai.isYaochuu() == false) && (addHai.getNum() == Hai.NUM_3) ) {
-                for(int i = 0 ; i < combi.m_shunNum ; i++){
-                    if( (addHai.getNumKind()-2) == combi.m_shunNumKinds[i]){
+            if( (addHai.isYaochuu() == false) && (addHai.getNum() == Hai.NUM_3) )
+            {
+                for(int i = 0 ; i < combi._shunNum ; i++)
+                {
+                    if( (addHai.getNumKind()-2) == combi._shunNumKinds[i])
                         countHu += 2;
-                    }
                 }
             }
 
             // 辺張待ち(7)の場合２符追加
-            if( (addHai.isYaochuu() == false) && (addHai.getNum() == Hai.NUM_7) ) {
-                for(int i = 0 ; i < combi.m_shunNum ; i++){
-                    if( addHai.getNumKind() == combi.m_shunNumKinds[i]){
+            if( (addHai.isYaochuu() == false) && (addHai.getNum() == Hai.NUM_7) )
+            {
+                for(int i = 0 ; i < combi._shunNum ; i++)
+                {
+                    if( addHai.getNumKind() == combi._shunNumKinds[i])
                         countHu += 2;
-                    }
                 }
             }
         }
 
         // 暗刻による加点
-        for (int i = 0; i < combi.m_kouNum; i++) {
-            Hai checkHai = new Hai(Hai.NumKindToID(combi.m_kouNumKinds[i]));
+        for (int i = 0; i < combi._kouNum; i++)
+        {
+            Hai checkHai = new Hai(Hai.NumKindToID(combi._kouNumKinds[i]));
+
             // 牌が字牌もしくは1,9
             if (checkHai.isYaochuu() == true) {
                 countHu += 8;
@@ -143,60 +148,71 @@ public class AgariScore
 
         Fuuro[] fuuros = tehai.getFuuros();
         int fuuroNum = tehai.getFuuroNum();
-        int type;
 
-        for (int i = 0; i < fuuroNum; i++) {
-            type = fuuros[i].getType();
-            switch (type) {
-                case Fuuro.TYPE_MINKOU:
-                //明刻の牌をチェック
-                checkHais = fuuros[i].getHais();
-                // 牌が字牌もしくは1,9
-                if (checkHais[0].isYaochuu() == true) {
-                    countHu += 4;
-                } 
-                else {
-                    countHu += 2;
+        for (int i = 0; i < fuuroNum; i++) 
+        {
+            switch( fuuros[i].Type ) 
+            {
+                case EFuuroType.MinKou:
+                {
+                    //明刻の牌をチェック
+                    checkHais = fuuros[i].Hais;
+
+                    // 牌が字牌もしくは1,9
+                    if (checkHais[0].isYaochuu() == true) {
+                        countHu += 4;
+                    } 
+                    else {
+                        countHu += 2;
+                    }
                 }
                 break;
-                case Fuuro.TYPE_DAIMINKAN:
-                case Fuuro.TYPE_KAKAN:
-                //明槓の牌をチェック
-                checkHais = fuuros[i].getHais();
-                // 牌が字牌もしくは1,9
-                if (checkHais[0].isYaochuu() == true) {
-                    countHu += 16;
-                } 
-                else {
-                    countHu += 8;
+
+                case EFuuroType.KaKan:
+                case EFuuroType.DaiMinKan:
+                {
+                    //明槓の牌をチェック
+                    checkHais = fuuros[i].Hais;
+
+                    // 牌が字牌もしくは1,9
+                    if (checkHais[0].isYaochuu() == true) {
+                        countHu += 16;
+                    } 
+                    else {
+                        countHu += 8;
+                    }
                 }
                 break;
-                case Fuuro.TYPE_ANKAN:
-                //暗槓の牌をチェック
-                checkHais = fuuros[i].getHais();
-                // 牌が字牌もしくは1,9
-                if (checkHais[0].isYaochuu() == true) {
-                    countHu += 32;
-                } 
-                else {
-                    countHu += 16;
+
+                case EFuuroType.AnKan:
+                {
+                    //暗槓の牌をチェック
+                    checkHais = fuuros[i].Hais;
+
+                    // 牌が字牌もしくは1,9
+                    if (checkHais[0].isYaochuu() == true) {
+                        countHu += 32;
+                    } 
+                    else {
+                        countHu += 16;
+                    }
                 }
-                break;
-                default:
                 break;
             }
         }
 
         // ツモ上がりで平和が成立していなければ２譜追加
-        if(setting.getYakuFlag( (int)YakuflgName.TUMO )== true){
+        if(setting.getYakuFlag( (int)EYakuFlagType.TUMO )== true)
+        {
             if(yaku.checkPinfu() == false){
                 countHu += 2;
             }
         }
 
         // 面前ロン上がりの場合は１０符追加
-        if( setting.getYakuFlag((int)YakuflgName.TUMO) == false ) {
-            if (yaku.GetNakiflg() == false) {
+        if( setting.getYakuFlag((int)EYakuFlagType.TUMO) == false )
+        {
+            if (yaku.isNaki == false) {
                 countHu += 10;
             }
         }
@@ -209,13 +225,11 @@ public class AgariScore
         return countHu;
     }
 
-    /**
-     * 上がり点数を取得します。
-     */
-    public int getScore(int hanSuu, int huSuu) {
-        if (hanSuu == 0) {
+    // 上がり点数を取得します
+    public int getScore(int hanSuu, int huSuu)
+    {
+        if (hanSuu == 0)
             return 0;
-        }
 
         int iFu;
         if (huSuu == 20) {
@@ -239,87 +253,64 @@ public class AgariScore
             iHan = hanSuu - 1;
         }
 
-        m_scoreWork = new Score(SCORE[iHan,iFu]);
+        _scoreWork = new Score( SCORE[iHan,iFu] );
 
-        return m_scoreWork.m_koRon;
-
-        //      int score;
-        //      // 符　× ２の　（翻数　+　場ゾロの2翻)乗
-        //      score = huSuu * (int) Math.pow(2, hanSuu + 2);
-        //      // 子は上の4倍が基本点(親は6倍)
-        //      score *= 4;
-        //
-        //      // 100で割り切れない数がある場合100点繰上げ
-        //      if (score % 100 != 0) {
-        //          score = score - (score % 100) + 100;
-        //      }
-        //      // 7700以上は8000とする
-        ////        if (score >= 7700) {
-        ////            score = 8000;
-        ////        }
-        //
-        //      if (hanSuu >= 13) { // 13翻以上は役満
-        //          score = 32000;
-        //      } 
-        //      else if (hanSuu >= 11) { // 11翻以上は3倍満
-        //          score = 24000;
-        //      } 
-        //      else if (hanSuu >= 8) { // 8翻以上は倍満
-        //          score = 16000;
-        //      } 
-        //      else if (hanSuu >= 6) { // 6翻以上は跳満
-        //          score = 12000;
-        //      } 
-        //      else if (hanSuu >= 5) { // 5翻以上は満貫
-        //          score = 8000;
-        //      }
-        //
-        //      return score;
+        return _scoreWork._koRon;
     }
 
     // 流局满贯 //
-    public void setNagashiMangan(AgariInfo a_agariInfo) {
+    public void setNagashiMangan(AgariInfo agariInfo)
+    {
         getScore(5, 30);
-        a_agariInfo.m_score = m_scoreWork;
-        a_agariInfo.m_fu = 30;
-        a_agariInfo.m_han = 5;
+
+        agariInfo.m_score = _scoreWork;
+        agariInfo.m_fu = 30;
+        agariInfo.m_han = 5;
 
         string[] strings = new string[1];
         strings[0] = Yaku.GetYakuName(48);
-        a_agariInfo.m_yakuNames = strings;
+        agariInfo.m_yakuNames = strings;
     }
 
-    public int getAgariScore(Tehai tehai, Hai addHai, Combi[] combis, AgariSetting setting, AgariInfo a_agariInfo) {
+    public int getAgariScore(Tehai tehai, Hai addHai, Combi[] combis, AgariSetting setting, AgariInfo agariInfo)
+    {
         // カウントフォーマットを取得します。
-        countFormat.setCountFormat(tehai, addHai);
+        _countFormat.setCountFormat(tehai, addHai);
 
         // あがりの組み合わせを取得します。
-        int combisCount = countFormat.getCombis(combis);
-        combis = countFormat.getCombis();
-        combisCount = countFormat.getCombiNum();
+        int combisCount = _countFormat.getCombis(combis);
+        combis = _countFormat.getCombis();
+        combisCount = _countFormat.getCombiNum();
 
-        if (countFormat.isChiitoitsu()) {
+        if (_countFormat.isChiitoitsu())
+        {
             Yaku yaku = new Yaku(tehai, addHai, combis[0], setting, 0);
+
             string[] yakuNames = yaku.getYakuName();
             int hanSuu = yaku.getHan();
             int agariScore = getScore(hanSuu, 25);
-            a_agariInfo.m_score = m_scoreWork;
-            a_agariInfo.m_fu = 25;
-            a_agariInfo.m_han = hanSuu;
-            a_agariInfo.m_yakuNames = yakuNames;
+
+            agariInfo.m_score = _scoreWork;
+            agariInfo.m_fu = 25;
+            agariInfo.m_han = hanSuu;
+            agariInfo.m_yakuNames = yakuNames;
 
             return agariScore;
         }
 
-        if (countFormat.isKokushi()) {
+        if (_countFormat.isKokushi())
+        {
             Yaku yaku = new Yaku(tehai, addHai, setting);
-            if( yaku.Kokushi ) {
+
+            if( yaku.isKokushi )
+            {
                 int hanSuu = 13;
                 int agariScore = getScore(hanSuu, 20);
-                a_agariInfo.m_score = m_scoreWork;
-                a_agariInfo.m_fu = 0;
-                a_agariInfo.m_han = hanSuu;
-                a_agariInfo.m_yakuNames = yaku.getYakuName();
+
+                agariInfo.m_score = _scoreWork;
+                agariInfo.m_fu = 0;
+                agariInfo.m_han = hanSuu;
+                agariInfo.m_yakuNames = yaku.getYakuName();
 
                 return agariScore;
             }
@@ -328,74 +319,72 @@ public class AgariScore
         }
 
         // あがりの組み合わせがない場合は0点
-        if (combisCount == 0) {
+        if (combisCount == 0)
             return 0;
-        }
 
-        // 役
-        int[] hanSuuArr = new int[combisCount];
-        // 符
-        int[] huSuu = new int[combisCount];
-        // 点数（子のロン上がり）
-        int[] agariScoreArr = new int[combisCount];
-        // 最大の点数
-        int maxagariScore = 0;
+        int[] hanSuuArr = new int[combisCount]; // 役
+        int[] huSuu = new int[combisCount]; // 符
+        int[] agariScoreArr = new int[combisCount]; // 点数（子のロン上がり）
+        int maxAgariScore = 0; // 最大の点数
 
-        for (int i = 0; i < combisCount; i++) {
+        for (int i = 0; i < combisCount; i++)
+        {
             Yaku yaku = new Yaku(tehai, addHai, combis[i], setting);
             hanSuuArr[i] = yaku.counttHanSuu();
             huSuu[i] = countHu(tehai, addHai, combis[i],yaku,setting);
             agariScoreArr[i] = getScore(hanSuuArr[i], huSuu[i]);
 
-            if( maxagariScore < agariScoreArr[i] ) {
-                a_agariInfo.m_score = m_scoreWork;
-                maxagariScore = agariScoreArr[i];
-                a_agariInfo.m_fu = huSuu[i];
-                a_agariInfo.m_han = hanSuuArr[i];
-                a_agariInfo.m_yakuNames = yaku.getYakuName();
+            if( maxAgariScore < agariScoreArr[i] )
+            {
+                agariInfo.m_score = _scoreWork;
+                maxAgariScore = agariScoreArr[i];
+                agariInfo.m_fu = huSuu[i];
+                agariInfo.m_han = hanSuuArr[i];
+                agariInfo.m_yakuNames = yaku.getYakuName();
             }
         }
 
         // 最大値を探す
-        maxagariScore = agariScoreArr[0];
-        for (int i = 0; i < combisCount; i++) {
-            maxagariScore = (maxagariScore >= agariScoreArr[i]? maxagariScore : agariScoreArr[i]);
+        maxAgariScore = agariScoreArr[0];
+
+        for (int i = 0; i < combisCount; i++) 
+        {
+            maxAgariScore = (maxAgariScore >= agariScoreArr[i])? maxAgariScore : agariScoreArr[i];
         }
 
-        return maxagariScore;
+        return maxAgariScore;
     }
 
-    public string[] getYakuName(Tehai tehai, Hai addHai, Combi[] combis, AgariSetting setting) {
+    public string[] getYakuName(Tehai tehai, Hai addHai, Combi[] combis, AgariSetting setting)
+    {
         //和了り役の名前
         string[] yakuNames = {""};
+
         // カウントフォーマットを取得します。
-        countFormat.setCountFormat(tehai, addHai);
+        _countFormat.setCountFormat(tehai, addHai);
 
         // あがりの組み合わせを取得します。
-        int combisCount = countFormat.getCombis(combis);
+        int combisCount = _countFormat.getCombis(combis);
 
         // あがりの組み合わせがない場合は0点
-        if (combisCount == 0){
+        if (combisCount == 0)
             return yakuNames;
-        }
 
-        // 役
-        int[] hanSuu = new int[combisCount];
-        // 符
-        int[] huSuu = new int[combisCount];
-        // 点数（子のロン上がり）
-        int[] agariScore = new int[combisCount];
-        // 最大の点数
-        int maxagariScore = 0;
+        int[] hanSuu = new int[combisCount]; // 役
+        int[] huSuu = new int[combisCount]; // 符
+        int[] agariScore = new int[combisCount]; // 点数（子のロン上がり）
+        int maxAgariScore = 0; // 最大の点数
 
-        for (int i = 0; i < combisCount; i++) {
+        for (int i = 0; i < combisCount; i++)
+        {
             Yaku yaku = new Yaku(tehai, addHai, combis[i], setting);
             hanSuu[i] = yaku.counttHanSuu();
             huSuu[i] = countHu(tehai, addHai, combis[i],yaku,setting);
             agariScore[i] = getScore(hanSuu[i], huSuu[i]);
 
-            if(maxagariScore < agariScore[i]){
-                maxagariScore = agariScore[i];
+            if(maxAgariScore < agariScore[i])
+            {
+                maxAgariScore = agariScore[i];
                 yakuNames = yaku.getYakuName();
             }
         }

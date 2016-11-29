@@ -1,12 +1,11 @@
 ﻿
-/**
- * 牌
- */
+/// <summary>
+/// 牌
+/// </summary>
+
 public class Hai 
 {
-    /*
-     * ID
-     */
+    #region Const
     /** 一萬 */
     public readonly static int ID_WAN_1 = 0;
     /** 二萬 */
@@ -92,9 +91,7 @@ public class Hai
     /** IDの個数の最大値 */
     public readonly static int ID_ITEM_MAX = ID_MAX + 1;
 
-    /*
-     * NO = Num.
-     */
+
     /** 1 */
     public readonly static int NUM_1 = 1;
     /** 2 */
@@ -281,158 +278,171 @@ public class Hai
         // 三元牌
         ID_HATSU, ID_CHUN, ID_HAKU 
     };
+    #endregion
+
+
+    private int _id = -1;
+
+    // 赤ドラ
+    private bool _isRed = false;
+
+
+    public Hai() {
+        _id = -1;
+        _isRed = false;
+    }
+
+    public Hai(int id) {
+        this._id = id;
+        this._isRed = false;
+    }
+
+    public Hai(int id, bool isRed) {
+        this._id = id;
+        this._isRed = isRed;
+    }
+
+    public Hai(Hai hai) {
+        copy(this, hai);
+    }
+
 
     /// <summary>
-    /// check if the target hai is valid.
+    /// Copy the specified hai src to dest.
+    /// 牌をコピーする
     /// </summary>
-    public static bool isValidHai(Hai hai) {
-        return (hai != null) && isValidHaiID(hai.getID());
-    }
-    public static bool isValidHaiID(int id) {
-        return id >= ID_MIN && id <= ID_MAX;
-    }
 
-
-
-    /** ID: default is -1 */
-    private int m_id = -1;
-
-    /** 赤ドラ */
-    private bool m_isRed = false;
-
-    /**
-     * 空の牌を作成する。
-     */
-    public Hai() {
-        m_id = -1;
-        m_isRed = false;
-    }
-
-    /**
-     * IDから牌を作成する。
-     */
-    public Hai(int a_id) {
-        this.m_id = a_id;
-        this.m_isRed = false;
-    }
-
-    /**
-     * IDと赤ドラから牌を作成する。
-     */
-    public Hai(int a_id, bool a_red) {
-        this.m_id = a_id;
-        this.m_isRed = a_red;
-    }
-
-    /**
-     * 牌から牌を作成する。
-     */
-    public Hai(Hai a_hai) {
-        copy(this, a_hai);
-    }
-
-    /**
-     * 牌をコピーする。
-     */
-    public static void copy( Hai a_dest, Hai a_src ) {
-        a_dest.m_id = a_src.m_id;
-        a_dest.m_isRed = a_src.m_isRed;
+    public static void copy( Hai dest, Hai src )
+    {
+        dest._id = src._id;
+        dest._isRed = src._isRed;
     }
 
 
-    /** 赤ドラ */
-    public void setRed( bool a_red ) {
-        this.m_isRed = a_red;
-    }
-    public bool isRed() {
-        return m_isRed;
+    public int ID
+    {
+        get{ return _id; }
     }
 
     /**
      * IDを取得する。
      */
-    public int getID() {
-        return m_id;
+    public int getID()
+    {
+        return _id;
     }
+
+    /** 赤ドラ */
+    public void setRed( bool a_red ) {
+        this._isRed = a_red;
+    }
+    public bool isRed() {
+        return _isRed;
+    }
+
 
     /**
      * 番号を取得する。
      */
-    public int getNum() {
-        return NUMS[m_id];
+    public int getNum()
+    {
+        return NUMS[_id];
     }
 
     /**
      * 種類を取得する。
      */
-    public int getKind() {
-        return KINDS[m_id];
+    public int getKind()
+    {
+        return KINDS[_id];
     }
 
     /**
      * NK(番号と種類のOR)を取得する。
      */
-    public int getNumKind() {
-        return NUMS[m_id] | KINDS[m_id];
+    public int getNumKind()
+    {
+        return NUMS[_id] | KINDS[_id];
     }
 
     /**
      * 一九牌フラグを取得する。
      */
-    public bool isIchikyuu() {
-        return IS_ICHIKYUUS[m_id];
+    public bool isIchikyuu()
+    {
+        return IS_ICHIKYUUS[_id];
     }
 
     /**
      * 字牌フラグ(flag)を取得する。
      */
-    public bool isTsuu() {
-        return IS_TSUUS[m_id];
-    }
-
-    /**
-     * 字牌フラグを取得する。
-     */
-    public static bool isTsuu(int a_NumKind) {
-        return (a_NumKind & KIND_TSUU) != 0;
+    public bool isTsuu()
+    {
+        return IS_TSUUS[_id];
     }
 
     /**
      * 一九、字牌 フラグを取得する。
      */
-    public bool isYaochuu() {
-        return IS_ICHIKYUUS[m_id] | IS_TSUUS[m_id];
+    public bool isYaochuu()
+    {
+        return IS_ICHIKYUUS[_id] | IS_TSUUS[_id];
     }
 
     /**
      * ネクスト(next)牌のIDを取得する。
      */
-    public int getNextHaiId() {
-        return NEXT_HAI_IDS[m_id];
+    public int getNextHaiId()
+    {
+        return NEXT_HAI_IDS[_id];
     }
 
+
     /**
-     * NK(番号と種類のOR)をIDに変換する。
+     * 字牌フラグを取得する。
      */
-    public static int NumKindToID(int a_numKind) {
+    public static bool isTsuu(int numKind)
+    {
+        return (numKind & KIND_TSUU) != 0;
+    }
+
+    /// <summary>
+    /// NK(番号と種類のOR)をIDに変換する
+    /// </summary>
+
+    public static int NumKindToID(int numKind)
+    {
         int id;
-        if (a_numKind >= KIND_SANGEN) {
-            id = a_numKind - KIND_SANGEN + ID_HAKU - 1;
+        if (numKind >= KIND_SANGEN) {
+            id = numKind - KIND_SANGEN + ID_HAKU - 1;
         } 
-        else if (a_numKind >= KIND_FON) {
-            id = a_numKind - KIND_FON + ID_TON - 1;
+        else if (numKind >= KIND_FON) {
+            id = numKind - KIND_FON + ID_TON - 1;
         } 
-        else if (a_numKind >= KIND_SOU) {
-            id = a_numKind - KIND_SOU + ID_SOU_1 - 1;
+        else if (numKind >= KIND_SOU) {
+            id = numKind - KIND_SOU + ID_SOU_1 - 1;
         } 
-        else if (a_numKind >= KIND_PIN) {
-            id = a_numKind - KIND_PIN + ID_PIN_1 - 1;
+        else if (numKind >= KIND_PIN) {
+            id = numKind - KIND_PIN + ID_PIN_1 - 1;
         } 
         else {
-            id = a_numKind - KIND_WAN + ID_WAN_1 - 1;
+            id = numKind - KIND_WAN + ID_WAN_1 - 1;
         }
         return id;
     }
 
+    /// <summary>
+    /// check if the target hai is valid.
+    /// </summary>
+
+    public static bool isValidHai(Hai hai)
+    {
+        return (hai != null) && isValidHaiID(hai.ID);
+    }
+
+    public static bool isValidHaiID(int id)
+    {
+        return id >= ID_MIN && id <= ID_MAX;
+    }
 }
 

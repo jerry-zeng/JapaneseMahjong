@@ -1,77 +1,81 @@
 ﻿
-/**
- * Agari(あがり) = 胡牌.
- */
+/// <summary>
+/// Agari setting.
+/// Agari(あがり) = 胡牌
+/// </summary>
+
 public class AgariSetting 
 {
+    // 役成立フラグの配列
+    private bool[] yakuFlag = new bool[(int)EYakuFlagType.YAKUFLG_COUNT];
 
-    /** 役成立フラグの配列 */
-    private bool[] yakuFlag = new bool[(int)YakuflgName.YAKUFLGNUM];
-    /** 自風の設定 */
-    private int jikaze = Kaze.KAZE_NONE;
-    /** 場風の設定 */
-    private int bakaze = Kaze.KAZE_TON;
-    /** 表ドラ表示牌 */
+    // 自風の設定
+    private EKaze jiKaze = EKaze.None;
+
+    // 場風の設定
+    private EKaze baKaze = EKaze.Ton;
+
+    // 表ドラ
     private Hai[] omoteDoraHais = new Hai[4];
-    /** 裏ドラ */
+
+    // 裏ドラ
     private Hai[] uraDoraHais = new Hai[4];
 
-    public AgariSetting(){
-        for(int i = 0 ; i < yakuFlag.Length ; i++){
+
+    public AgariSetting()
+    {
+        for(int i = 0; i < yakuFlag.Length ; i++){
             yakuFlag[i] = false;
         }
     }
 
-    /** コンストラクタ(Constructor) */
-    public AgariSetting(Mahjong game) : this() {
+    public AgariSetting(Mahjong game) : this()
+    {
         this.omoteDoraHais = game.getOmotoDoras();
         this.uraDoraHais = game.getUraDoras();
-        this.jikaze = game.getJiKaze();
-        this.bakaze = game.getBaKaze();
+        this.jiKaze = game.getJiKaze();
+        this.baKaze = game.getBaKaze();
     }
 
-    /** 特殊役成立の設定 */
-    public void setYakuflg(int yakuNum, bool flg) {
+
+    public void setYakuFlag(int yakuNum, bool flg) {
         yakuFlag[yakuNum] = flg;
     }
-    /** 特殊役成立の取得 */
+
     public bool getYakuFlag(int yakuNum) {
         return yakuFlag[yakuNum];
     }
 
-    /** 自風の設定 */
-    public void setJikaze(int jikaze) {
-        this.jikaze = jikaze;
-    }
-    /** 自風の取得 */
-    public int getJikaze() {
-        return this.jikaze;
+
+    public void setJikaze(EKaze jikaze) {
+        this.jiKaze = jikaze;
     }
 
-    /** 場風の設定 */
-    public void setBakaze(int bakaze) {
-        this.bakaze = bakaze;
-    }
-    /** 場風の取得 */
-    public int getBakaze() {
-        return this.bakaze;
+    public EKaze getJikaze() {
+        return this.jiKaze;
     }
 
 
-    /** ドラ表示牌の設定 */
-    public void setOmoteDoraHais(Hai[] doraHais) {
-        this.omoteDoraHais = doraHais;
+    public void setBakaze(EKaze bakaze) {
+        this.baKaze = bakaze;
     }
-    /** ドラ表示牌の取得 */
+    public EKaze getBakaze() {
+        return this.baKaze;
+    }
+
+
+    // 表ドラ
+    public void setOmoteDoraHais(Hai[] omoteDoraHais) {
+        this.omoteDoraHais = omoteDoraHais;
+    }
     public Hai[] getOmoteDoraHais() {
         return this.omoteDoraHais;
     }
 
-    /** 裏ドラ表示牌の設定 */
+    // 裏ドラ
     public void setUraDoraHais(Hai[] uraDoraHais) {
         this.omoteDoraHais = uraDoraHais;
     }
-    /** 裏ドラ表示牌の取得 */
     public Hai[] getUraDoraHais() {
         return this.uraDoraHais;
     }

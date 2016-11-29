@@ -1,26 +1,26 @@
 ﻿
-/**
- * サイコロ(色子)を管理する。
- */
+/// <summary>
+/// サイコロ(色子)を管理する
+/// </summary>
+
 public class Sai 
 {
-    /** 番号 */
-    private int m_num = 1;
+    // 番号
+    private int _num = 1;
 
-    /**
-     * 番号を取得する。
-     */
-    public int getNum() {
-        return m_num;
+    public int Num
+    {
+        get{ return _num; }
     }
 
-    /**
-     * サイコロを振って番号を取得する。
-     * 摇色子，结果1-6.
-     */
-    public int SaiFuri() {
-        m_num = Utils.GetRandomNum(1, 7);
+    /// <summary>
+    /// サイコロを振って番号を取得する。
+    /// 摇色子，结果1-6.
+    /// </summary>
+    public int SaiFuri()
+    {
+        _num = Utils.GetRandomNum(1, 7);
 
-        return m_num;
+        return _num;
     }
 }

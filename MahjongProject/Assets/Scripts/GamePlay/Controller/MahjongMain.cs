@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-
-/**
- *  game logic manage.
- */ 
+ 
+/// <summary>
+/// Mahjong main.
+/// The game logic manager
+/// </summary>
 
 public class MahjongMain : Mahjong 
 {
@@ -16,15 +18,13 @@ public class MahjongMain : Mahjong
     int iPlayer = 0;
 
 
-    /**
-     * 初期化する。 数据初始化.
-     */
-    public override void initialize() {
+    public override void initialize()
+    {
         // 山を作成する。
         m_yama = new Yama();
 
         // 赤ドラを設定する。
-        if( MahjongSetting.UseRedDora ) {
+        if( GameSettings.UseRedDora ) {
             m_yama.setRedDora(Hai.ID_PIN_5, 2);
             m_yama.setRedDora(Hai.ID_WAN_5, 1);
             m_yama.setRedDora(Hai.ID_SOU_5, 1);
@@ -44,27 +44,24 @@ public class MahjongMain : Mahjong
         m_honba = 0;
 
         // 局を初期化する。
-        m_kyoku = KYOKU_TON_1;
+        m_kyoku = (int)EKyoku.Ton_1;
 
 
         // プレイヤーの人数を設定する。
-        m_playerNum = MahjongSetting.PlayerNum;
+        m_playerNum = GameSettings.PlayerCount;
         
         // プレイヤーの配列を初期化する。
-        m_players = new Player[m_playerNum];
-        //m_players[0] = new Player((IPlayer)new Man(m_info, "A", m_playerAction));
-        m_players[0] = new Player((IPlayer)new AI(m_info, "A"));
-        m_players[1] = new Player((IPlayer)new AI(m_info, "B"));
-        m_players[2] = new Player((IPlayer)new AI(m_info, "C"));
-        m_players[3] = new Player((IPlayer)new AI(m_info, "D"));
+        m_players = new List<Player>();
+        //m_players[EKaze.Ton] = new Player((IPlayer)new Man(m_info, "A", m_playerAction));
+        m_players.Add( new Player((IPlayer)new AI(m_info, "A")) );
+        m_players.Add( new Player((IPlayer)new AI(m_info, "B")) );
+        m_players.Add( new Player((IPlayer)new AI(m_info, "C")) );
+        m_players.Add( new Player((IPlayer)new AI(m_info, "D")) );
 
-        for( int i = 0; i < m_playerNum; i++ ) {
-            m_players[i].setTenbou(MahjongSetting.TENBOU_INIT);
+        for(int i = 0; i < m_players.Count; i++)
+        {
+            m_players[i].setTenbou(GameSettings.TENBOU_INIT);
         }
-
-        // 風をプレイヤーインデックスに変換する配列を初期化する。
-        m_kazeToPlayerIndex = new int[m_players.Length];
-
 
         // プレイヤーに提供する情報を作成する。
         m_info = new Info(this);
@@ -74,7 +71,7 @@ public class MahjongMain : Mahjong
     }
 
     public void SetChiicha() {
-        m_iOya = (m_sais[0].getNum() + m_sais[1].getNum() - 1) % 4;
+        m_iOya = (m_sais[0].Num + m_sais[1].Num - 1) % 4;
         m_iChiicha = m_iOya;
     }
 
@@ -82,7 +79,9 @@ public class MahjongMain : Mahjong
     /// <summary>
     /// 准备牌山.
     /// </summary>
-    public void PrepareKyokuYama() {
+
+    public void PrepareKyokuYama()
+    {
         // 連荘を初期化する。
         m_renchan = false;
 
@@ -102,8 +101,8 @@ public class MahjongMain : Mahjong
         m_kazeTo = m_players[m_iOya].getJikaze();
 
         // プレイヤー配列を初期化する。
-        for( int i = 0; i < m_players.Length; i++ ) {
-            m_players[i].init();
+        for( int i = 0; i < m_players.Count; i++ ) {
+            m_players[i].Init();
         }
 
         m_suteHaisCount = 0;
@@ -115,7 +114,9 @@ public class MahjongMain : Mahjong
     /// <summary>
     /// 发牌.
     /// </summary>
-    public void SetWaremeAndHaipai() {
+
+    public void SetWaremeAndHaipai() 
+    {
         // 山に割れ目を設定する。
         setWareme(m_sais);
 
@@ -128,7 +129,7 @@ public class MahjongMain : Mahjong
     }
 
     public bool IsLastKyoku() {
-        return m_kyoku >= MahjongSetting.Kyoku_Max;
+        return (int)m_kyoku >= GameSettings.Kyoku_Max;
     }
     public void GoToNextKyoku() {
         m_kyoku++;
@@ -173,9 +174,9 @@ public class MahjongMain : Mahjong
     public bool HasRyuukyokuMan() 
     { 
         // 流し満貫の確認をする。
-        for( int i = 0, j = m_iOya; i < m_players.Length; i++, j++ ) 
+        for( int i = 0, j = m_iOya; i < m_players.Count; i++, j++ ) 
         {
-            if( j >= m_players.Length ) {
+            if( j >= m_players.Count ) {
                 j = 0;
             }
 
@@ -187,7 +188,7 @@ public class MahjongMain : Mahjong
 
             // check 1,9,字./
             for( int k = 0; k < suteHaisLength; k++ ) {
-                if( suteHais[k].isNaki() || !suteHais[k].isYaochuu() ) {
+                if( suteHais[k].IsNaki || !suteHais[k].isYaochuu() ) {
                     agari = false;
                     break;
                 }
@@ -198,12 +199,13 @@ public class MahjongMain : Mahjong
 
         return false;
     }
+
     public void HandleRyuukyokuMan() 
     {
         // 流し満貫の確認をする。
-        for( int i = 0, j = m_iOya; i < m_players.Length; i++, j++ ) 
+        for( int i = 0, j = m_iOya; i < m_players.Count; i++, j++ ) 
         {
-            if( j >= m_players.Length ) {
+            if( j >= m_players.Count ) {
                 j = 0;
             }
 
@@ -214,7 +216,7 @@ public class MahjongMain : Mahjong
 
             // check 1,9,字./
             for( int k = 0; k < suteHaisLength; k++ ) {
-                if( suteHais[k].isNaki() || !suteHais[k].isYaochuu() ) {
+                if( suteHais[k].IsNaki || !suteHais[k].isYaochuu() ) {
                     agari = false;
                     break;
                 }
@@ -230,24 +232,24 @@ public class MahjongMain : Mahjong
                 iPlayer = getPlayerIndex( m_kazeFrom );
                 if( m_iOya == iPlayer ) // count chii cha score.
                 {
-                    score = m_agariInfo.m_score.m_oyaRon + (m_honba * 300);
+                    score = m_agariInfo.m_score._oyaRon + (m_honba * 300);
 
                     for( int l = 0; l < 3; l++ ) {
                         iPlayer = (iPlayer + 1) % 4;
-                        m_players[iPlayer].reduceTenbou( m_agariInfo.m_score.m_oyaTsumo + (m_honba * 100) );
+                        m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._oyaTsumo + (m_honba * 100) );
                     }
                 }
                 else 
                 {
-                    score = m_agariInfo.m_score.m_koRon + (m_honba * 300);
+                    score = m_agariInfo.m_score._koRon + (m_honba * 300);
 
                     for( int l = 0; l < 3; l++ ) {
                         iPlayer = (iPlayer + 1) % 4;
                         if( m_iOya == iPlayer ) {
-                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score.m_oyaTsumo + (m_honba * 100) );
+                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._oyaTsumo + (m_honba * 100) );
                         }
                         else {
-                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score.m_koTsumo + (m_honba * 100) );
+                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._koTsumo + (m_honba * 100) );
                         }
                     }
                 }
@@ -269,7 +271,7 @@ public class MahjongMain : Mahjong
                 // 親を更新する。
                 if( m_iOya != getPlayerIndex( m_kazeFrom ) ) {
                     m_iOya++;
-                    if( m_iOya >= m_players.Length ) {
+                    if( m_iOya >= m_players.Count ) {
                         m_iOya = 0;
                     }
                     m_honba = 0;
@@ -286,9 +288,11 @@ public class MahjongMain : Mahjong
     }
 
 
-    public bool HasRyuukyokuTenpai() {
+    public bool HasRyuukyokuTenpai()
+    {
         // テンパイの確認をする。
-        for( int i = 0; i < m_tenpai.Length; i++ ) {
+        for( int i = 0; i < m_tenpai.Length; i++ )
+        {
             m_tenpai[i] = getPlayer( i ).isTenpai();
             if( m_tenpai[i] ) {
                 return true;
@@ -296,6 +300,7 @@ public class MahjongMain : Mahjong
         }
         return false;
     }
+
     public void HandleRyuukyokuTenpai() 
     {
         int tenpaiCount = 0;
@@ -336,7 +341,7 @@ public class MahjongMain : Mahjong
         }
 
         // UIイベント（流局）を発行する。
-        PostUIEvent( EventId.RYUUKYOKU, Kaze.KAZE_NONE, Kaze.KAZE_NONE );
+        PostUIEvent( EventId.RYUUKYOKU );
 
         // フラグを落としておく。
         for( int i = 0; i < m_tenpai.Length; i++ ) {
@@ -345,7 +350,7 @@ public class MahjongMain : Mahjong
 
         // 親を更新する。上がり連荘とする。
         m_iOya++;
-        if( m_iOya >= m_players.Length ) {
+        if( m_iOya >= m_players.Count ) {
             m_iOya = 0;
         }
 
@@ -354,7 +359,8 @@ public class MahjongMain : Mahjong
     }
 
 
-    public bool HasTsumo() {
+    public bool HasTsumo()
+    {
         int tsumoNokori = m_yama.getTsumoNokori();
         if( tsumoNokori == 0 ) {
             m_isLast = true;
@@ -369,124 +375,126 @@ public class MahjongMain : Mahjong
         // イベントを処理する。
         switch( retEid ) 
         {
-        case EventId.TSUMO_AGARI:// ツモあがり.
-        {
-            if( activePlayer.isReach() ) {
-                arg_setting.setOmoteDoraHais( m_yama.getAllDoraHais() );
-            }
-
-            m_score = new AgariScore();
-            m_score.getAgariScore( activePlayer.getTehai(), m_tsumoHai, combis, arg_setting, m_agariInfo );
-
-            iPlayer = getPlayerIndex( m_kazeFrom );
-            if( m_iOya == iPlayer ) {
-                score = m_agariInfo.m_score.m_oyaRon + (m_honba * 300);
-                for( int i = 0; i < 3; i++ ) {
-                    iPlayer = (iPlayer + 1) % 4;
-                    m_players[iPlayer].reduceTenbou( m_agariInfo.m_score.m_oyaTsumo + (m_honba * 100) );
+            case EventId.TSUMO_AGARI:// ツモあがり.
+            {
+                if( activePlayer.isReach() ) {
+                    arg_setting.setOmoteDoraHais( m_yama.getAllDoraHais() );
                 }
-            }
-            else {
-                score = m_agariInfo.m_score.m_koRon + (m_honba * 300);
-                for( int i = 0; i < 3; i++ ) {
-                    iPlayer = (iPlayer + 1) % 4;
-                    if( m_iOya == iPlayer ) {
-                        m_players[iPlayer].reduceTenbou( m_agariInfo.m_score.m_oyaTsumo + (m_honba * 100) );
-                    }
-                    else {
-                        m_players[iPlayer].reduceTenbou( m_agariInfo.m_score.m_koTsumo + (m_honba * 100) );
+
+                m_score = new AgariScore();
+                m_score.getAgariScore( activePlayer.getTehai(), m_tsumoHai, combis, arg_setting, m_agariInfo );
+
+                iPlayer = getPlayerIndex( m_kazeFrom );
+                if( m_iOya == iPlayer ) {
+                    score = m_agariInfo.m_score._oyaRon + (m_honba * 300);
+                    for( int i = 0; i < 3; i++ ) {
+                        iPlayer = (iPlayer + 1) % 4;
+                        m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._oyaTsumo + (m_honba * 100) );
                     }
                 }
-            }
-
-            activePlayer.increaseTenbou( score ); //1. add Tsumo score.
-
-            m_agariInfo.m_agariScore = score - (m_honba * 300);
-
-            // 点数を清算する。//2. add reach bou score.
-            activePlayer.increaseTenbou( m_reachbou * 1000 );
-
-            // リーチ棒の数を初期化する。
-            m_reachbou = 0;
-
-            // UIイベント（ツモあがり）を発行する。
-            PostUIEvent( EventId.TSUMO_AGARI, m_kazeFrom, m_kazeTo );
-
-            // 親を更新する。
-            if( m_iOya != getPlayerIndex( m_kazeFrom ) ) {
-                m_iOya++;
-                if( m_iOya >= m_players.Length ) {
-                    m_iOya = 0;
+                else {
+                    score = m_agariInfo.m_score._koRon + (m_honba * 300);
+                    for( int i = 0; i < 3; i++ ) {
+                        iPlayer = (iPlayer + 1) % 4;
+                        if( m_iOya == iPlayer ) {
+                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._oyaTsumo + (m_honba * 100) );
+                        }
+                        else {
+                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._koTsumo + (m_honba * 100) );
+                        }
+                    }
                 }
-                m_honba = 0;
-            }
-            else {
-                m_renchan = true;
-                m_honba++;
-            }
-        }
-        return true;
 
-        case EventId.RON_AGARI:// ロン
-        {
-            if( activePlayer.isReach() ) {
-                arg_setting.setOmoteDoraHais( m_yama.getAllDoraHais() );
-            }
+                activePlayer.increaseTenbou( score ); //1. add Tsumo score.
 
-            m_score = new AgariScore();
-            m_score.getAgariScore( activePlayer.getTehai(), m_suteHai, combis, arg_setting, m_agariInfo );
+                m_agariInfo.m_agariScore = score - (m_honba * 300);
 
-            if( m_iOya == getPlayerIndex( m_kazeFrom ) ) {
-                score = m_agariInfo.m_score.m_oyaRon + (m_honba * 300);
-            }
-            else {
-                score = m_agariInfo.m_score.m_koRon + (m_honba * 300);
-            }
+                // 点数を清算する。//2. add reach bou score.
+                activePlayer.increaseTenbou( m_reachbou * 1000 );
 
-            getPlayer( m_kazeFrom ).increaseTenbou( score );
-            getPlayer( m_kazeTo ).reduceTenbou( score );
+                // リーチ棒の数を初期化する。
+                m_reachbou = 0;
 
-            m_agariInfo.m_agariScore = score - (m_honba * 300);
+                // UIイベント（ツモあがり）を発行する。
+                PostUIEvent( EventId.TSUMO_AGARI, m_kazeFrom, m_kazeTo );
 
-            // 点数を清算する。
-            activePlayer.increaseTenbou( m_reachbou * 1000 );
-
-            // リーチ棒の数を初期化する。
-            m_reachbou = 0;
-
-            // UIイベント（ロン）を発行する。
-            PostUIEvent( EventId.RON_AGARI, m_kazeFrom, m_kazeTo );
-
-            // 親を更新する。
-            if( m_iOya != getPlayerIndex( m_kazeFrom ) ) {
-                m_iOya++;
-                if( m_iOya >= m_players.Length ) {
-                    m_iOya = 0;
+                // 親を更新する。
+                if( m_iOya != getPlayerIndex( m_kazeFrom ) ) {
+                    m_iOya++;
+                    if( m_iOya >= m_players.Count ) {
+                        m_iOya = 0;
+                    }
+                    m_honba = 0;
                 }
-                m_honba = 0;
+                else {
+                    m_renchan = true;
+                    m_honba++;
+                }
             }
-            else {
-                m_renchan = true;
-                m_honba++;
+            return true;
+
+            case EventId.RON_AGARI:// ロン
+            {
+                if( activePlayer.isReach() ) {
+                    arg_setting.setOmoteDoraHais( m_yama.getAllDoraHais() );
+                }
+
+                m_score = new AgariScore();
+                m_score.getAgariScore( activePlayer.getTehai(), m_suteHai, combis, arg_setting, m_agariInfo );
+
+                if( m_iOya == getPlayerIndex( m_kazeFrom ) ) {
+                    score = m_agariInfo.m_score._oyaRon + (m_honba * 300);
+                }
+                else {
+                    score = m_agariInfo.m_score._koRon + (m_honba * 300);
+                }
+
+                getPlayer( m_kazeFrom ).increaseTenbou( score );
+                getPlayer( m_kazeTo ).reduceTenbou( score );
+
+                m_agariInfo.m_agariScore = score - (m_honba * 300);
+
+                // 点数を清算する。
+                activePlayer.increaseTenbou( m_reachbou * 1000 );
+
+                // リーチ棒の数を初期化する。
+                m_reachbou = 0;
+
+                // UIイベント（ロン）を発行する。
+                PostUIEvent( EventId.RON_AGARI, m_kazeFrom, m_kazeTo );
+
+                // 親を更新する。
+                if( m_iOya != getPlayerIndex( m_kazeFrom ) ) {
+                    m_iOya++;
+                    if( m_iOya >= m_players.Count ) {
+                        m_iOya = 0;
+                    }
+                    m_honba = 0;
+                }
+                else {
+                    m_renchan = true;
+                    m_honba++;
+                }
             }
-        }
-        return true;
+            return true;
         }
 
         return false;
     }
 
-    public void GoToNextLoop() {
+    public void GoToNextLoop()
+    {
         // イベントを発行した風を更新する。
-        m_kazeFrom++;
-        if( m_kazeFrom >= m_players.Length ) {
-            m_kazeFrom = 0;
+        int tmp = (int)m_kazeFrom;
+        tmp++;
+        if( tmp >= m_players.Count ) {
+            tmp = 0;
         }
+        m_kazeFrom = (EKaze)tmp;
     }
 
 
-
-    /** 自摸 */
+    // 自摸
     public EventId tsumoEvent() 
     {
         // アクティブプレイヤーを設定する。
@@ -498,7 +506,7 @@ public class MahjongMain : Mahjong
         PostUIEvent(EventId.TSUMO, m_kazeFrom, m_kazeFrom);
 
         // イベント（ツモ）を発行する。
-        EventId retEid = activePlayer.HandleEvent(EventId.TSUMO, m_kazeFrom, m_kazeFrom);
+        EventId result = activePlayer.HandleEvent(EventId.TSUMO, m_kazeFrom, m_kazeFrom);
 
         m_isTenhou = false;
         m_isTsumo = false;
@@ -509,161 +517,166 @@ public class MahjongMain : Mahjong
         int sutehaiIndex;
         Hai[] kanHais;
 
-        if( retEid != EventId.REACH ) {
+        if( result != EventId.REACH ) {
             activePlayer.setIppatsu(false);
         }
 
         // イベントを処理する。
-        switch( retEid ) 
+        switch( result ) 
         {
-        case EventId.ANKAN: {
-            m_isChiihou = false;
+            case EventId.ANKAN: {
+                m_isChiihou = false;
 
-            activePlayer.getTehai().addJyunTehai( m_tsumoHai );
-            sutehaiIndex = activePlayer.getSutehaiIndex();
-            kanHais = m_playerAction.getKanHais();
-            activePlayer.getTehai().setAnKan( kanHais[sutehaiIndex], getRelation( this.m_kazeFrom, this.m_kazeTo ) );
+                activePlayer.getTehai().addJyunTehai( m_tsumoHai );
+                sutehaiIndex = activePlayer.getSutehaiIndex();
+                kanHais = m_playerAction.getKanHais();
+                activePlayer.getTehai().setAnKan( kanHais[sutehaiIndex], getRelation( this.m_kazeFrom, this.m_kazeTo ) );
 
-            // イベントを通知する。
-            retEid = PostGameEvent( EventId.ANKAN, m_kazeFrom, m_kazeFrom );
+                // イベントを通知する。
+                result = PostGameEvent( EventId.ANKAN, m_kazeFrom, m_kazeFrom );
 
-            // UIイベント（進行待ち）を発行する。
-            PostUIEvent( EventId.UI_WAIT_PROGRESS, Kaze.KAZE_NONE, Kaze.KAZE_NONE );
+                // UIイベント（進行待ち）を発行する。
+                PostUIEvent( EventId.UI_WAIT_PROGRESS );
 
-            // ツモ牌を取得する。
-            m_tsumoHai = m_yama.PickRinshanTsumoHai();
+                // ツモ牌を取得する。
+                m_tsumoHai = m_yama.PickRinshanTsumoHai();
 
-            // イベント（ツモ）を発行する。
-            m_isRinshan = true;
-            retEid = tsumoEvent();
-            m_isRinshan = false;
-        }
-        break;
-
-        case EventId.TSUMO_AGARI:// ツモあがり
+                // イベント（ツモ）を発行する。
+                m_isRinshan = true;
+                result = tsumoEvent();
+                m_isRinshan = false;
+            }
             break;
 
-        case EventId.SUTEHAI:// 捨牌
-        {
-            // 捨牌のインデックスを取得する。
-            sutehaiIndex = activePlayer.getSutehaiIndex();
+            case EventId.TSUMO_AGARI:// ツモあがり
+                break;
 
-            // 理牌の間をとる。
-            m_infoUi.setSutehaiIndex( sutehaiIndex );
+            case EventId.SUTEHAI:// 捨牌
+            {
+                // 捨牌のインデックスを取得する。
+                sutehaiIndex = activePlayer.getSutehaiIndex();
 
-            PostUIEvent( EventId.UI_WAIT_RIHAI, m_kazeFrom, m_kazeFrom );
+                // 理牌の間をとる。
+                m_infoUi.setSutehaiIndex( sutehaiIndex );
 
-            if( sutehaiIndex >= activePlayer.getTehai().getJyunTehaiLength() ) {// ツモ切り
-                Hai.copy( m_suteHai, m_tsumoHai );
-                activePlayer.getHou().add( m_suteHai );
+                PostUIEvent( EventId.UI_WAIT_RIHAI, m_kazeFrom, m_kazeFrom );
+
+                if( sutehaiIndex >= activePlayer.getTehai().getJyunTehaiLength() ) {// ツモ切り
+                    Hai.copy( m_suteHai, m_tsumoHai );
+                    activePlayer.getHou().addHai( m_suteHai );
+                }
+                else {// 手出し
+                    activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, sutehaiIndex );
+                    activePlayer.getTehai().removeJyunTehai( sutehaiIndex );
+                    activePlayer.getTehai().addJyunTehai( m_tsumoHai );
+                    activePlayer.getHou().addHai( m_suteHai );
+                    activePlayer.getHou().setTedashi( true );
+                }
+
+                m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
+                m_suteHaisCount++;
+
+                if( !activePlayer.isReach() ) {
+                    activePlayer.setSuteHaisCount( m_suteHaisCount );
+                }
+
+                // イベントを通知する。
+                result = PostGameEvent( EventId.SUTEHAI, m_kazeFrom, m_kazeFrom );
             }
-            else {// 手出し
-                activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, sutehaiIndex );
-                activePlayer.getTehai().removeJyunTehai( sutehaiIndex );
-                activePlayer.getTehai().addJyunTehai( m_tsumoHai );
-                activePlayer.getHou().add( m_suteHai );
-                activePlayer.getHou().setTedashi( true );
-            }
+            break;
 
-            m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
-            m_suteHaisCount++;
+            case EventId.REACH: 
+            {
+                // 捨牌のインデックスを取得する。
+                sutehaiIndex = activePlayer.getSutehaiIndex();
+                activePlayer.setReach( true );
 
-            if( !activePlayer.isReach() ) {
+                if( m_isChiihou ) {
+                    activePlayer.setDoubleReach( true );
+                }
+
                 activePlayer.setSuteHaisCount( m_suteHaisCount );
+
+                PostUIEvent( EventId.UI_WAIT_RIHAI, m_kazeFrom, m_kazeFrom );
+
+                if( sutehaiIndex >= activePlayer.getTehai().getJyunTehaiLength() ) {// ツモ切り
+                    Hai.copy( m_suteHai, m_tsumoHai );
+                    activePlayer.getHou().addHai( m_suteHai );
+                    activePlayer.getHou().setReach( true );
+                }
+                else {// 手出し
+                    activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, sutehaiIndex );
+                    activePlayer.getTehai().removeJyunTehai( sutehaiIndex );
+                    activePlayer.getTehai().addJyunTehai( m_tsumoHai );
+                    activePlayer.getHou().addHai( m_suteHai );
+                    activePlayer.getHou().setTedashi( true );
+                    activePlayer.getHou().setReach( true );
+                }
+
+                m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
+                m_suteHaisCount++;
+
+                activePlayer.reduceTenbou( 1000 );
+                activePlayer.setReach( true );
+                m_reachbou++;
+
+                activePlayer.setIppatsu( true );
+
+                // イベントを通知する。
+                result = PostGameEvent( EventId.REACH, m_kazeFrom, m_kazeFrom );
             }
-
-            // イベントを通知する。
-            retEid = PostGameEvent( EventId.SUTEHAI, m_kazeFrom, m_kazeFrom );
-        }
-        break;
-
-        case EventId.REACH: 
-        {
-            // 捨牌のインデックスを取得する。
-            sutehaiIndex = activePlayer.getSutehaiIndex();
-            activePlayer.setReach( true );
-
-            if( m_isChiihou ) {
-                activePlayer.setDoubleReach( true );
-            }
-
-            activePlayer.setSuteHaisCount( m_suteHaisCount );
-
-            PostUIEvent( EventId.UI_WAIT_RIHAI, m_kazeFrom, m_kazeFrom );
-
-            if( sutehaiIndex >= activePlayer.getTehai().getJyunTehaiLength() ) {// ツモ切り
-                Hai.copy( m_suteHai, m_tsumoHai );
-                activePlayer.getHou().add( m_suteHai );
-                activePlayer.getHou().setReach( true );
-            }
-            else {// 手出し
-                activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, sutehaiIndex );
-                activePlayer.getTehai().removeJyunTehai( sutehaiIndex );
-                activePlayer.getTehai().addJyunTehai( m_tsumoHai );
-                activePlayer.getHou().add( m_suteHai );
-                activePlayer.getHou().setTedashi( true );
-                activePlayer.getHou().setReach( true );
-            }
-
-            m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
-            m_suteHaisCount++;
-
-            activePlayer.reduceTenbou( 1000 );
-            activePlayer.setReach( true );
-            m_reachbou++;
-
-            activePlayer.setIppatsu( true );
-
-            // イベントを通知する。
-            retEid = PostGameEvent( EventId.REACH, m_kazeFrom, m_kazeFrom );
-        }
-        break;
+            break;
         }
 
-        return retEid;
+        return result;
     }
 
 
-    public override void PostUIEvent(EventId a_eventId, int a_kazeFrom, int a_kazeTo) {
-        EventManager.Get().SendEvent(a_eventId, a_kazeFrom, a_kazeTo);
+    public override void PostUIEvent(EventId eventId, EKaze kazeFrom = EKaze.None, EKaze kazeTo = EKaze.None) {
+        EventManager.Get().SendEvent(eventId, kazeFrom, kazeTo);
     }
 
 
-    public EventId PostGameEvent(EventId a_eventId, int a_kazeFrom, int a_kazeTo) 
+    public EventId PostGameEvent(EventId eventId, EKaze kazeFrom = EKaze.None, EKaze kazeTo = EKaze.None) 
     {
         // UIイベントを発行する。
-        PostUIEvent(a_eventId, a_kazeFrom, a_kazeTo);
+        PostUIEvent(eventId, kazeFrom, kazeTo);
 
         EventId ret = EventId.NAGASHI;
         int iSuteHai;
 
         //--------------------------------check if someone will Ron.----------------------------
-        switch( a_eventId ) 
+        EKaze nextKaze = kazeFrom;
+
+        switch( eventId ) 
         {
-        case EventId.PON:
-        case EventId.CHII_CENTER:
-        case EventId.CHII_LEFT:
-        case EventId.CHII_RIGHT:
-        case EventId.DAIMINKAN:
-        case EventId.SUTEHAI:
-        case EventId.REACH:
-            for( int i = 0, j = a_kazeFrom + 1; i < m_players.Length - 1; i++, j++ ) {
-                if( j >= m_players.Length ) {
-                    j = 0;
-                }
+            case EventId.PON:
+            case EventId.CHII_CENTER:
+            case EventId.CHII_LEFT:
+            case EventId.CHII_RIGHT:
+            case EventId.DAIMINKAN:
+            case EventId.SUTEHAI:
+            case EventId.REACH:
+            {
+                nextKaze = kazeFrom.Next();
 
-                // アクティブプレイヤーを設定する。
-                activePlayer = getPlayer(j);
-
-                ret = activePlayer.HandleEvent(EventId.RON_CHECK, a_kazeFrom, j);
-
-                if( ret == EventId.RON_AGARI ) {
+                for( int i = 0; i < m_players.Count - 1; i++ ) 
+                {
                     // アクティブプレイヤーを設定する。
-                    this.m_kazeFrom = j;
-                    this.m_kazeTo = a_kazeFrom;
-                    activePlayer = getPlayer(this.m_kazeFrom); // foucs on Ron player.
+                    activePlayer = getPlayer(nextKaze);
 
-                    return ret;
+                    ret = activePlayer.HandleEvent(EventId.RON_CHECK, kazeFrom, nextKaze);
+
+                    if( ret == EventId.RON_AGARI ) {
+                        // アクティブプレイヤーを設定する。
+                        this.m_kazeFrom = nextKaze;
+                        this.m_kazeTo = kazeFrom;
+                        activePlayer = getPlayer(this.m_kazeFrom); // foucs on Ron player.
+
+                        return ret;
+                    }
+
+                    nextKaze = kazeFrom.Next();
                 }
             }
             break;
@@ -671,19 +684,17 @@ public class MahjongMain : Mahjong
 
         //----------------- Nobody ron, then notify other players to handle the Sutehai -----------------------------
 
-        // 各プレイヤーにイベントを通知する。       
-        for (int i = 0, j = a_kazeFrom; i < m_players.Length; i++, j++) 
-        {
-            if (j >= m_players.Length) {
-                j = 0;
-            }
+        nextKaze = kazeFrom;
 
+        // 各プレイヤーにイベントを通知する。       
+        for (int i = 0; i < m_players.Count; i++) 
+        {
             // アクティブプレイヤーを設定する。
-            activePlayer = getPlayer(j);
+            activePlayer = getPlayer(nextKaze);
 
             // イベントを発行する。
-            a_kazeTo = j;
-            ret = activePlayer.HandleEvent(a_eventId, a_kazeFrom, a_kazeTo);
+            kazeTo = nextKaze;
+            ret = activePlayer.HandleEvent(eventId, kazeFrom, kazeTo);
 
             if (ret != EventId.NAGASHI) 
             {
@@ -693,179 +704,180 @@ public class MahjongMain : Mahjong
             }
 
             // イベントを処理する。
-            switch (ret) {
-            case EventId.TSUMO_AGARI:// ツモあがり
+            switch (ret)
             {
-                // アクティブプレイヤーを設定する。
-                this.m_kazeFrom = j;
-                this.m_kazeTo = a_kazeTo;
-                activePlayer = getPlayer( this.m_kazeFrom );
+                case EventId.TSUMO_AGARI:// ツモあがり
+                {
+                    // アクティブプレイヤーを設定する。
+                    this.m_kazeFrom = nextKaze;
+                    this.m_kazeTo = kazeTo;
+                    activePlayer = getPlayer( this.m_kazeFrom );
+                }
+                goto NOTIFYLOOP_End;
+
+                case EventId.RON_AGARI:// ロン
+                {
+                    // アクティブプレイヤーを設定する。
+                    this.m_kazeFrom = kazeTo;
+                    this.m_kazeTo = kazeFrom;
+                    activePlayer = getPlayer( this.m_kazeFrom );
+                }
+                goto NOTIFYLOOP_End;
+
+                case EventId.PON: 
+                {
+                    m_isChiihou = false;
+
+                    // アクティブプレイヤーを設定する。
+                    this.m_kazeFrom = nextKaze;
+                    this.m_kazeTo = kazeFrom;
+
+                    activePlayer = getPlayer( this.m_kazeFrom );
+                    activePlayer.getTehai().setPon( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
+                    getPlayer( this.m_kazeTo ).getHou().setNaki( true );
+
+                    PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
+
+                    // 捨牌のインデックスを取得する。
+                    iSuteHai = activePlayer.getSutehaiIndex();
+                    activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, iSuteHai );
+                    activePlayer.getTehai().removeJyunTehai( iSuteHai );
+
+                    activePlayer.getHou().addHai( m_suteHai );
+                    //activePlayer.getHou().setNaki(true);
+                    activePlayer.getHou().setTedashi( true );
+
+                    m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
+                    m_suteHaisCount++;
+
+                    // イベントを通知する。
+                    ret = PostGameEvent( EventId.PON, this.m_kazeFrom, this.m_kazeTo );
+                }
+                goto NOTIFYLOOP_End;
+
+                case EventId.CHII_LEFT: 
+                {
+                    m_isChiihou = false;
+
+                    // アクティブプレイヤーを設定する。
+                    this.m_kazeFrom = nextKaze;
+                    this.m_kazeTo = kazeFrom;
+
+                    activePlayer = getPlayer( this.m_kazeFrom );
+                    activePlayer.getTehai().setChiiLeft( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
+                    getPlayer( this.m_kazeTo ).getHou().setNaki( true );
+
+                    PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
+
+                    // 捨牌のインデックスを取得する。
+                    iSuteHai = activePlayer.getSutehaiIndex();
+                    activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, iSuteHai );
+                    activePlayer.getTehai().removeJyunTehai( iSuteHai );
+
+                    activePlayer.getHou().addHai( m_suteHai );
+                    //activePlayer.getHou().setNaki(true);
+                    activePlayer.getHou().setTedashi( true );
+
+                    m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
+                    m_suteHaisCount++;
+
+                    // イベントを通知する。
+                    ret = PostGameEvent( EventId.CHII_LEFT, this.m_kazeFrom, this.m_kazeTo );
+                }
+                goto NOTIFYLOOP_End;
+
+                case EventId.CHII_CENTER: 
+                {
+                    m_isChiihou = false;
+
+                    // アクティブプレイヤーを設定する。
+                    this.m_kazeFrom = nextKaze;
+                    this.m_kazeTo = kazeFrom;
+
+                    activePlayer = getPlayer( this.m_kazeFrom );
+                    activePlayer.getTehai().setChiiCenter( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
+                    getPlayer( this.m_kazeTo ).getHou().setNaki( true );
+
+                    PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
+
+                    // 捨牌のインデックスを取得する。
+                    iSuteHai = activePlayer.getSutehaiIndex();
+                    activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, iSuteHai );
+                    activePlayer.getTehai().removeJyunTehai( iSuteHai );
+
+                    activePlayer.getHou().addHai( m_suteHai );
+                    //activePlayer.getHou().setNaki(true);
+                    activePlayer.getHou().setTedashi( true );
+
+                    m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
+                    m_suteHaisCount++;
+
+                    // イベントを通知する。
+                    ret = PostGameEvent( EventId.CHII_CENTER, this.m_kazeFrom, this.m_kazeTo );
+                }
+                goto NOTIFYLOOP_End;
+
+                case EventId.CHII_RIGHT: 
+                {
+                    m_isChiihou = false;
+
+                    // アクティブプレイヤーを設定する。
+                    this.m_kazeFrom = nextKaze;
+                    this.m_kazeTo = kazeFrom;
+
+                    activePlayer = getPlayer( this.m_kazeFrom );
+                    activePlayer.getTehai().setChiiRight( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
+                    getPlayer( this.m_kazeTo ).getHou().setNaki( true );
+
+                    PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
+
+                    // 捨牌のインデックスを取得する。
+                    iSuteHai = activePlayer.getSutehaiIndex();
+                    activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, iSuteHai );
+                    activePlayer.getTehai().removeJyunTehai( iSuteHai );
+
+                    activePlayer.getHou().addHai( m_suteHai );
+                    //activePlayer.getHou().setNaki(true);
+                    activePlayer.getHou().setTedashi( true );
+
+                    m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
+                    m_suteHaisCount++;
+
+                    // イベントを通知する。
+                    ret = PostGameEvent( EventId.CHII_RIGHT, this.m_kazeFrom, this.m_kazeTo );
+                }
+                goto NOTIFYLOOP_End;
+
+                case EventId.DAIMINKAN: 
+                {
+                    m_isChiihou = false;
+
+                    // アクティブプレイヤーを設定する。
+                    this.m_kazeFrom = nextKaze;
+                    this.m_kazeTo = kazeFrom;
+
+                    activePlayer = getPlayer( this.m_kazeFrom );
+                    activePlayer.getTehai().setDaiMinKan( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
+                    getPlayer( this.m_kazeTo ).getHou().setNaki( true );
+
+                    // イベントを通知する。
+                    ret = PostGameEvent( EventId.DAIMINKAN, this.m_kazeFrom, this.m_kazeTo );
+
+                    // UIイベント（進行待ち）を発行する。
+                    PostUIEvent( EventId.UI_WAIT_PROGRESS );
+
+                    // ツモ牌を取得する。
+                    m_tsumoHai = m_yama.PickRinshanTsumoHai();
+
+                    // イベント（ツモ）を発行する。
+                    m_isRinshan = true;
+                    ret = tsumoEvent();
+                    m_isRinshan = false;
+                }
+                goto NOTIFYLOOP_End;
             }
-            goto NOTIFYLOOP_End;
 
-            case EventId.RON_AGARI:// ロン
-            {
-                // アクティブプレイヤーを設定する。
-                this.m_kazeFrom = a_kazeTo;
-                this.m_kazeTo = a_kazeFrom;
-                activePlayer = getPlayer( this.m_kazeFrom );
-            }
-            goto NOTIFYLOOP_End;
-
-            case EventId.PON: 
-            {
-                m_isChiihou = false;
-
-                // アクティブプレイヤーを設定する。
-                this.m_kazeFrom = j;
-                this.m_kazeTo = a_kazeFrom;
-
-                activePlayer = getPlayer( this.m_kazeFrom );
-                activePlayer.getTehai().setPon( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
-                getPlayer( this.m_kazeTo ).getHou().setNaki( true );
-
-                PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
-
-                // 捨牌のインデックスを取得する。
-                iSuteHai = activePlayer.getSutehaiIndex();
-                activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, iSuteHai );
-                activePlayer.getTehai().removeJyunTehai( iSuteHai );
-
-                activePlayer.getHou().add( m_suteHai );
-                //activePlayer.getHou().setNaki(true);
-                activePlayer.getHou().setTedashi( true );
-
-                m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
-                m_suteHaisCount++;
-
-                // イベントを通知する。
-                ret = PostGameEvent( EventId.PON, this.m_kazeFrom, this.m_kazeTo );
-            }
-            goto NOTIFYLOOP_End;
-
-            case EventId.CHII_LEFT: 
-            {
-                m_isChiihou = false;
-
-                // アクティブプレイヤーを設定する。
-                this.m_kazeFrom = j;
-                this.m_kazeTo = a_kazeFrom;
-
-                activePlayer = getPlayer( this.m_kazeFrom );
-                activePlayer.getTehai().setChiiLeft( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
-                getPlayer( this.m_kazeTo ).getHou().setNaki( true );
-
-                PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
-
-                // 捨牌のインデックスを取得する。
-                iSuteHai = activePlayer.getSutehaiIndex();
-                activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, iSuteHai );
-                activePlayer.getTehai().removeJyunTehai( iSuteHai );
-
-                activePlayer.getHou().add( m_suteHai );
-                //activePlayer.getHou().setNaki(true);
-                activePlayer.getHou().setTedashi( true );
-
-                m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
-                m_suteHaisCount++;
-
-                // イベントを通知する。
-                ret = PostGameEvent( EventId.CHII_LEFT, this.m_kazeFrom, this.m_kazeTo );
-            }
-            goto NOTIFYLOOP_End;
-
-            case EventId.CHII_CENTER: 
-            {
-                m_isChiihou = false;
-
-                // アクティブプレイヤーを設定する。
-                this.m_kazeFrom = j;
-                this.m_kazeTo = a_kazeFrom;
-
-                activePlayer = getPlayer( this.m_kazeFrom );
-                activePlayer.getTehai().setChiiCenter( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
-                getPlayer( this.m_kazeTo ).getHou().setNaki( true );
-
-                PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
-
-                // 捨牌のインデックスを取得する。
-                iSuteHai = activePlayer.getSutehaiIndex();
-                activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, iSuteHai );
-                activePlayer.getTehai().removeJyunTehai( iSuteHai );
-
-                activePlayer.getHou().add( m_suteHai );
-                //activePlayer.getHou().setNaki(true);
-                activePlayer.getHou().setTedashi( true );
-
-                m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
-                m_suteHaisCount++;
-
-                // イベントを通知する。
-                ret = PostGameEvent( EventId.CHII_CENTER, this.m_kazeFrom, this.m_kazeTo );
-            }
-            goto NOTIFYLOOP_End;
-
-            case EventId.CHII_RIGHT: 
-            {
-                m_isChiihou = false;
-
-                // アクティブプレイヤーを設定する。
-                this.m_kazeFrom = j;
-                this.m_kazeTo = a_kazeFrom;
-
-                activePlayer = getPlayer( this.m_kazeFrom );
-                activePlayer.getTehai().setChiiRight( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
-                getPlayer( this.m_kazeTo ).getHou().setNaki( true );
-
-                PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
-
-                // 捨牌のインデックスを取得する。
-                iSuteHai = activePlayer.getSutehaiIndex();
-                activePlayer.getTehai().copyJyunTehaiIndex( m_suteHai, iSuteHai );
-                activePlayer.getTehai().removeJyunTehai( iSuteHai );
-
-                activePlayer.getHou().add( m_suteHai );
-                //activePlayer.getHou().setNaki(true);
-                activePlayer.getHou().setTedashi( true );
-
-                m_suteHais[m_suteHaisCount] = new SuteHai( m_suteHai );
-                m_suteHaisCount++;
-
-                // イベントを通知する。
-                ret = PostGameEvent( EventId.CHII_RIGHT, this.m_kazeFrom, this.m_kazeTo );
-            }
-            goto NOTIFYLOOP_End;
-
-            case EventId.DAIMINKAN: 
-            {
-                m_isChiihou = false;
-
-                // アクティブプレイヤーを設定する。
-                this.m_kazeFrom = j;
-                this.m_kazeTo = a_kazeFrom;
-
-                activePlayer = getPlayer( this.m_kazeFrom );
-                activePlayer.getTehai().setDaiMinKan( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
-                getPlayer( this.m_kazeTo ).getHou().setNaki( true );
-
-                // イベントを通知する。
-                ret = PostGameEvent( EventId.DAIMINKAN, this.m_kazeFrom, this.m_kazeTo );
-
-                // UIイベント（進行待ち）を発行する。
-                PostUIEvent( EventId.UI_WAIT_PROGRESS, Kaze.KAZE_NONE, Kaze.KAZE_NONE );
-
-                // ツモ牌を取得する。
-                m_tsumoHai = m_yama.PickRinshanTsumoHai();
-
-                // イベント（ツモ）を発行する。
-                m_isRinshan = true;
-                ret = tsumoEvent();
-                m_isRinshan = false;
-            }
-            goto NOTIFYLOOP_End;
-            }
-
-            if (a_eventId == EventId.SELECT_SUTEHAI) {
+            if (eventId == EventId.SELECT_SUTEHAI) {
                 return ret;
             }
         } // end for().
@@ -875,13 +887,14 @@ public class MahjongMain : Mahjong
         }
 
         // アクティブプレイヤーを設定する。
-        activePlayer = getPlayer(a_kazeFrom);
+        activePlayer = getPlayer(kazeFrom);
 
         return ret;
     }
 
     #region Other Method
-    protected override void Haipai() {
+    protected override void Haipai()
+    {
         base.Haipai();
 
         if( testHaipai == true ) 

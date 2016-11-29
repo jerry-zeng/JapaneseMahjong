@@ -1,271 +1,254 @@
-﻿/**
- * 
- */
+﻿
+public enum EActionState
+{
+    None           = 0,
+    Action_Wait    = 1,
+    Sutehai_Select = 2,
+    Chii_Select    = 3,
+    Kan_Select     = 4,
+    Reach_Select   = 5,
+    Ron_Select     = 6,
+    Tsumo_Select   = 7,
+}
+
+
 public class PlayerAction 
 {
-    // states.
-    public readonly static int STATE_NONE = 0;
-    public readonly static int STATE_SUTEHAI_SELECT = 1;
-    public readonly static int STATE_RON_SELECT     = 2;
-    public readonly static int STATE_TSUMO_SELECT   = 3;
-    public readonly static int STATE_ACTION_WAIT    = 4;
-    public readonly static int STATE_CHII_SELECT    = 5;
-    public readonly static int STATE_KAN_SELECT     = 6;
-    public readonly static int STATE_REACH_SELECT   = 7;
+    private EActionState _state = EActionState.None;
 
+    // 捨牌のインデックス
+    private int _sutehaiIndex;
 
-    private EventId m_chiiEventId;
-    public EventId getChiiEventId() {
-        return m_chiiEventId;
-    }
-    public void setChiiEventId(EventId a_chiiEventId) {
-        m_chiiEventId = a_chiiEventId;
-    }
+    // ロンが可能
+    private bool _validRon;
 
+    // ツモが可能
+    private bool _validTsumo;
 
-    private int mState = STATE_NONE;
+    // ポンが可能
+    private bool _validPon;
 
-    /** 捨牌のインデックス */
-    private int mSutehaiIndex;
+    // メニュー選択
+    private int _menuSelect;
 
-    /** ロンが可能 */
-    private bool mValidRon;
-
-    /** ツモが可能 */
-    private bool mValidTsumo;
-
-    /** ポンが可能 */
-    private bool mValidPon;
-
-    /** メニュー選択 */
-    private int mMenuSelect;
-
-    private int m_menuNum;
+    private int _menuNum;
 
     public int[] m_indexs;
     public int m_indexNum;
 
-    private bool m_dispMenu;
-    private bool m_validReach;
+    private bool _dispMenu;
+    private bool _validReach;
 
-    /**
-     * コンストラクター
-     */
+
     public PlayerAction() {
-        init();
+        Init();
     }
 
-    /**
-     * 初期化する。
-     */
-    public void init() {
-        mState = STATE_NONE;
-        mSutehaiIndex = int.MaxValue;
-        mValidRon = false;
-        mValidTsumo = false;
-        mValidPon = false;
-        m_validReach = false;
+    public void Init()
+    {
+        _state = EActionState.None;
+        _sutehaiIndex = int.MaxValue;
+        _validRon = false;
+        _validTsumo = false;
+        _validPon = false;
+        _validReach = false;
 
-        m_validChiiLeft = false;
-        m_validChiiCenter = false;
-        m_validChiiRight = false;
+        _validChiiLeft = false;
+        _validChiiCenter = false;
+        _validChiiRight = false;
 
-        m_validKan = false;
-        m_kanNum = 0;
-        m_kanSelect = 0;
-        m_dispMenu = false;
-        m_validDaiMinKan = false;
+        _validKan = false;
+        _kanNum = 0;
+        _kanSelect = 0;
+        _dispMenu = false;
+        _validDaiMinKan = false;
 
-        m_menuNum = 0;
+        _menuNum = 0;
 
         setMenuSelect(5);
     }
 
-    // menuNum's getter & setter.
-    public void setMenuNum(int a_menuNum) {
-        this.m_menuNum = a_menuNum;
+
+    public void setMenuNum(int menuNum) {
+        this._menuNum = menuNum;
     }
     public int getMenuNum() {
-        return m_menuNum;
+        return _menuNum;
     }
 
-    // mState's getter & setter.
-    public void setState(int state) {
-        this.mState = state;
+
+    public void setState(EActionState state) {
+        this._state = state;
     }
-    public int getState() {
-        return mState;
+    public EActionState getState() {
+        return _state;
     }
 
-    /**
-     * アクションを待つ。
-     */
+
     public void actionWait() {
 
     }
 
-    /**
-     * 捨牌のインデックスを設定する。
-     */
+
     public void setSutehaiIndex(int sutehaiIdx) {
-        this.mSutehaiIndex = sutehaiIdx;
+        this._sutehaiIndex = sutehaiIdx;
     }
     public int getSutehaiIndex() {
-        return mSutehaiIndex;
+        return _sutehaiIndex;
     }
 
 
-    /**
-     * アクション要求を取得する。
-     */
-    public bool isActionRequest() {
-        return mValidRon | mValidTsumo | mValidPon | m_validReach
-            | m_validChiiLeft | m_validChiiCenter | m_validChiiRight | m_validKan | m_validDaiMinKan;
+    public bool isActionRequest() 
+    {
+        return _validRon || _validTsumo || _validPon || _validReach
+            || _validChiiLeft || _validChiiCenter || _validChiiRight 
+            || _validKan || _validDaiMinKan;
     }
 
-    /**
-     * ロンが可能かを設定/取得する。
-     */
+
     public void setValidRon(bool validRon) {
-        this.mValidRon = validRon;
+        this._validRon = validRon;
     }
     public bool isValidRon() {
-        return mValidRon;
+        return _validRon;
     }
 
-    /**
-     * ツモが可能かを設定/取得する。
-     */
+
     public void setValidTsumo(bool validTsumo) {
-        this.mValidTsumo = validTsumo;
+        this._validTsumo = validTsumo;
     }
     public bool isValidTsumo() {
-        return mValidTsumo;
+        return _validTsumo;
     }
 
 
-    /**
-     * ポンが可能かを設定する。
-     */
     public void setValidPon(bool validPon) {
-        this.mValidPon = validPon;
+        this._validPon = validPon;
     }
     public bool isValidPon() {
-        return mValidPon;
+        return _validPon;
     }
 
 
-    public void setValidReach(bool a_validReach) {
-        this.m_validReach = a_validReach;
+    public void setValidReach(bool validReach) {
+        this._validReach = validReach;
     }
     public bool isValidReach() {
-        return m_validReach;
+        return _validReach;
     }
 
 
     public void setMenuSelect(int menuSelect) {
-        this.mMenuSelect = menuSelect;
+        this._menuSelect = menuSelect;
     }
     public int getMenuSelect() {
-        return mMenuSelect;
+        return _menuSelect;
     }
 
 
-    private Hai[] m_sarashiHaiLeft = new Hai[2];
-    private Hai[] m_sarashiHaiCenter = new Hai[2];
-    private Hai[] m_sarashiHaiRight = new Hai[2];
-    private bool m_validChiiLeft;
-    private bool m_validChiiCenter;
-    private bool m_validChiiRight;
+    private EventId _chiiEventId;
+    public EventId getChiiEventId() {
+        return _chiiEventId;
+    }
+    public void setChiiEventId(EventId a_chiiEventId) {
+        _chiiEventId = a_chiiEventId;
+    }
 
-    public void setValidChiiLeft(bool a_validChii, Hai[] a_sarashiHai) {
-        this.m_validChiiLeft = a_validChii;
-        this.m_sarashiHaiLeft = a_sarashiHai;
+    private Hai[] _sarashiHaiLeft = new Hai[2];
+    private Hai[] _sarashiHaiCenter = new Hai[2];
+    private Hai[] _sarashiHaiRight = new Hai[2];
+    private bool _validChiiLeft;
+    private bool _validChiiCenter;
+    private bool _validChiiRight;
+
+    public void setValidChiiLeft(bool validChii, Hai[] sarashiHai) {
+        this._validChiiLeft = validChii;
+        this._sarashiHaiLeft = sarashiHai;
     }
     public bool isValidChiiLeft() {
-        return m_validChiiLeft;
+        return _validChiiLeft;
     }
     public Hai[] getSarachiHaiLeft() {
-        return m_sarashiHaiLeft;
+        return _sarashiHaiLeft;
     }
 
-    public void setValidChiiCenter(bool a_validChii, Hai[] a_sarashiHai) {
-        this.m_validChiiCenter = a_validChii;
-        this.m_sarashiHaiCenter = a_sarashiHai;
+    public void setValidChiiCenter(bool validChii, Hai[] sarashiHai) {
+        this._validChiiCenter = validChii;
+        this._sarashiHaiCenter = sarashiHai;
     }
     public bool isValidChiiCenter() {
-        return m_validChiiCenter;
+        return _validChiiCenter;
     }
     public Hai[] getSarachiHaiCenter() {
-        return m_sarashiHaiCenter;
+        return _sarashiHaiCenter;
     }
 
-    public void setValidChiiRight(bool a_validChii, Hai[] a_sarashiHai) {
-        this.m_validChiiRight = a_validChii;
-        this.m_sarashiHaiRight = a_sarashiHai;
+    public void setValidChiiRight(bool validChii, Hai[] sarashiHai) {
+        this._validChiiRight = validChii;
+        this._sarashiHaiRight = sarashiHai;
     }
     public bool isValidChiiRight() {
-        return m_validChiiRight;
+        return _validChiiRight;
     }
     public Hai[] getSarachiHaiRight() {
-        return m_sarashiHaiRight;
+        return _sarashiHaiRight;
     }
 
 
-    private bool m_validKan;
-    private Hai[] m_kanHais = new Hai[3];
-    private int m_kanNum = 0;
+    private bool _validKan;
+    private Hai[] _kanHais = new Hai[3];
+    private int _kanNum = 0;
 
 
-    public void setValidKan(bool a_validKan, Hai[] a_kanHais, int a_kanNum) {
-        this.m_validKan = a_validKan;
-        this.m_kanHais = a_kanHais;
-        this.m_kanNum = a_kanNum;
+    public void setValidKan(bool validKan, Hai[] kanHais, int kanNum) {
+        this._validKan = validKan;
+        this._kanHais = kanHais;
+        this._kanNum = kanNum;
     }
 
     public Hai[] getKanHais() {
-        return m_kanHais;
+        return _kanHais;
     }
 
     public int getKanNum() {
-        return m_kanNum;
+        return _kanNum;
     }
 
 
-    private bool m_validDaiMinKan;
-    public void setValidDaiMinKan(bool a_validDaiMinKan) {
-        this.m_validDaiMinKan = a_validDaiMinKan;
+    private bool _validDaiMinKan;
+    public void setValidDaiMinKan(bool validDaiMinKan) {
+        this._validDaiMinKan = validDaiMinKan;
     }
     public bool isValidDaiMinKan() {
-        return m_validDaiMinKan;
+        return _validDaiMinKan;
     }
 
 
-    private int m_kanSelect = 0;
-    public void setKanSelect(int a_kanSelect) {
-        this.m_kanSelect = a_kanSelect;
+    private int _kanSelect = 0;
+    public void setKanSelect(int kanSelect) {
+        this._kanSelect = kanSelect;
     }
     public int getKanSelect() {
-        return m_kanSelect;
+        return _kanSelect;
     }
 
     public bool isValidKan() {
-        return m_validKan;
+        return _validKan;
     }
 
-    public void setDispMenu(bool a_dispMenu) {
-        this.m_dispMenu = a_dispMenu;
+    public void setDispMenu(bool dispMenu) {
+        this._dispMenu = dispMenu;
     }
     public bool isDispMenu() {
-        return m_dispMenu;
+        return _dispMenu;
     }
 
-    private int m_reachSelect;
-    public void setReachSelect(int a_reachSelect) {
-        this.m_reachSelect = a_reachSelect;
+    private int _reachSelect;
+    public void setReachSelect(int reachSelect) {
+        this._reachSelect = reachSelect;
     }
     public int getReachSelect() {
-        return m_reachSelect;
+        return _reachSelect;
     }
 
 }

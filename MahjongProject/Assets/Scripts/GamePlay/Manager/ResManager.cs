@@ -13,6 +13,8 @@ public class ResManager
     public static GameObject CreateMahjongObject() {
         return Object.Instantiate(Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/MahjongPai")) as GameObject;
     }
+
+    /*
     public static MahjongPai getMahjongObject() {
         return null;
     }
@@ -25,7 +27,7 @@ public class ResManager
 
         return true;
     }
-
+*/
     public static GameObject CreatePlayerUIObject() {
         return Object.Instantiate(Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/PlayerUI")) as GameObject;
     }
@@ -55,8 +57,4 @@ public class ResManager
         return head + "_" + num;
     }
 
-    //public static string getMahjongSpriteName(int id) {
-
-    //    return "";
-    //}
 }

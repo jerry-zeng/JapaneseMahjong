@@ -1,39 +1,39 @@
 ﻿
-/**
- * 上がりの組み合わせのクラスです。
- * 牌的组合。
- */
+/// <summary>
+/// 上がりの組み合わせのクラスです。
+/// 胡牌的组合。
+/// </summary>
 
 public class Combi 
 {
-    /** 頭のNK */
-    public int m_atamaNumKind = 0;
+    // 頭のNK
+    public int _atamaNumKind = 0;
 
-    /** 順子のNKの配列 */
-    public int[] m_shunNumKinds = new int[4];
-    /** 順子のNKの配列の有効な個数 */
-    public int m_shunNum = 0;
+    // 順子のNKの配列
+    public int[] _shunNumKinds = new int[4];
 
-    /** 刻子のNKの配列 */
-    public int[] m_kouNumKinds = new int[4];
-    /** 刻子のNKの配列の有効な個数 */
-    public int m_kouNum = 0;
+    // 順子のNKの配列の有効な個数
+    public int _shunNum = 0;
 
-    /**
-     * Combiをコピーする。
-     */
-    public static void copy(Combi a_dest, Combi a_src)
+    // 刻子のNKの配列
+    public int[] _kouNumKinds = new int[4];
+
+    // 刻子のNKの配列の有効な個数
+    public int _kouNum = 0;
+
+
+    public static void copy(Combi dest, Combi src)
     {
-        a_dest.m_atamaNumKind = a_src.m_atamaNumKind;
+        dest._atamaNumKind = src._atamaNumKind;
 
-        a_dest.m_shunNum = a_src.m_shunNum;
-        for( int i = 0; i < a_dest.m_shunNum; i++ ) {
-            a_dest.m_shunNumKinds[i] = a_src.m_shunNumKinds[i];
+        dest._shunNum = src._shunNum;
+        for( int i = 0; i < dest._shunNum; i++ ) {
+            dest._shunNumKinds[i] = src._shunNumKinds[i];
         }
 
-        a_dest.m_kouNum = a_src.m_kouNum;
-        for( int i = 0; i < a_dest.m_kouNum; i++ ) {
-            a_dest.m_kouNumKinds[i] = a_src.m_kouNumKinds[i];
+        dest._kouNum = src._kouNum;
+        for( int i = 0; i < dest._kouNum; i++ ) {
+            dest._kouNumKinds[i] = src._kouNumKinds[i];
         }
     }
 }

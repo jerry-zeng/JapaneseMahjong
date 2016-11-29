@@ -1,31 +1,31 @@
-﻿/**
- * AIを実装するクラスです。
- * 电脑AI，与Man相对。
- */
+﻿
+/// <summary>
+/// AIを実装するクラスです
+/// </summary>
+
 public class AI : IPlayer 
 {
-    /** Infoのコンストラクタ */
+    // Infoのコンストラクタ
     private Info m_info;
 
-    /** AIの名前 */
+    // AIの名前
     private string m_name;
 
-    /** 捨牌のインデックス */
+    // 捨牌のインデックス
     private int m_sutehaiIndex;
 
-    /** 手牌 */
+    // 手牌
     private Tehai m_tehai = new Tehai();
 
-    /** 河 */
+    // 河
     private Hou m_hou = new Hou();
 
-    /** 捨牌 */
+    // 捨牌
     private Hai m_suteHai = new Hai();
 
-    /**
-     * AIを作成する。
-     */
-    public AI(Info a_info, string a_name) {
+
+    public AI(Info a_info, string a_name)
+    {
         this.m_info = a_info;
         this.m_name = a_name;
     }
@@ -41,14 +41,14 @@ public class AI : IPlayer
     }
 
 
-    public EventId HandleEvent(EventId a_eventId, int a_kazeFrom, int a_kazeTo) 
+    public EventId HandleEvent(EventId evtID, EKaze kazeFrom, EKaze kazeTo) 
     {
-        EventId eventId = EventId.NAGASHI;
+        EventId result = EventId.NAGASHI;
 
-        switch (a_eventId) 
+        switch(evtID) 
         {
             case EventId.TSUMO:
-            eventId = eventTsumo(a_kazeFrom, a_kazeTo);
+                result = eventTsumo(kazeFrom, kazeTo);
             break;
 
             case EventId.PON:
@@ -59,33 +59,29 @@ public class AI : IPlayer
             case EventId.SUTEHAI:
             case EventId.RON_CHECK:
             case EventId.REACH:
-            eventId = eventSutehai(a_kazeFrom, a_kazeTo);
+                result = eventSutehai(kazeFrom, kazeTo);
             break;
 
             case EventId.SELECT_SUTEHAI:
-            m_info.copyTehai(m_tehai);
-            thinkSutehai(null);
-            break;
-
-            default:
+            {
+                m_info.copyTehai(m_tehai);
+                thinkSutehai(null);
+            }
             break;
         }
 
-        return eventId;
+        return result;
     }
 
-    /**
-     * イベント(ツモ)を処理する。
-     */
-    private EventId eventTsumo(int a_kazeFrom, int a_kazeTo) {
+    private EventId eventTsumo(EKaze kazeFrom, EKaze kazeTo)
+    {
         m_info.copyTehai(m_tehai);
         Hai tsumoHai = m_info.getTsumoHai();
 
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
         int agariScore = m_info.getAgariScore(m_tehai, tsumoHai);
-        if (agariScore > 0) {
+        if (agariScore > 0) 
             return EventId.TSUMO_AGARI;
-        }
 
         // リーチの場合は、ツモ切りする。
         if (m_info.isReach()) {
@@ -102,37 +98,34 @@ public class AI : IPlayer
         }
 
         // リーチする場合はイベント（リーチ）を返します。
-        if (thinkReach(m_tehai)) {
+        if (thinkReach(m_tehai))
             return EventId.REACH;
-        }
 
         return EventId.SUTEHAI;
     }
 
-    /**
-     * イベント(捨牌)を処理する。
-     */
-    private EventId eventSutehai(int a_kazeFrom, int a_kazeTo) {
-        if (a_kazeFrom == m_info.getJikaze()) {
+    private EventId eventSutehai(EKaze kazeFrom, EKaze kazeTo)
+    {
+        if (kazeFrom == m_info.getJikaze())
             return EventId.NAGASHI;
-        }
 
         m_info.copyTehai(m_tehai);
         m_suteHai = m_info.getSuteHai();
         m_info.copyHou(m_hou, m_info.getJikaze());
 
-        if (isFuriten() == false) {
+        if(isFuriten() == false)
+        {
             int agariScore = m_info.getAgariScore(m_tehai, m_suteHai);
-            if (agariScore > 0) {
+            if (agariScore > 0)
                 return EventId.RON_AGARI;
-            }
         }
 
         return EventId.NAGASHI;
     }
 
     // 振听.
-    private bool isFuriten() {
+    private bool isFuriten()
+    {
         bool furiten = false;
         Hai[] hais = new Hai[Hai.ID_ITEM_MAX];
         int indexNum = m_info.getMachiIndexs(m_tehai, hais);
@@ -143,10 +136,12 @@ public class AI : IPlayer
             SuteHai[] suteHais = m_hou.getSuteHais();
             int suteHaisLength = m_hou.getSuteHaisLength();
 
-            for (int i = 0; i < suteHaisLength; i++) {
+            for (int i = 0; i < suteHaisLength; i++)
+            {
                 suteHaiTemp = suteHais[i];
-                for (int j = 0; j < indexNum; j++) {
-                    if (suteHaiTemp.getID() == hais[j].getID()) {
+                for (int j = 0; j < indexNum; j++)
+                {
+                    if (suteHaiTemp.ID == hais[j].ID){
                         furiten = true;
                         goto END_FURITENLOOP;
                     }
@@ -166,10 +161,12 @@ public class AI : IPlayer
                 suteHaisCount = m_info.getSuteHaisCount();
                 playerSuteHaisCount = m_info.getPlayerSuteHaisCount();
 
-                for (; playerSuteHaisCount < suteHaisCount - 1; playerSuteHaisCount++) {
+                for (; playerSuteHaisCount < suteHaisCount - 1; playerSuteHaisCount++)
+                {
                     suteHaiTemp = suteHais[playerSuteHaisCount];
-                    for (int j = 0; j < indexNum; j++) {
-                        if (suteHaiTemp.getID() == hais[j].getID()) {
+                    for (int j = 0; j < indexNum; j++)
+                    {
+                        if (suteHaiTemp.ID == hais[j].ID){
                             furiten = true;
                             goto End_FURITENLOOP_2;
                         }
@@ -190,13 +187,15 @@ public class AI : IPlayer
 
     private readonly static int HYOUKA_SHUU = 1;
 
-    private Combi[] combis = new Combi[10]{
+    private Combi[] combis = new Combi[10]
+    {
         new Combi(),new Combi(),new Combi(),new Combi(),new Combi(),
         new Combi(),new Combi(),new Combi(),new Combi(),new Combi()
     };
 
 
-    private void thinkSutehai(Hai addHai) {
+    private void thinkSutehai(Hai addHai)
+    {
         int score = 0;
         int maxScore = 0;
 
@@ -214,7 +213,8 @@ public class AI : IPlayer
         int jyunTehaiLength = m_tehai.getJyunTehaiLength();
         Tehai.copyJyunTehai(jyunTehai, m_tehai.getJyunTehai(), jyunTehaiLength);
 
-        for (int i = 0; i < jyunTehaiLength; i++) {
+        for (int i = 0; i < jyunTehaiLength; i++)
+        {
             m_tehai.copyJyunTehaiIndex(hai, i);
             m_tehai.removeJyunTehai(i);
             countFormat.setCountFormat(m_tehai, addHai);
@@ -253,7 +253,8 @@ public class AI : IPlayer
         new Hai(Hai.ID_CHUN) 
     };
 
-    private bool thinkReach(Tehai tehai) {
+    private bool thinkReach(Tehai tehai)
+    {
         if (m_info.getTsumoRemain() >= 4) 
         {
             for(int i = 0; i < haiTable.Length; i++) 
@@ -261,37 +262,35 @@ public class AI : IPlayer
                 Hai hai = haiTable[i];
                 countFormat.setCountFormat(tehai, hai);
 
-                if (countFormat.getCombis(combis) > 0) {
+                if (countFormat.getCombis(combis) > 0)
                     return true;
-                }
             }
         }
         return false;
     }
 
-    private int getCountFormatScore(CountFormat countFormat) {
+    private int getCountFormatScore(CountFormat countFormat)
+    {
         int score = 0;
 
-        for (int i = 0; i < countFormat.m_countNum; i++) 
+        for (int i = 0; i < countFormat._countNum; i++) 
         {
-            if ((countFormat.m_counts[i].m_numKind & Hai.KIND_SHUU) != 0) {
-                score += countFormat.m_counts[i].m_num * HYOUKA_SHUU;
-            }
+            if ((countFormat._counts[i]._numKind & Hai.KIND_SHUU) != 0)
+                score += countFormat._counts[i]._num * HYOUKA_SHUU;
 
-            if (countFormat.m_counts[i].m_num == 2) {
+            if (countFormat._counts[i]._num == 2)
                 score += 4;
-            }
 
-            if (countFormat.m_counts[i].m_num >= 3) {
+            if (countFormat._counts[i]._num >= 3)
                 score += 8;
-            }
 
-            if ((countFormat.m_counts[i].m_numKind & Hai.KIND_SHUU) > 0) {
-                if ((countFormat.m_counts[i].m_numKind + 1) == countFormat.m_counts[i + 1].m_numKind) {
+            if ((countFormat._counts[i]._numKind & Hai.KIND_SHUU) > 0)
+            {
+                if ((countFormat._counts[i]._numKind + 1) == countFormat._counts[i + 1]._numKind) {
                     score += 4;
                 }
 
-                if ((countFormat.m_counts[i].m_numKind + 2) == countFormat.m_counts[i + 2].m_numKind) {
+                if ((countFormat._counts[i]._numKind + 2) == countFormat._counts[i + 2]._numKind) {
                     score += 4;
                 }
             }

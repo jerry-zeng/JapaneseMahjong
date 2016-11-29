@@ -1,87 +1,64 @@
 ﻿
-/**
- * 捨牌を管理する。
- * 捨牌 = 打出去的牌。
- */
+/// <summary>
+/// 捨牌を管理する
+/// 捨牌 = 打出去的牌
+/// </summary>
+
 public class SuteHai : Hai
 {
-    /** 鳴きフラグ (吃碰以及明槓) */
-    private bool m_naki = false;
+    // 鳴きフラグ (吃碰以及明槓)
+    private bool _isNaki = false;
 
-    /** リーチフラグ(立直flag) */
-    private bool m_reach = false;
+    // リーチフラグ(立直flag)
+    private bool _isReach = false;
 
-    /** 手出し(正常打出去？)フラグ */
-    private bool m_tedashi = false;
+    // 手出し(正常打出去？)フラグ
+    private bool _isTedashi = false;
 
-    /**
-     * 捨牌を作成する。
-     */
+
+    public bool IsNaki
+    {
+        get{ return _isNaki; }
+        set{ _isNaki = value; }
+    }
+
+    public bool IsReach
+    {
+        get{ return _isReach; }
+        set{ _isReach = value; }
+    }
+
+    public bool IsTedashi
+    {
+        get{ return _isTedashi; }
+        set{ _isTedashi = value; }
+    }
+
+
     public SuteHai() : base() {
-
     }
 
-    /**
-     * IDから捨牌を作成する。
-     */
-    public SuteHai(int a_id)
-        : base(a_id) {
+    public SuteHai(int id) : base(id) {
     }
 
-    /**
-     * 牌から捨牌を作成する。
-     */
-    public SuteHai(Hai a_hai)
-        : base(a_hai) {
+    public SuteHai(Hai hai) : base(hai) {
     }
 
-    /**
-     * 捨牌をコピーする。
-     */
-    public static void copy(SuteHai a_dest, SuteHai a_src) {
-        Hai.copy(a_dest, a_src);
-        a_dest.m_naki = a_src.m_naki;
-        a_dest.m_reach = a_src.m_reach;
-        a_dest.m_tedashi = a_src.m_tedashi;
+
+    public static void copy(SuteHai dest, SuteHai src)
+    {
+        Hai.copy(dest, src);
+        dest._isNaki = src._isNaki;
+        dest._isReach = src._isReach;
+        dest._isTedashi = src._isTedashi;
     }
 
-    /**
-     * 捨牌をコピーする。
-     */
-    public static void copy(SuteHai a_dest, Hai a_src) {
-        Hai.copy(a_dest, a_src);
-        a_dest.m_naki = false;
-        a_dest.m_reach = false;
-        a_dest.m_tedashi = false;
+    public static void copy(SuteHai dest, Hai src)
+    {
+        Hai.copy(dest, src);
+        dest._isNaki = false;
+        dest._isReach = false;
+        dest._isTedashi = false;
     }
 
-    /**
-     * 鳴きフラグを設定する。
-     */
-    public void setNaki(bool a_naki) {
-        this.m_naki = a_naki;
-    }
-    public bool isNaki() {
-        return m_naki;
-    }
-
-    /**
-     * リーチフラグを設定する。
-     */
-    public void setReach(bool a_reach) {
-        this.m_reach = a_reach;
-    }
-    public bool isReach() {
-        return m_reach;
-    }
-
-    /**
-     * 手出しフラグを設定する。
-     */
-    public void setTedashi(bool a_tedashi) {
-        this.m_tedashi = a_tedashi;
-    }
-    public bool isTedashi() {
-        return m_tedashi;
-    }
 }

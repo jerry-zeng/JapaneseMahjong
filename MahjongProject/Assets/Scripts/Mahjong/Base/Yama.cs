@@ -1,91 +1,90 @@
 ﻿
-/**
- * 山を管理する。
- * 日本麻将里最后的7幢牌，共14个，叫牌山。
- */
+/// <summary>
+/// 山を管理する, 所有堆起来的牌叫山牌
+/// 最后的7幢牌，共14个，叫牌山
+/// </summary>
+
 public class Yama 
 {
-    /** 山牌の配列の最大数 */
+    // 山牌の配列の最大数
     public readonly static int YAMA_HAIS_MAX = 136;
 
-    /** 自摸牌の配列の最大数 */
+    // 自摸牌の配列の最大数
     public readonly static int TSUMO_HAIS_MAX = 122;
 
-    /** 杠上开花牌の配列の最大数 */
+    // 杠上开花牌の配列の最大数
     public readonly static int RINSHAN_HAIS_MAX = 4;
 
-    /** 各宝牌の配列の最大数 */
+    // 各宝牌の配列の最大数
     public readonly static int DORA_HAIS_MAX = RINSHAN_HAIS_MAX + 1;
 
-    // Fields.
 
-    /** 山牌の配列 */
-    private Hai[] m_yamaHais = new Hai[YAMA_HAIS_MAX];
+    // 山牌の配列
+    private Hai[] _yamaHais = new Hai[YAMA_HAIS_MAX];
 
-    /** ツモ牌の配列 */
-    private Hai[] m_tsumoHais = new Hai[TSUMO_HAIS_MAX];
+    // ツモ牌の配列
+    private Hai[] _tsumoHais = new Hai[TSUMO_HAIS_MAX];
 
-    /** リンシャン(岭上开花)牌の配列 */
-    private Hai[] m_rinshanHais = new Hai[RINSHAN_HAIS_MAX];
+    // リンシャン(岭上开花)牌の配列
+    private Hai[] _rinshanHais = new Hai[RINSHAN_HAIS_MAX];
 
-    /** リンシャン牌の位置 */
-    private int m_RinshanHaisIndex;
+    // リンシャン牌の位置
+    private int _rinshanHaisIndex;
 
-    /** ツモ牌のインデックス(index) */
-    private int m_TsumoHaisIndex;
+    // ツモ牌のインデックス(index)
+    private int _tsumoHaisIndex;
 
-    /** 表ドラ牌の配列 */
-    private Hai[] m_omoteDoraHais = new Hai[DORA_HAIS_MAX];
+    // 表ドラ牌の配列
+    private Hai[] _omoteDoraHais = new Hai[DORA_HAIS_MAX];
 
-    /** 裏ドラ牌の配列 */
-    private Hai[] m_uraDoraHais = new Hai[DORA_HAIS_MAX];
+    // 裏ドラ牌の配列
+    private Hai[] _uraDoraHais = new Hai[DORA_HAIS_MAX];
 
 
-    /**
-     * 山を作成する。
-     */
-    public Yama() {
+    public Yama()
+    {
         setTsumoHaisStartIndex(0);
 
-        for (int i = Hai.ID_ITEM_MIN; i < Hai.ID_ITEM_MAX; i++) {
+        for (int i = Hai.ID_ITEM_MIN; i < Hai.ID_ITEM_MAX; i++)
+        {
             for (int j = 0; j < 4; j++) {
-                m_yamaHais[(i * 4) + j] = new Hai(i);
+                _yamaHais[(i * 4) + j] = new Hai(i);
             }
         }
     }
 
     // temply implement.
-    public Hai[] getYamaHais() {
-        return m_yamaHais;
+    public Hai[] getYamaHais()
+    {
+        return _yamaHais;
     }
 
-    /**
-     * 洗牌する。
-     */
-    public void XiPai() {
+    // 洗牌する
+    public void XiPai()
+    {
         Hai temp;
-        for (int i = 0, j; i < YAMA_HAIS_MAX; i++) 
+        int j;
+
+        for (int i = 0; i < YAMA_HAIS_MAX; i++) 
         {
             // get a random index.
             j = Utils.GetRandomNum(0, YAMA_HAIS_MAX);
 
             // exchange hais.
-            temp = m_yamaHais[i];
-            m_yamaHais[i] = m_yamaHais[j];
-            m_yamaHais[j] = temp;
+            temp = _yamaHais[i];
+            _yamaHais[i] = _yamaHais[j];
+            _yamaHais[j] = temp;
         }
     }
 
-    /**
-     * ツモ牌を取得する。
-     */
-    public Hai PickTsumoHai() {
-        if (m_TsumoHaisIndex >= (TSUMO_HAIS_MAX - m_RinshanHaisIndex)) {
+    // ツモ牌を取得する
+    public Hai PickTsumoHai()
+    {
+        if (_tsumoHaisIndex >= (TSUMO_HAIS_MAX - _rinshanHaisIndex))
             return null;
-        }
 
-        Hai tsumoHai = new Hai(m_tsumoHais[m_TsumoHaisIndex]);
-        m_TsumoHaisIndex++;
+        Hai tsumoHai = new Hai(_tsumoHais[_tsumoHaisIndex]);
+        _tsumoHaisIndex++;
 
         return tsumoHai;
     }
@@ -93,19 +92,18 @@ public class Yama
     /// <summary>
     /// 初始拿牌.
     /// </summary>
-    public Hai[] PickHaipai() {
-        if( m_TsumoHaisIndex >= (TSUMO_HAIS_MAX - m_RinshanHaisIndex) ) {
+    public Hai[] PickHaipai()
+    {
+        if( _tsumoHaisIndex >= (TSUMO_HAIS_MAX - _rinshanHaisIndex) )
             return null;
-        }
 
         Hai[] hais = new Hai[4];
         for( int i = 0; i < hais.Length; i++ ) 
         {
-            hais[i] = new Hai( m_tsumoHais[m_TsumoHaisIndex] );
+            hais[i] = new Hai( _tsumoHais[_tsumoHaisIndex] );
 
-            m_TsumoHaisIndex++;
-
-            if( m_TsumoHaisIndex >= (TSUMO_HAIS_MAX - m_RinshanHaisIndex) ) {
+            _tsumoHaisIndex++;
+            if( _tsumoHaisIndex >= (TSUMO_HAIS_MAX - _rinshanHaisIndex) ) {
                 //break;
             }
         }
@@ -116,13 +114,13 @@ public class Yama
     /**
      * リンシャン(岭上开花)牌を取得する。
      */
-    public Hai PickRinshanTsumoHai() {
-        if (m_RinshanHaisIndex >= RINSHAN_HAIS_MAX) {
+    public Hai PickRinshanTsumoHai()
+    {
+        if (_rinshanHaisIndex >= RINSHAN_HAIS_MAX)
             return null;
-        }
 
-        Hai rinshanHai = new Hai(m_rinshanHais[m_RinshanHaisIndex]);
-        m_RinshanHaisIndex++;
+        Hai rinshanHai = new Hai(_rinshanHais[_rinshanHaisIndex]);
+        _rinshanHaisIndex++;
 
         return rinshanHai;
     }
@@ -130,14 +128,13 @@ public class Yama
     /**
      * 表ドラの配列を取得する。
      */
-    public Hai[] getOmoteDoraHais() {
-
-        int omoteDoraHaisLength = m_RinshanHaisIndex + 1;
+    public Hai[] getOmoteDoraHais()
+    {
+        int omoteDoraHaisLength = _rinshanHaisIndex + 1;
         Hai[] omoteDoraHais = new Hai[omoteDoraHaisLength];
 
-        for (int i = 0; i < omoteDoraHaisLength; i++) {
-            omoteDoraHais[i] = new Hai(this.m_omoteDoraHais[i]);
-        }
+        for (int i = 0; i < omoteDoraHaisLength; i++)
+            omoteDoraHais[i] = new Hai(this._omoteDoraHais[i]);
 
         return omoteDoraHais;
     }
@@ -145,32 +142,30 @@ public class Yama
     /**
      * 裏ドラの配列を取得する。
      */
-    public Hai[] getUraDoraHais() {
-
-        int uraDoraHaisLength = m_RinshanHaisIndex + 1;
+    public Hai[] getUraDoraHais()
+    {
+        int uraDoraHaisLength = _rinshanHaisIndex + 1;
         Hai[] uraDoraHais = new Hai[uraDoraHaisLength];
 
-        for (int i = 0; i < uraDoraHaisLength; i++) {
-            uraDoraHais[i] = new Hai(this.m_uraDoraHais[i]);
-        }
+        for (int i = 0; i < uraDoraHaisLength; i++)
+            uraDoraHais[i] = new Hai(this._uraDoraHais[i]);
 
         return uraDoraHais;
     }
 
-    public Hai[] getAllDoraHais() {
-        int omoteDoraHaisLength = m_RinshanHaisIndex + 1;
-        int uraDoraHaisLength = m_RinshanHaisIndex + 1;
+    public Hai[] getAllDoraHais()
+    {
+        int omoteDoraHaisLength = _rinshanHaisIndex + 1;
+        int uraDoraHaisLength = _rinshanHaisIndex + 1;
         int allDoraHaisLength = omoteDoraHaisLength + uraDoraHaisLength;
 
         Hai[] allDoraHais = new Hai[allDoraHaisLength];
 
-        for (int i = 0; i < omoteDoraHaisLength; i++) {
-            allDoraHais[i] = new Hai(this.m_omoteDoraHais[i]);
-        }
+        for (int i = 0; i < omoteDoraHaisLength; i++)
+            allDoraHais[i] = new Hai(this._omoteDoraHais[i]);
 
-        for (int i = 0; i < uraDoraHaisLength; i++) {
-            allDoraHais[omoteDoraHaisLength + i] = new Hai(this.m_uraDoraHais[i]);
-        }
+        for (int i = 0; i < uraDoraHaisLength; i++)
+            allDoraHais[omoteDoraHaisLength + i] = new Hai(this._uraDoraHais[i]);
 
         return allDoraHais;
     }
@@ -186,23 +181,24 @@ public class Yama
      *  
      *  Wareme<-- Rinshan <-- Doras <-- Tsumo <--.
      */
-    public bool setTsumoHaisStartIndex(int a_tsumoHaiStartIndex) {
-        if (a_tsumoHaiStartIndex >= YAMA_HAIS_MAX) {
+    public bool setTsumoHaisStartIndex(int tsumoHaiStartIndex)
+    {
+        if (tsumoHaiStartIndex >= YAMA_HAIS_MAX)
             return false;
-        }
 
-        int yamaHaisIndex = a_tsumoHaiStartIndex;
+        int yamaHaisIndex = tsumoHaiStartIndex;
 
         // tsumo hais. 122.
-        for (int i = 0; i < TSUMO_HAIS_MAX; i++) {
-            m_tsumoHais[i] = m_yamaHais[yamaHaisIndex];
+        for (int i = 0; i < TSUMO_HAIS_MAX; i++)
+        {
+            _tsumoHais[i] = _yamaHais[yamaHaisIndex];
 
             yamaHaisIndex++;
-            if (yamaHaisIndex >= YAMA_HAIS_MAX) {
+
+            if (yamaHaisIndex >= YAMA_HAIS_MAX)
                 yamaHaisIndex = 0;
-            }
         }
-        m_TsumoHaisIndex = 0;
+        _tsumoHaisIndex = 0;
 
 
         // dora hais. 1+4=5. 
@@ -210,45 +206,42 @@ public class Yama
         for( int i = DORA_HAIS_MAX - 1; i >= 0; i-- ) // reverse.
         {
             // 表dora.
-            m_omoteDoraHais[i] = m_yamaHais[yamaHaisIndex];
+            _omoteDoraHais[i] = _yamaHais[yamaHaisIndex];
 
             yamaHaisIndex++;
-            if( yamaHaisIndex >= YAMA_HAIS_MAX ) {
+            if( yamaHaisIndex >= YAMA_HAIS_MAX )
                 yamaHaisIndex = 0;
-            }
 
             // 里dora.
-            m_uraDoraHais[i] = m_yamaHais[yamaHaisIndex];
+            _uraDoraHais[i] = _yamaHais[yamaHaisIndex];
 
             yamaHaisIndex++;
-            if( yamaHaisIndex >= YAMA_HAIS_MAX ) {
+            if( yamaHaisIndex >= YAMA_HAIS_MAX )
                 yamaHaisIndex = 0;
-            }
         }
 
         // rinshan hais. 4.
         for( int i = 0; i < RINSHAN_HAIS_MAX; i++ )      
         {
-            m_rinshanHais[i] = m_yamaHais[yamaHaisIndex];
+            _rinshanHais[i] = _yamaHais[yamaHaisIndex];
 
             yamaHaisIndex++;
-            if( yamaHaisIndex >= YAMA_HAIS_MAX ) {
+            if( yamaHaisIndex >= YAMA_HAIS_MAX )
                 yamaHaisIndex = 0;
-            }    
         }
 
         /// reverse.
         ///   2 0  ->  0 2
         ///   3 1      1 3
-        Hai temp = m_rinshanHais[0];
-        m_rinshanHais[0] = m_rinshanHais[2];
-        m_rinshanHais[2] = temp;
+        Hai temp = _rinshanHais[0];
+        _rinshanHais[0] = _rinshanHais[2];
+        _rinshanHais[2] = temp;
 
-        temp = m_rinshanHais[1];
-        m_rinshanHais[1] = m_rinshanHais[3];
-        m_rinshanHais[3] = temp;
+        temp = _rinshanHais[1];
+        _rinshanHais[1] = _rinshanHais[3];
+        _rinshanHais[3] = temp;
 
-        m_RinshanHaisIndex = 0;
+        _rinshanHaisIndex = 0;
 
         return true;
     }
@@ -256,27 +249,28 @@ public class Yama
     /**
      * ツモ牌の残り数を取得する。
      */
-    public int getTsumoNokori() {
-        return TSUMO_HAIS_MAX - m_TsumoHaisIndex - m_RinshanHaisIndex;
+    public int getTsumoNokori()
+    {
+        return TSUMO_HAIS_MAX - _tsumoHaisIndex - _rinshanHaisIndex;
     }
 
     /**
      * 红ドラ牌。
      */
-    public void setRedDora(int a_id, int a_num) {
-        if (a_num <= 0) {
+    public void setRedDora(int id, int num)
+    {
+        if(num <= 0) 
             return;
-        }
 
-        for (int i = 0; i < m_yamaHais.Length; i++) 
+        for(int i = 0; i < _yamaHais.Length; i++) 
         {
-            if (m_yamaHais[i].getID() == a_id) {
-                m_yamaHais[i].setRed(true);
+            if(_yamaHais[i].ID == id) {
+                _yamaHais[i].setRed(true);
 
-                a_num--;
-                if (a_num <= 0) {
+                num--;
+
+                if(num <= 0) 
                     break;
-                }
             }
         } 
     }
