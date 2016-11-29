@@ -33,8 +33,8 @@ public class GameInfoUI : UIObject
         reachBan.enabled = false;
     }
 
-    public void SetKyoku( int kaze, int kyoku ) {
-        kyokuLab.text = ((EKaze)kaze).ToString() + " " + kyoku.ToString();
+    public void SetKyoku( EKaze kaze, int kyoku ) {
+        kyokuLab.text = kaze.ToString() + " " + kyoku.ToString();
     }
 
     public void SetReachCount(int count) {

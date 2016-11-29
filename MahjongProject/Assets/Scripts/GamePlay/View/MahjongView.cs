@@ -43,7 +43,7 @@ public class MahjongView : UIObject, IObserver
             gameInfo = transform.FindChild("Info_Panel/GameInfo").GetComponent<GameInfoUI>();
 
             // init player uis.
-            for( int i = 0; i < MahjongSetting.PlayerNum; i++ ) 
+            for( int i = 0; i < GameSettings.PlayerCount; i++ ) 
             {
                 string dir = "South_Panel";
                 float eulerAngleZ = 0;
@@ -122,8 +122,8 @@ public class MahjongView : UIObject, IObserver
 
         case EventId.Init_PlayerInfoUI: 
             {
-                Player[] players = Model.getPlayers();
-                for( int i = 0; i < players.Length; i++ ) {
+                List<Player> players = Model.getPlayers();
+                for( int i = 0; i < players.Count; i++ ) {
                     Player player = players[i];
                     PlayerUI ui = playerUIDic[i];
 
@@ -143,7 +143,7 @@ public class MahjongView : UIObject, IObserver
                 const int MaxLength = YamaUI.MaxYamaPairInPlayer * 2;
 
                 Hai[] yamaHais = Model.getYama().getYamaHais();
-                int PlayerLength = Model.getPlayers().Length;
+                int PlayerLength = Model.getPlayers().Count;
 
                 for( int i = 0; i < PlayerLength; i++ ) 
                 {
@@ -181,7 +181,7 @@ public class MahjongView : UIObject, IObserver
                 gameInfo.SetHonba(Model.getHonba());
 
                 /// set tehais.
-                for( int i = 0; i < Model.getPlayers().Length; i++ ) 
+                for( int i = 0; i < Model.getPlayers().Count; i++ ) 
                 {
                     Player player = Model.getPlayers()[i];
 
@@ -192,7 +192,7 @@ public class MahjongView : UIObject, IObserver
                 }
 
                 /// set yama.                
-                int PlayerLength = Model.getPlayers().Length;
+                int PlayerLength = Model.getPlayers().Count;
                 int waremeIndex = Model.getWareme();
 
                 // count start tsumo index.
@@ -254,7 +254,7 @@ public class MahjongView : UIObject, IObserver
     }
     void OnClickSaisButton() {
         Sai[] sais = Model.Saifuri();
-        saiTip.text = sais[0].getNum() + ", " + sais[1].getNum();
+        saiTip.text = sais[0].Num + ", " + sais[1].Num;
 
         saisButton.isEnabled = false;
 
@@ -288,7 +288,7 @@ public class MahjongView : UIObject, IObserver
             return null;
 
         int MaxLength = 34;
-        int MaxPlayer = Model.getPlayers().Length;
+        int MaxPlayer = Model.getPlayers().Count;
 
         int[] index = new int[2];
         index[0] = MaxLength * ((MaxPlayer - playerIndex) % MaxPlayer);
@@ -303,7 +303,7 @@ public class MahjongView : UIObject, IObserver
     /// <param name="yamahaiIndex"></param>
     /// <returns></returns>
     int[] getStartEndOfYamahaiIndex( int yamahaiIndex ) {
-        int MaxPlayer = Model.getPlayers().Length;
+        int MaxPlayer = Model.getPlayers().Count;
 
         for( int i = 0; i < MaxPlayer; i++ ) {
             int[] index = getStartEndOfYamaUIOfPlayer( i );
@@ -320,7 +320,7 @@ public class MahjongView : UIObject, IObserver
     /// <param name="yamahaiIndex"></param>
     /// <returns></returns>
     int findPlayerForYamahaiIndex(int yamahaiIndex) {
-        int MaxPlayer = Model.getPlayers().Length;
+        int MaxPlayer = Model.getPlayers().Count;
 
         for( int i = 0; i < MaxPlayer; i++ ) 
         {

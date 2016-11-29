@@ -30,9 +30,8 @@ public class PlayerInfoUI : UIObject
         }
     }
 
-    public void SetKaze(int kaze) {
-        EKaze dk = (EKaze)kaze;
-        string str = dk.ToString();
+    public void SetKaze(EKaze kaze) {
+        string str = kaze.ToString();
 
         kazeLab.text = str.Substring(0,1);
     }

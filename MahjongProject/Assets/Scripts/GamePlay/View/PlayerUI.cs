@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class PlayerUI : UIObject 
 {
-    public EKaze DeskKaze = EKaze.East;
+    public EKaze DeskKaze = EKaze.Ton;
 
     private TehaiUI tehai; // 手牌.
     private YamaUI yama;   // 牌山.
@@ -124,7 +124,7 @@ public class PlayerUI : UIObject
     }
 
     // player info.
-    public void SetKaze(int kaze) {
+    public void SetKaze(EKaze kaze) {
         playerInfo.SetKaze(kaze);
     }
     public void SetTenbou(int point) {
