@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Andjong</string>
+	<string name="main_title">Andjong</string>
+	<string name="new_game_label">New Game</string>
+	<string name="about_label">About</string>
+	<string name="exit_label">Exit</string>
+	<string name="game_title">Game</string>
+	<string name="kyoku_ton_1">東一局</string>
+	<string name="kyoku_ton_2">東二局</string>
+	<string name="kyoku_ton_3">東三局</string>
+	<string name="kyoku_ton_4">東四局</string>
+	<string name="kyoku_nan_1">南一局</string>
+	<string name="kyoku_nan_2">南二局</string>
+	<string name="kyoku_nan_3">南三局</string>
+	<string name="kyoku_nan_4">南四局</string>
+
+	<string name="kaze_ton">東</string>
+	<string name="kaze_nan">南</string>
+	<string name="kaze_sya">西</string>
+	<string name="kaze_pei">北</string>
+
+	<string name="space">" "</string>
+	<string name="multi">x</string>
+
+	<string name="button_menu">メニュー</string>
+	<string name="button_reach">リーチ</string>
+	<string name="button_ron">ロン</string>
+	<string name="button_tsumo">ツモ</string>
+	<string name="button_pon">ポン</string>
+	<string name="button_chii">チー</string>
+	<string name="button_kan">カン</string>
+
+	<string name="han">翻</string>
+	<string name="fu">符</string>
+	<string name="ten">点</string>
+
+	<string name="yakuman">役満</string>
+	<string name="sanbaiman">三倍満</string>
+	<string name="baiman">倍満</string>
+	<string name="haneman">ハネ満</string>
+	<string name="mangan">満貫</string>
+
+	<string name="info_reach">リーチ</string>
+	<string name="info_ron">ロン</string>
+	<string name="info_tsumo">ツモ</string>
+	<string name="info_ryuukyoku">流局</string>
+	<string name="info_end">終了</string>
+
+	<string name="yaku_tanyao">断幺</string>
+	<string name="yaku_pinfu">平和</string>
+	<string name="yaku_ipeikou">一盃口</string>
+	<string name="yaku_reach">立直</string>
+	<string name="yaku_ippatu">一発</string>
+	<string name="yaku_tumo">門前清自摸和</string>
+	<string name="yaku_doubleton">ダブ東</string>
+	<string name="yaku_ton">東</string>
+	<string name="yaku_doublenan">ダブ南</string>
+	<string name="yaku_nan">南</string>
+	<string name="yaku_sya">西</string>
+	<string name="yaku_pei">北</string>
+	<string name="yaku_haku">白</string>
+	<string name="yaku_hatu">發</string>
+	<string name="yaku_cyun">中</string>
+	<string name="yaku_haitei">海底摸月</string>
+	<string name="yaku_houtei">河底撈魚</string>
+	<string name="yaku_rinsyan">嶺上開花</string>
+	<string name="yaku_cyankan">槍槓</string>
+	<string name="yaku_doublereach">ダブル立直</string>
+	<string name="yaku_teetoitu">七対子</string>
+	<string name="yaku_cyanta">全帯</string>
+	<string name="yaku_ikkituukan">一気通貫</string>
+	<string name="yaku_sansyokudoujyun">三色同順</string>
+	<string name="yaku_sansyokudoukou">三色同刻</string>
+	<string name="yaku_toitoi">対々和</string>
+	<string name="yaku_sanankou">三暗刻</string>
+	<string name="yaku_sankantu">三槓子</string>
+	<string name="yaku_ryanpeikou">二盃口</string>
+	<string name="yaku_honitu">混一色</string>
+	<string name="yaku_juncyan">純全帯</string>
+	<string name="yaku_syousangen">小三元</string>
+	<string name="yaku_honroutou">混老頭</string>
+	<string name="yaku_tinitu">清一色</string>
+	<string name="yaku_suuankou">四暗刻</string>
+	<string name="yaku_suukantu">四槓子</string>
+	<string name="yaku_daisangen">大三元</string>
+	<string name="yaku_syousuushi">小四喜</string>
+	<string name="yaku_daisuushi">大四喜</string>
+	<string name="yaku_tuuisou">字一色</string>
+	<string name="yaku_chinroutou">清老頭</string>
+	<string name="yaku_ryuuisou">緑一色</string>
+	<string name="yaku_cyuurennpoutou">九蓮宝燈</string>
+	<string name="yaku_kokushi">国士無双</string>
+	<string name="yaku_tenhou">天和</string>
+	<string name="yaku_tihou">地和</string>
+	<string name="yaku_dora">ドラ</string>
+	<string name="yaku_nagashimangan">流し満貫</string>
+
+	<string name="settings_kuitan">クイタン</string>
+	<string name="hints_title">赤ドラ</string>
+	<string name="settings_kyokusuu">局数</string>
+
+	<string name="rounds_tonpuu">東風戦</string>
+	<string name="rounds_hanchan">半荘戦</string>
+
+	<string name="about_title">About Andjong</string>
+	<string name="about_text">\
+オープンソースの四人打ち麻雀ゲームです。\n
+皆様とともに、より良いゲームにしていきたいです。\n
+\n
+HVGA(320 X 480 pixel)のみサポートしています。\n
+\n
+ベータ版のリリースになります。\n
+バグが多くあると思いますので、報告はウェブページにしていただけるとありがたいです。\n
+\n
+操作方法\n
+・スクリーンの下の領域をタッチするか、左右キー操作で牌を選択します。\n
+・スクリーンの上の領域をタッチするか、決定キー操作で牌を捨てます。\n
+・表示されたメニューをクリックすることでアクションを起こすことができます。メニューをタッチできる領域はスクリーンの下の領域です。実際の表示よりも大きくなっています。\n
+・画面をタッチするか、決定キー操作で画面を遷移します。\n
+\n
+その他、色々さわりながら試してみてください。\n
+</string>
+</resources>
