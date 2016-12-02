@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections.Generic;
+
 /// <summary>
 /// 副露を管理する。
 /// 副露包括吃牌(チー),碰牌(ポン)和杠，也就是放桌角的那些牌.
@@ -7,7 +8,7 @@
 public class Fuuro 
 {
     // 種別
-    private EFuuroType _type = EFuuroType.None;
+    private EFuuroType _type = EFuuroType.MinShun;
 
     // 構成牌
     private Hai[] _hais;
@@ -20,13 +21,17 @@ public class Fuuro
     private int _newPickIndex = -1;
 
 
-    public Fuuro()
+    public Fuuro(Fuuro other)
     {
-        _hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
+        copy( this, other );
+    }
 
-        for (int i = 0; i < _hais.Length; i++) {
-            _hais[i] = new Hai();
-        }
+    public Fuuro(EFuuroType newType, Hai[] newHais, int newRelation, int newPickIndex)
+    {
+        this._type = newType;
+        this._hais = newHais;
+        this._fromRelation = newRelation;
+        this._newPickIndex = newPickIndex;
     }
 
 
@@ -42,7 +47,7 @@ public class Fuuro
         set{ _hais = value; }
     }
 
-    public int Relation
+    public int FromRelation
     {
         get{ return _fromRelation; }
         set{ _fromRelation = value; }
@@ -59,7 +64,7 @@ public class Fuuro
     {
         Type = newType;
         Hais = newHais;
-        Relation = newRelation;
+        FromRelation = newRelation;
         NewPickIndex = newPick;
     }
 
@@ -78,4 +83,5 @@ public class Fuuro
             Hai.copy(dest._hais[i], src._hais[i]);
         }
     }
+
 }

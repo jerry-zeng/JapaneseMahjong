@@ -314,49 +314,49 @@ public abstract class Mahjong
 
     public int getAgariScore(Tehai tehai, Hai addHai)
     {
-        AgariSetting.setOmoteDoraHais(getOmotoDoras());
+        AgariParam param = new AgariParam(this);
 
         if( activePlayer.isReach() ) {
             if( activePlayer.isDoubleReach() ) {
-                AgariSetting.setYakuFlag((int)EYakuFlagType.DOUBLE_REACH, true);
+                param.setYakuFlag((int)EYakuFlagType.DOUBLE_REACH, true);
             }
             else {
-                AgariSetting.setYakuFlag((int)EYakuFlagType.REACH, true);
+                param.setYakuFlag((int)EYakuFlagType.REACH, true);
             }
         }
 
         if( m_isTsumo ) {
-            AgariSetting.setYakuFlag((int)EYakuFlagType.TSUMO, true);
+            param.setYakuFlag((int)EYakuFlagType.TSUMO, true);
             if( m_isTenhou ) {
-                AgariSetting.setYakuFlag((int)EYakuFlagType.TENHOU, true);
+                param.setYakuFlag((int)EYakuFlagType.TENHOU, true);
             }
             else if( m_isChiihou ) {
-                AgariSetting.setYakuFlag((int)EYakuFlagType.TIHOU, true);
+                param.setYakuFlag((int)EYakuFlagType.TIHOU, true);
             }
         }
 
         if( m_isTsumo && m_isRinshan ) {
-            AgariSetting.setYakuFlag((int)EYakuFlagType.RINSYAN, true);
+            param.setYakuFlag((int)EYakuFlagType.RINSYAN, true);
         }
 
         if( m_isLast ) {
             if( m_isTsumo ) {
-                AgariSetting.setYakuFlag((int)EYakuFlagType.HAITEI, true);
+                param.setYakuFlag((int)EYakuFlagType.HAITEI, true);
             }
             else {
-                AgariSetting.setYakuFlag((int)EYakuFlagType.HOUTEI, true);
+                param.setYakuFlag((int)EYakuFlagType.HOUTEI, true);
             }
         }
 
         if( activePlayer.isIppatsu() ) {
-            AgariSetting.setYakuFlag((int)EYakuFlagType.IPPATU, true);
+            param.setYakuFlag((int)EYakuFlagType.IPPATU, true);
         }
 
         if( GameSettings.UseKuitan ) {
-            AgariSetting.setYakuFlag((int)EYakuFlagType.KUITAN, true);
+            param.setYakuFlag((int)EYakuFlagType.KUITAN, true);
         }
 
-        return AgariScoreManager.GetAgariScore(tehai, addHai, combis, ref m_agariInfo);
+        return AgariScoreManager.GetAgariScore(tehai, addHai, combis, param, ref m_agariInfo);
     }
 
     public void setSutehaiIndex(int sutehaiIdx)

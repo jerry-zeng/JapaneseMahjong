@@ -130,12 +130,12 @@ public class Info
 
         int index = 0;
         Hai[] jyunTehai = tehai.getJyunTehai();
-        int jyunTehaiLength = tehai.getJyunTehaiLength();
+
         Hai haiTemp = new Hai();
         Hai addHai;
         CountFormat countFormat = new CountFormat();
 
-        for (int i = 0; i < jyunTehaiLength; i++)
+        for (int i = 0; i < jyunTehai.Length; i++)
         {
             Hai.copy(haiTemp, jyunTehai[i]);
             tehai.removeJyunTehai(jyunTehai[i]);

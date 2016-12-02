@@ -88,9 +88,9 @@ public class MahjongPai : UIObject
     }
     public void SetInfo(Hai hai) {
         this.id = hai.ID;
-        this.kind = hai.getKind();
-        this.num = hai.getNum();
-        this.isRed = hai.isRed();
+        this.kind = hai.Kind;
+        this.num = hai.Num;
+        this.isRed = hai.IsRed;
     }
 
     public void UpdateImage() {

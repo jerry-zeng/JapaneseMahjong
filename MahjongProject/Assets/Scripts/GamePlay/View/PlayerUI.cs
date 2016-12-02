@@ -137,7 +137,7 @@ public class PlayerUI : UIObject
 
 
     public static MahjongPai CreateMahjongPai(Transform parent, Vector3 localPos, Hai info, bool isShow = true) {
-        if( Hai.isValidHai(info) == false ){
+        if( Hai.IsValidHai(info) == false ){
             Debug.LogError("PlayerUI: Invalid hai for ID == " + info.ID);
             return null;
         }

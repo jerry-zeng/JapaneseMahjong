@@ -79,18 +79,15 @@ public class Hai
     // 中 
     public readonly static int ID_CHUN = 33;
 
+    // IDの最小値 
+    public readonly static int ID_MIN = ID_WAN_1;
     // IDの最大値 
     public readonly static int ID_MAX = ID_CHUN;
 
-    // IDの最小値 
-    public readonly static int ID_MIN = ID_WAN_1;
-
     // IDの個数の最小値 
     public readonly static int ID_ITEM_MIN = ID_WAN_1;
-
     // IDの個数の最大値 
     public readonly static int ID_ITEM_MAX = ID_MAX + 1;
-
 
     // 1 
     public readonly static int NUM_1 = 1;
@@ -191,7 +188,6 @@ public class Hai
     public readonly static int KIND_PIN = 0x00000020;
     // 索子 
     public readonly static int KIND_SOU = 0x00000040;
-
     // 風牌 
     public readonly static int KIND_FON = 0x00000100;
     // 三元牌 
@@ -282,7 +278,6 @@ public class Hai
     private int _id = -1;
     private bool _isRed = false;
 
-
     public Hai() {
         _id = -1;
         _isRed = false;
@@ -314,87 +309,87 @@ public class Hai
         dest._isRed = src._isRed;
     }
 
+    /// <summary>
+    /// Gets the ID.
+    /// </summary>
 
     public int ID
     {
         get{ return _id; }
     }
 
-    protected int getID()
-    {
-        return _id;
-    }
-
     // 赤ドラ
-    public void setRed( bool a_red ) {
-        this._isRed = a_red;
-    }
-    public bool isRed() {
-        return _isRed;
-    }
+    /// <summary>
+    /// Gets or sets the Hai is 赤ドラ.
+    /// </summary>
 
+    public bool IsRed
+    {
+        get{ return _isRed; }
+        set{ _isRed = value; }
+    }
 
     /// <summary>
     /// 番号を取得する.
     /// </summary>
 
-    public int getNum()
+    public int Num
     {
-        return NUMS[_id];
+        get{ return NUMS[_id]; }
     }
 
     /// <summary>
     /// 種類を取得する.
     /// </summary>
 
-    public int getKind()
+    public int Kind
     {
-        return KINDS[_id];
+        get{ return KINDS[_id]; }
     }
 
     /// <summary>
     /// NK(番号と種類のOR)を取得する.
     /// </summary>
 
-    public int getNumKind()
+    public int NumKind
     {
-        return NUMS[_id] | KINDS[_id];
+        get{ return NUMS[_id] | KINDS[_id]; }
     }
 
     /// <summary>
     /// 一九牌フラグを取得する.
     /// </summary>
 
-    public bool isIchikyuu()
+    public bool IsIchikyuu
     {
-        return IS_ICHIKYUUS[_id];
+        get{ return IS_ICHIKYUUS[_id]; }
     }
 
     /// <summary>
     /// 字牌フラグ(flag)を取得する.
     /// </summary>
 
-    public bool isTsuu()
+    public bool IsTsuu
     {
-        return IS_TSUUS[_id];
+        get{ return IS_TSUUS[_id]; }
     }
 
     /// <summary>
     /// 一九、字牌 フラグを取得する
     /// </summary>
 
-    public bool isYaochuu()
+    public bool IsYaochuu
     {
-        return IS_ICHIKYUUS[_id] | IS_TSUUS[_id];
+        get{ return IS_ICHIKYUUS[_id] | IS_TSUUS[_id]; }
     }
 
     /// <summary>
     /// Gets the next hai identifier.
     /// </summary>
 
-    public int getNextHaiId()
+    public int NextHaiID
     {
-        return NEXT_HAI_IDS[_id];
+        get{ return NEXT_HAI_IDS[_id]; }
     }
 
 
@@ -402,7 +397,7 @@ public class Hai
     /// 字牌フラグを取得する.
     /// </summary>
 
-    public static bool isTsuu(int numKind)
+    public static bool CheckIsTsuu(int numKind)
     {
         return (numKind & KIND_TSUU) != 0;
     }
@@ -436,12 +431,16 @@ public class Hai
     /// check if the target hai is valid.
     /// </summary>
 
-    public static bool isValidHai(Hai hai)
+    public static bool IsValidHai(Hai hai)
     {
-        return (hai != null) && isValidHaiID(hai.ID);
+        return (hai != null) && IsValidHaiID(hai.ID);
     }
 
-    public static bool isValidHaiID(int id)
+    /// <summary>
+    /// check if the target hai ID is valid.
+    /// </summary>
+
+    public static bool IsValidHaiID(int id)
     {
         return id >= ID_MIN && id <= ID_MAX;
     }

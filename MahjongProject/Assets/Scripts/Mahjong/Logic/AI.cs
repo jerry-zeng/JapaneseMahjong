@@ -134,7 +134,7 @@ public class AI : IPlayer
         {
             SuteHai suteHaiTemp = new SuteHai();
             SuteHai[] suteHais = m_hou.getSuteHais();
-            int suteHaisLength = m_hou.getSuteHaisLength();
+            int suteHaisLength = suteHais.Length;
 
             for (int i = 0; i < suteHaisLength; i++)
             {
@@ -210,8 +210,8 @@ public class AI : IPlayer
             jyunTehai[i] = new Hai();
         }
 
-        int jyunTehaiLength = m_tehai.getJyunTehaiLength();
-        Tehai.copyJyunTehai(jyunTehai, m_tehai.getJyunTehai(), jyunTehaiLength);
+        int jyunTehaiLength = m_tehai.getJyunTehai().Length;
+        Tehai.copyJyunTehai(jyunTehai, m_tehai.getJyunTehai());
 
         for (int i = 0; i < jyunTehaiLength; i++)
         {
@@ -272,12 +272,10 @@ public class AI : IPlayer
     private int getCountFormatScore(CountFormat countFormat)
     {
         int score = 0;
-        HaiCounterInfo[] countArr;
+        HaiCounterInfo[] countArr = countFormat.getCounterArray();
 
-        for (int i = 0; i < countFormat.getCounterArrLength(); i++) 
+        for (int i = 0; i < countArr.Length; i++) 
         {
-            countArr = countFormat.getCounterArray();
-
             if ((countArr[i].numKind & Hai.KIND_SHUU) != 0)
                 score += countArr[i].count * HYOUKA_SHUU;
 

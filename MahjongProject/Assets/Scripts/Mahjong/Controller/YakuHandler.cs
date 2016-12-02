@@ -173,8 +173,8 @@ public class CheckTon : YakuHandler {
     public CheckTon(Yaku owner) {
         hantei = owner.checkTon();
 
-        if( (AgariSetting.getJikaze() == EKaze.Ton) && 
-           (AgariSetting.getBakaze() == EKaze.Ton) ) 
+        if((owner.AgariParam.getJikaze() == EKaze.Ton) && 
+           (owner.AgariParam.getBakaze() == EKaze.Ton) ) 
         {
             this.YakuID = 7;
             hanSuu = 2;
@@ -189,8 +189,8 @@ public class CheckTon : YakuHandler {
 public class CheckNan : YakuHandler {
     public CheckNan(Yaku owner) {
         hantei = owner.checkNan();
-        if( (AgariSetting.getJikaze() == EKaze.Nan) && 
-           (AgariSetting.getBakaze() == EKaze.Nan) ) 
+        if((owner.AgariParam.getJikaze() == EKaze.Nan) && 
+           (owner.AgariParam.getBakaze() == EKaze.Nan) ) 
         {
             this.YakuID = 9;
             hanSuu = 2;

@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections.Generic;
+
 /// <summary>
 /// 河を管理する。
 /// 日本麻将，玩家打出去的牌放置的那块区域叫河。
@@ -10,60 +11,43 @@ public class Hou
     public readonly static int SUTE_HAIS_LENGTH_MAX = 24;
 
     // 捨牌の配列.
-    private SuteHai[] _suteHais = new SuteHai[SUTE_HAIS_LENGTH_MAX];
-
-    // 捨牌の配列の長さ.
-    private int _suteHaisLength = 0;
+    protected List<SuteHai> _suteHais = new List<SuteHai>(SUTE_HAIS_LENGTH_MAX);
 
 
-    // 河を作成する.
-    public Hou()
-    {
-        initialize();
-
-        for (int i = 0; i < SUTE_HAIS_LENGTH_MAX; i++) {
-            _suteHais[i] = new SuteHai();
-        }
-    }
-
-    // 河を初期化する
     public void initialize()
     {
-        _suteHaisLength = 0;
+        _suteHais.Clear();
     }
 
     // 河をコピーする
     public static void copy(Hou dest, Hou src) 
     {
-        dest._suteHaisLength = src._suteHaisLength;
+        dest._suteHais.Clear();
 
-        for (int i = 0; i < dest._suteHaisLength; i++) {
-            SuteHai.copy(dest._suteHais[i], src._suteHais[i]);
-        }
+        for (int i = 0; i < src._suteHais.Count; i++)
+        {
+            SuteHai suteHai = new SuteHai();
+            SuteHai.copy(suteHai, src._suteHais[i]);
+            dest._suteHais.Add(suteHai);
+        }            
     }
 
 
     // 捨牌の配列を取得する
     public SuteHai[] getSuteHais()
     {
-        return _suteHais;
-    }
-        
-    // 捨牌の配列の長さを取得する
-    public int getSuteHaisLength()
-    {
-        return _suteHaisLength;
+        return _suteHais.ToArray();
     }
 
     // 捨牌の配列に牌を追加する
     public bool addHai(Hai hai)
     {
-        if (_suteHaisLength >= SUTE_HAIS_LENGTH_MAX) {
+        if (_suteHais.Count >= SUTE_HAIS_LENGTH_MAX)
             return false;
-        }
 
-        SuteHai.copy(_suteHais[_suteHaisLength], hai);
-        _suteHaisLength++;
+        SuteHai suteHai = new SuteHai();
+        SuteHai.copy(suteHai, hai);
+        _suteHais.Add(suteHai);
 
         return true;
     }
@@ -71,11 +55,10 @@ public class Hou
     // 捨牌の配列の最後の牌に、鳴きフラグを設定する
     public bool setNaki(bool isNaki)
     {
-        if (_suteHaisLength <= 0) {
+        if (_suteHais.Count <= 0)
             return false;
-        }
-
-        _suteHais[_suteHaisLength - 1].IsNaki = isNaki;
+        
+        _suteHais[_suteHais.Count-1].IsNaki = isNaki;
 
         return true;
     }
@@ -83,11 +66,10 @@ public class Hou
     // 捨牌の配列の最後の牌に、リーチフラグを設定する
     public bool setReach(bool isReach)
     {
-        if (_suteHaisLength <= 0) {
+        if (_suteHais.Count <= 0)
             return false;
-        }
 
-        _suteHais[_suteHaisLength - 1].IsReach = isReach;
+        _suteHais[_suteHais.Count-1].IsReach = isReach;
 
         return true;
     }
@@ -95,12 +77,12 @@ public class Hou
     // 捨牌の配列の最後の牌に、手出しフラグを設定する
     public bool setTedashi(bool isTedashi)
     {
-        if (_suteHaisLength <= 0) {
+        if (_suteHais.Count <= 0)
             return false;
-        }
 
-        _suteHais[_suteHaisLength - 1].IsTedashi = isTedashi;
+        _suteHais[_suteHais.Count-1].IsTedashi = isTedashi;
 
         return true;
     }
+
 }

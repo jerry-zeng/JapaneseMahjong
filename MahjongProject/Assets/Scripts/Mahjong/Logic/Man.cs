@@ -197,7 +197,7 @@ public class Man : IPlayer
             case EventID.Select_SuteHai:
             {
                 m_info.copyTehai(m_tehai, m_info.getJikaze());
-                jyunTehaiLength = m_tehai.getJyunTehaiLength();
+                jyunTehaiLength = m_tehai.getJyunTehai().Length;
 
                 while (true) 
                 {
@@ -229,7 +229,7 @@ public class Man : IPlayer
                     m_info.copyHou(m_hou, m_info.getJikaze());
                     SuteHai suteHaiTemp = new SuteHai();
                     SuteHai[] suteHais = m_hou.getSuteHais();
-                    int kawaLength = m_hou.getSuteHaisLength();
+                    int kawaLength = suteHais.Length;
 
                     for (int i = 0; i < kawaLength; i++) {
                         suteHaiTemp = suteHais[i];
@@ -314,7 +314,7 @@ public class Man : IPlayer
                     SuteHai suteHaiTemp = new SuteHai();
                     SuteHai[] suteHais = m_hou.getSuteHais();
 
-                    int houLength = m_hou.getSuteHaisLength();
+                    int houLength = suteHais.Length;
 
                     for (int i = 0; i < houLength; i++) {
                         suteHaiTemp = suteHais[i];

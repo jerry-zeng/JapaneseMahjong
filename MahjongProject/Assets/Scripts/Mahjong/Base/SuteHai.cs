@@ -1,7 +1,7 @@
 ﻿
 /// <summary>
 /// 捨牌を管理する
-/// 捨牌 = 打出去的牌
+/// 捨牌: 打出去的牌
 /// </summary>
 
 public class SuteHai : Hai
@@ -12,7 +12,7 @@ public class SuteHai : Hai
     // リーチフラグ(立直flag)
     private bool _isReach = false;
 
-    // 手出し(正常打出去？)フラグ
+    // 手出しフラグ(正常打出去)
     private bool _isTedashi = false;
 
 

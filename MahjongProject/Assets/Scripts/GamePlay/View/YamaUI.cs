@@ -107,7 +107,7 @@ public class YamaUI : UIObject
     }
 
     MahjongPai AddHai( Hai hai, int index ) {
-        if( !Hai.isValidHai(hai) ) {
+        if( !Hai.IsValidHai(hai) ) {
             return null;
         }
 

@@ -7,6 +7,4 @@ public enum EFuuroType
     DaiMinKan = 2, // 大明杠.
     KaKan = 3,     // 加杠.
     AnKan = 4,     // 暗杠.
-
-    None = 100
 }

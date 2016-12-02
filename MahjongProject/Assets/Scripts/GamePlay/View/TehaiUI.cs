@@ -49,7 +49,7 @@ public class TehaiUI : UIObject
     }
 
     public MahjongPai AddHai( Hai hai, int newIndex = -1, bool isShow = false ) {
-        if( !Hai.isValidHai( hai ) )
+        if( !Hai.IsValidHai( hai ) )
             return null;
 
         Transform parent = transform;

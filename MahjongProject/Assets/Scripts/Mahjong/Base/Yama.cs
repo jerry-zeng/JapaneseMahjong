@@ -15,8 +15,8 @@ public class Yama
     // 杠上开花牌の配列の最大数
     public readonly static int RINSHAN_HAIS_MAX = 4;
 
-    // 各宝牌の配列の最大数
-    public readonly static int DORA_HAIS_MAX = RINSHAN_HAIS_MAX + 1;
+    // 表と裏ドラの配列の最大数
+    public readonly static int DORA_HAIS_MAX = 5; //x2
 
 
     // 山牌の配列
@@ -30,10 +30,10 @@ public class Yama
     private Hai[] _rinshanHais;
 
     // ツモ牌のインデックス(index)
-    private int _tsumoHaisIndex;
+    private int _tsumoHaisIndex = 0;
 
     // リンシャン牌の位置
-    private int _rinshanHaisIndex;
+    private int _rinshanHaisIndex = 0;
 
 
     // 表ドラ牌の配列
@@ -103,18 +103,12 @@ public class Yama
     /// </summary>
     public Hai[] PickHaipai()
     {
-        if( getTsumoNokori() <= 0 )
-            return null;
-
         Hai[] hais = new Hai[4];
         for( int i = 0; i < hais.Length; i++ ) 
         {
             hais[i] = new Hai( _tsumoHais[_tsumoHaisIndex] );
 
             _tsumoHaisIndex++;
-            if( getTsumoNokori() <= 0 ) {
-                //break;
-            }
         }
 
         return hais;
@@ -148,10 +142,10 @@ public class Yama
     // 表ドラの配列を取得する
     public Hai[] getOmoteDoraHais()
     {
-        int omoteDoraHaisLength = _rinshanHaisIndex + 1;
-        Hai[] omoteDoraHais = new Hai[omoteDoraHaisLength];
+        int omoteDoraHaisCount = _rinshanHaisIndex + 1;
+        Hai[] omoteDoraHais = new Hai[omoteDoraHaisCount];
 
-        for (int i = 0; i < omoteDoraHaisLength; i++)
+        for (int i = 0; i < omoteDoraHais.Length; i++)
             omoteDoraHais[i] = new Hai(this._omoteDoraHais[i]);
 
         return omoteDoraHais;
@@ -160,10 +154,10 @@ public class Yama
     // 裏ドラの配列を取得する
     public Hai[] getUraDoraHais()
     {
-        int uraDoraHaisLength = _rinshanHaisIndex + 1;
-        Hai[] uraDoraHais = new Hai[uraDoraHaisLength];
+        int uraDoraHaisCount = _rinshanHaisIndex + 1;
+        Hai[] uraDoraHais = new Hai[uraDoraHaisCount];
 
-        for (int i = 0; i < uraDoraHaisLength; i++)
+        for (int i = 0; i < uraDoraHais.Length; i++)
             uraDoraHais[i] = new Hai(this._uraDoraHais[i]);
 
         return uraDoraHais;
@@ -188,15 +182,12 @@ public class Yama
 
     /**
      * ツモ牌の開始位置を設定する。
-     * 
-     * TODO: currently tsumo hais array like:
-     * 
-     *  Wareme<-- Doras <-- Rinshan <-- Tsumo <--.
+     *
+     *  the correct array is like:
      *  
-     *  the correct array should be:
-     *  
-     *  Wareme<-- Rinshan <-- Doras <-- Tsumo <--.
+     *  Tsumo Start <--| Wareme |<-- Rinshan 2x2 <-- Doras 2x5 |<-- Tsumo End <--.
      */
+
     public bool setTsumoHaisStartIndex(int tsumoHaiStartIndex)
     {
         if (tsumoHaiStartIndex >= YAMA_HAIS_MAX)
@@ -218,7 +209,6 @@ public class Yama
 
 
         // dora hais. 1+4=5. 
-        //for( int i = 0; i < DORA_HAIS_MAX; i++ ) 
         for( int i = DORA_HAIS_MAX - 1; i >= 0; i-- ) // reverse.
         {
             // 表dora.
@@ -271,7 +261,7 @@ public class Yama
         for(int i = 0; i < _yamaHais.Length; i++) 
         {
             if(_yamaHais[i].ID == id) {
-                _yamaHais[i].setRed(true);
+                _yamaHais[i].IsRed = true;
 
                 num--;
 

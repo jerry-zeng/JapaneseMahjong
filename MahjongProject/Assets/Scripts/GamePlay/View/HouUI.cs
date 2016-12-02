@@ -64,7 +64,7 @@ public class HouUI : UIObject
 
     public void AddHai(Hai hai) 
     {
-        if( !Hai.isValidHai(hai) ){
+        if( !Hai.IsValidHai(hai) ){
             Debug.Log("Invalid hai for id == " + hai.ID);
             return;
         }

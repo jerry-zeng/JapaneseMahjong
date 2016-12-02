@@ -23,18 +23,28 @@ public class HaiCombi
     public int kouCount = 0;
 
 
+    public void Clear()
+    {
+        for(int i = 0; i < shunNumKinds.Length; i++)
+            shunNumKinds[i] = 0;
+        for(int i = 0; i < kouNumKinds.Length; i++)
+            kouNumKinds[i] = 0;
+        
+        this.atamaNumKind = 0;
+        this.shunCount = 0;
+        this.kouCount = 0;
+    }
+
     public static void copy(HaiCombi dest, HaiCombi src)
     {
         dest.atamaNumKind = src.atamaNumKind;
 
         dest.shunCount = src.shunCount;
-        for( int i = 0; i < dest.shunCount; i++ ) {
+        for( int i = 0; i < dest.shunCount; i++ )
             dest.shunNumKinds[i] = src.shunNumKinds[i];
-        }
 
         dest.kouCount = src.kouCount;
-        for( int i = 0; i < dest.kouCount; i++ ) {
+        for( int i = 0; i < dest.kouCount; i++ )
             dest.kouNumKinds[i] = src.kouNumKinds[i];
-        }
     }
 }

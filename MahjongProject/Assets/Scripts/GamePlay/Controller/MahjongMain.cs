@@ -124,7 +124,7 @@ public class MahjongMain : Mahjong
 
     public void PrepareToStart()
     {
-        AgariSetting.Initialize(this);
+        
     }
 
     public bool IsLastKyoku() {
@@ -184,12 +184,12 @@ public class MahjongMain : Mahjong
 
             Hou hou = m_players[j].getHou();
             SuteHai[] suteHais = hou.getSuteHais();
-            int suteHaisLength = hou.getSuteHaisLength();
+            int suteHaisLength = suteHais.Length;
 
             // check 1,9,字./
             for( int k = 0; k < suteHaisLength; k++ )
             {
-                if( suteHais[k].IsNaki || !suteHais[k].isYaochuu() )
+                if( suteHais[k].IsNaki || !suteHais[k].IsYaochuu )
                 {
                     agari = false;
                     break;
@@ -214,12 +214,12 @@ public class MahjongMain : Mahjong
             bool agari = true;
             Hou hou = m_players[j].getHou();
             SuteHai[] suteHais = hou.getSuteHais();
-            int suteHaisLength = hou.getSuteHaisLength();
+            int suteHaisLength = suteHais.Length;
 
             // check 1,9,字./
             for( int k = 0; k < suteHaisLength; k++ )
             {
-                if( suteHais[k].IsNaki || !suteHais[k].isYaochuu() ) {
+                if( suteHais[k].IsNaki || !suteHais[k].IsYaochuu ) {
                     agari = false;
                     break;
                 }
@@ -378,16 +378,18 @@ public class MahjongMain : Mahjong
         // イベント（ツモ）を発行する。
         retEventID = tsumoEvent();
 
+        AgariParam param = new AgariParam(this);
+
         // イベントを処理する。
         switch( retEventID ) 
         {
             case EventID.Tsumo_Agari:// ツモあがり.
-            {
-                if( activePlayer.isReach() ) {
-                    AgariSetting.setOmoteDoraHais( getAllDoras() );
-                }
+            {                
+                param.setOmoteDoraHais( getOmotoDoras() );
+                if( activePlayer.isReach() )                    
+                    param.setUraDoraHais( getUraDoras() );
 
-                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_tsumoHai, combis, ref m_agariInfo );
+                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_tsumoHai, combis, param, ref m_agariInfo );
 
                 iPlayer = getPlayerIndex( m_kazeFrom );
                 if( m_iOya == iPlayer ) {
@@ -441,12 +443,12 @@ public class MahjongMain : Mahjong
             return true;
 
             case EventID.Ron_Agari:// ロン
-            {
-                if( activePlayer.isReach() ) {
-                    AgariSetting.setOmoteDoraHais( getAllDoras() );
-                }
+            {                
+                param.setOmoteDoraHais( getOmotoDoras() );
+                if( activePlayer.isReach() )                    
+                    param.setUraDoraHais( getUraDoras() );
 
-                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_suteHai, combis, ref m_agariInfo );
+                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_suteHai, combis, param, ref m_agariInfo );
 
                 if( m_iOya == getPlayerIndex( m_kazeFrom ) ) {
                     score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
@@ -568,7 +570,7 @@ public class MahjongMain : Mahjong
 
                 PostUIEvent( EventID.UI_Wait_Rihai, m_kazeFrom, m_kazeFrom );
 
-                if( sutehaiIndex >= activePlayer.getTehai().getJyunTehaiLength() ) {// ツモ切り
+                if( sutehaiIndex >= activePlayer.getTehai().getJyunTehai().Length ) {// ツモ切り
                     Hai.copy( m_suteHai, m_tsumoHai );
                     activePlayer.getHou().addHai( m_suteHai );
                 }
@@ -606,7 +608,7 @@ public class MahjongMain : Mahjong
 
                 PostUIEvent( EventID.UI_Wait_Rihai, m_kazeFrom, m_kazeFrom );
 
-                if( sutehaiIndex >= activePlayer.getTehai().getJyunTehaiLength() ) {// ツモ切り
+                if( sutehaiIndex >= activePlayer.getTehai().getJyunTehai().Length ) {// ツモ切り
                     Hai.copy( m_suteHai, m_tsumoHai );
                     activePlayer.getHou().addHai( m_suteHai );
                     activePlayer.getHou().setReach( true );
@@ -911,7 +913,7 @@ public class MahjongMain : Mahjong
             
             // remove all the hais of player 0.
             int iPlayer = 0;
-            while( m_players[iPlayer].getTehai().getJyunTehaiLength() > 0 ) {
+            while( m_players[iPlayer].getTehai().getJyunTehai().Length > 0 ) {
                 m_players[iPlayer].getTehai().removeJyunTehai(0);
             }
 
