@@ -131,6 +131,9 @@ public class CountFormat
             }
         }
 
+        if(combis != null)
+            combis = _combiHelper.combis.ToArray();
+
         return _combiHelper.combis.Count;
     }
 

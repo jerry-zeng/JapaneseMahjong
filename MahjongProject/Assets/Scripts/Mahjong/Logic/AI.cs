@@ -187,11 +187,7 @@ public class AI : IPlayer
 
     private readonly static int HYOUKA_SHUU = 1;
 
-    private HaiCombi[] combis = new HaiCombi[10]
-    {
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi()
-    };
+    private HaiCombi[] combis = new HaiCombi[0];
 
 
     private void thinkSutehai(Hai addHai)

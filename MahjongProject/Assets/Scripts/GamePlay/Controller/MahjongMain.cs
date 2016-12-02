@@ -389,7 +389,7 @@ public class MahjongMain : Mahjong
                 if( activePlayer.isReach() )                    
                     param.setUraDoraHais( getUraDoras() );
 
-                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_tsumoHai, combis, param, ref m_agariInfo );
+                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_tsumoHai, param, ref m_combis, ref m_agariInfo );
 
                 iPlayer = getPlayerIndex( m_kazeFrom );
                 if( m_iOya == iPlayer ) {
@@ -448,7 +448,7 @@ public class MahjongMain : Mahjong
                 if( activePlayer.isReach() )                    
                     param.setUraDoraHais( getUraDoras() );
 
-                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_suteHai, combis, param, ref m_agariInfo );
+                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_suteHai, param, ref m_combis, ref m_agariInfo );
 
                 if( m_iOya == getPlayerIndex( m_kazeFrom ) ) {
                     score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);

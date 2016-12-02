@@ -210,14 +210,14 @@ public sealed class AgariScoreManager
         return countHu;
     }
 
-    public static int GetAgariScore(Tehai tehai, Hai addHai, HaiCombi[] p_combis, AgariParam param, ref AgariInfo agariInfo)
+    public static int GetAgariScore(Tehai tehai, Hai addHai, AgariParam param, ref HaiCombi[] combis, ref AgariInfo agariInfo)
     {
         // カウントフォーマットを取得します。
         formatWorker.setCounterFormat(tehai, addHai);
 
         // あがりの組み合わせを取得します。
-        int combisCount = formatWorker.calculateCombisCount(p_combis);
-        HaiCombi[] combis = formatWorker.getCombis();
+        int combisCount = formatWorker.calculateCombisCount(combis);
+        combis = formatWorker.getCombis();
 
         if (formatWorker.isChiitoitsu())
         {

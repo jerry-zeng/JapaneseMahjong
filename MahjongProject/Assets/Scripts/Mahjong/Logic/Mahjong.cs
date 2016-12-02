@@ -77,12 +77,7 @@ public abstract class Mahjong
 
     protected bool[] m_tenpai = new bool[4];
 
-    protected HaiCombi[] combis = new HaiCombi[10]
-    {
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi()
-    };
+    protected HaiCombi[] m_combis = new HaiCombi[0];
 
     protected AgariInfo m_agariInfo = new AgariInfo();
 
@@ -356,7 +351,7 @@ public abstract class Mahjong
             param.setYakuFlag((int)EYakuFlagType.KUITAN, true);
         }
 
-        return AgariScoreManager.GetAgariScore(tehai, addHai, combis, param, ref m_agariInfo);
+        return AgariScoreManager.GetAgariScore(tehai, addHai, param, ref m_combis, ref m_agariInfo);
     }
 
     public void setSutehaiIndex(int sutehaiIdx)

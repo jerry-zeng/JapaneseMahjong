@@ -23,11 +23,7 @@ public class Info
         return _sutehaiIdx;
     }
 
-    private HaiCombi[] combis = new HaiCombi[10]
-    {
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi()
-    };
+    private HaiCombi[] combis = new HaiCombi[0];
 
 
     public Sai[] getSais() {
