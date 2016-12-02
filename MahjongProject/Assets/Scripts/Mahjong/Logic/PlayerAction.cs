@@ -28,6 +28,8 @@ public class PlayerAction
     // ポンが可能
     private bool _validPon;
 
+    private bool _validReach;
+
     // メニュー選択
     private int _menuSelect;
 
@@ -37,7 +39,6 @@ public class PlayerAction
     public int m_indexNum;
 
     private bool _dispMenu;
-    private bool _validReach;
 
 
     public PlayerAction() {
@@ -157,9 +158,9 @@ public class PlayerAction
     private Hai[] _sarashiHaiLeft = new Hai[2];
     private Hai[] _sarashiHaiCenter = new Hai[2];
     private Hai[] _sarashiHaiRight = new Hai[2];
-    private bool _validChiiLeft;
-    private bool _validChiiCenter;
-    private bool _validChiiRight;
+    private bool _validChiiLeft = false;
+    private bool _validChiiCenter = false;
+    private bool _validChiiRight = false;
 
     public void setValidChiiLeft(bool validChii, Hai[] sarashiHai) {
         this._validChiiLeft = validChii;
@@ -195,7 +196,7 @@ public class PlayerAction
     }
 
 
-    private bool _validKan;
+    private bool _validKan = false;
     private Hai[] _kanHais = new Hai[3];
     private int _kanNum = 0;
 
@@ -215,7 +216,7 @@ public class PlayerAction
     }
 
 
-    private bool _validDaiMinKan;
+    private bool _validDaiMinKan = false;
     public void setValidDaiMinKan(bool validDaiMinKan) {
         this._validDaiMinKan = validDaiMinKan;
     }

@@ -10,11 +10,11 @@ using System.Collections.Generic;
 
 public class MahjongMain : Mahjong 
 {
-    bool testHaipai = false;
+    protected bool testHaipai = false;
 
-    EventId retEid = EventId.None;
-    int score = 0;
-    int iPlayer = 0;
+    protected EventId retEventID = EventId.None;
+    protected int score = 0;
+    protected int iPlayer = 0;
 
 
     public override void initialize()
@@ -51,8 +51,7 @@ public class MahjongMain : Mahjong
         
         // プレイヤーの配列を初期化する。
         m_players = new List<Player>();
-        //m_players[EKaze.Ton] = new Player((IPlayer)new Man(m_info, "A", m_playerAction));
-        m_players.Add( new Player((IPlayer)new AI(m_info, "A")) );
+        m_players.Add( new Player((IPlayer)new Man(m_info, "A", m_playerAction)) );
         m_players.Add( new Player((IPlayer)new AI(m_info, "B")) );
         m_players.Add( new Player((IPlayer)new AI(m_info, "C")) );
         m_players.Add( new Player((IPlayer)new AI(m_info, "D")) );
@@ -138,7 +137,7 @@ public class MahjongMain : Mahjong
     /// <summary>
     /// 牌发好，游戏开始循环.
     /// </summary>
-/*
+    /*
     public void StartGameLoop() {
         PickNewTsumoHai();
 
@@ -160,7 +159,8 @@ public class MahjongMain : Mahjong
             }
         }
     }
-*/
+    */
+
     public void PickNewTsumoHai() {
         // ツモ牌を取得する。
         m_tsumoHai = m_yama.PickTsumoHai();
@@ -187,8 +187,10 @@ public class MahjongMain : Mahjong
             int suteHaisLength = hou.getSuteHaisLength();
 
             // check 1,9,字./
-            for( int k = 0; k < suteHaisLength; k++ ) {
-                if( suteHais[k].IsNaki || !suteHais[k].isYaochuu() ) {
+            for( int k = 0; k < suteHaisLength; k++ )
+            {
+                if( suteHais[k].IsNaki || !suteHais[k].isYaochuu() )
+                {
                     agari = false;
                     break;
                 }
@@ -215,7 +217,8 @@ public class MahjongMain : Mahjong
             int suteHaisLength = hou.getSuteHaisLength();
 
             // check 1,9,字./
-            for( int k = 0; k < suteHaisLength; k++ ) {
+            for( int k = 0; k < suteHaisLength; k++ )
+            {
                 if( suteHais[k].IsNaki || !suteHais[k].isYaochuu() ) {
                     agari = false;
                     break;
@@ -233,7 +236,8 @@ public class MahjongMain : Mahjong
                 {
                     score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
 
-                    for( int l = 0; l < 3; l++ ) {
+                    for( int l = 0; l < 3; l++ )
+                    {
                         iPlayer = (iPlayer + 1) % 4;
                         m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                     }
@@ -242,7 +246,8 @@ public class MahjongMain : Mahjong
                 {
                     score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
 
-                    for( int l = 0; l < 3; l++ ) {
+                    for( int l = 0; l < 3; l++ )
+                    {
                         iPlayer = (iPlayer + 1) % 4;
                         if( m_iOya == iPlayer ) {
                             m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
@@ -303,7 +308,8 @@ public class MahjongMain : Mahjong
     public void HandleRyuukyokuTenpai() 
     {
         int tenpaiCount = 0;
-        for( int i = 0; i < m_tenpai.Length; i++ ) {
+        for( int i = 0; i < m_tenpai.Length; i++ )
+        {
             m_tenpai[i] = getPlayer( i ).isTenpai();
             if( m_tenpai[i] ) {
                 tenpaiCount++;
@@ -330,7 +336,8 @@ public class MahjongMain : Mahjong
             break;
         }
 
-        for( int i = 0; i < m_tenpai.Length; i++ ) {
+        for( int i = 0; i < m_tenpai.Length; i++ )
+        {
             if( m_tenpai[i] ) {
                 getPlayer( i ).increaseTenbou( increasedScore );
             }
@@ -369,10 +376,10 @@ public class MahjongMain : Mahjong
         }
 
         // イベント（ツモ）を発行する。
-        retEid = tsumoEvent();
+        retEventID = tsumoEvent();
 
         // イベントを処理する。
-        switch( retEid ) 
+        switch( retEventID ) 
         {
             case EventId.TSUMO_AGARI:// ツモあがり.
             {
@@ -385,14 +392,16 @@ public class MahjongMain : Mahjong
                 iPlayer = getPlayerIndex( m_kazeFrom );
                 if( m_iOya == iPlayer ) {
                     score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
-                    for( int i = 0; i < 3; i++ ) {
+                    for( int i = 0; i < 3; i++ )
+                    {
                         iPlayer = (iPlayer + 1) % 4;
                         m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                     }
                 }
                 else {
                     score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
-                    for( int i = 0; i < 3; i++ ) {
+                    for( int i = 0; i < 3; i++ )
+                    {
                         iPlayer = (iPlayer + 1) % 4;
                         if( m_iOya == iPlayer ) {
                             m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
@@ -521,7 +530,8 @@ public class MahjongMain : Mahjong
         // イベントを処理する。
         switch( result ) 
         {
-            case EventId.ANKAN: {
+            case EventId.ANKAN: 
+            {
                 m_isChiihou = false;
 
                 activePlayer.getTehai().addJyunTehai( m_tsumoHai );
@@ -629,7 +639,8 @@ public class MahjongMain : Mahjong
     }
 
 
-    public override void PostUIEvent(EventId eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton) {
+    public override void PostUIEvent(EventId eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton)
+    {
         EventManager.Get().SendEvent(eventId, kazeFrom, kazeTo);
     }
 
@@ -926,39 +937,39 @@ public class MahjongMain : Mahjong
     protected int[] getTestHaiIds() 
     {
         int[] haiIds = { 27, 27, 27, 28, 28, 28, 0, 0, 1, 2, 3, 4, 5, 6 };
-        //int haiIds[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 33, 33, 33, 31, 31};
-        //int haiIds[] = {29, 29, 29, 30, 30, 30, 31, 31, 31, 32, 32, 33, 33, 33};
-        //int haiIds[] = {0, 1, 2, 3, 4, 5, 6, 7, 31, 31, 33, 33, 33};
-        //int haiIds[] = {0, 1, 2, 10, 11, 12, 13, 14, 15, 31, 31, 33, 33, 33};
-        //int haiIds[] = {0, 1, 2, 3, 4, 5, 6, 7, 31, 31, 32, 32, 32};
-        //int haiIds[] = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
-        //int haiIds[] = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};
-        //int haiIds[] = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7};
-        //int haiIds[] = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
-        //int haiIds[] = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};
-        //int haiIds[] = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};
-        //int haiIds[] = {0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 34};
-        //int haiIds[] = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
-        //int haiIds[] = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7};
-        //int haiIds[] = {19, 19, 20, 20, 21, 21, 23, 23, 23, 23, 25, 25, 25, 25};
-        //int haiIds[] = {0, 0, 0, 8, 8, 8, 9, 9, 9, 17, 17, 17, 18, 18};
-        //int haiIds[] = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};
-        //int haiIds[] = {0, 0, 0, 8, 8, 8, 9, 9, 9, 18, 18, 18, 26, 26};
-        //int haiIds[] = {27, 27, 27, 28, 28, 28, 29, 29, 29, 30, 30, 31, 31, 31};
-        //int haiIds[] = {31, 31, 31, 32, 32, 32, 33, 33, 33, 30, 30, 30, 29, 29};
-        //int haiIds[] = {0, 0, 1, 1, 2, 2, 6, 6, 7, 7, 8, 8, 9, 9};
-        //int haiIds[] = {31, 31, 31, 32, 32, 32, 33, 33, 3, 4, 5, 6, 7, 8};
-        //int haiIds[] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4};
-        //int haiIds[] = {0, 0, 0, 9, 9, 9, 18, 18, 18, 27, 27, 29, 28, 28};
-        //int haiIds[] = {0, 0, 0, 9, 9, 9, 18, 18, 18, 27, 27, 28, 28, 28};
-        //int haiIds[] = {0, 0, 0, 9, 9, 9, 18, 18, 18, 5, 6, 7, 27, 27};
-        //int haiIds[] = {0, 0, 0, 2, 2, 2, 3, 3, 3, 5, 6, 7, 27, 27};
-        //int haiIds[] = {0, 0, 0, 2, 2, 2, 3, 3, 3, 4, 4, 4, 10, 10};
-        //int haiIds[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 10, 10}; // イッツー
-        //int haiIds[] = {0, 1, 2, 9, 10, 11, 18, 19, 20, 33, 33, 33, 27, 27};
-        //int haiIds[] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4}; // リーチタンピンイーペーコー
-        //int haiIds[] = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7}; // リーチタンピンイーペーコー
-        //int haiIds[] = {1, 1, 2, 2, 3, 3, 4, 5, 6, 10, 10, 10, 11, 12}; // リーチタンピンイーペーコー
+        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 33, 33, 33, 31, 31};
+        //int[] haiIds = {29, 29, 29, 30, 30, 30, 31, 31, 31, 32, 32, 33, 33, 33};
+        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 31, 31, 33, 33, 33};
+        //int[] haiIds = {0, 1, 2, 10, 11, 12, 13, 14, 15, 31, 31, 33, 33, 33};
+        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 31, 31, 32, 32, 32};
+        //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
+        //int[] haiIds = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};
+        //int[] haiIds = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7};
+        //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
+        //int[] haiIds = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};
+        //int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};
+        //int[] haiIds = {0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 34};
+        //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
+        //int[] haiIds = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7};
+        //int[] haiIds = {19, 19, 20, 20, 21, 21, 23, 23, 23, 23, 25, 25, 25, 25};
+        //int[] haiIds = {0, 0, 0, 8, 8, 8, 9, 9, 9, 17, 17, 17, 18, 18};
+        //int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};
+        //int[] haiIds = {0, 0, 0, 8, 8, 8, 9, 9, 9, 18, 18, 18, 26, 26};
+        //int[] haiIds = {27, 27, 27, 28, 28, 28, 29, 29, 29, 30, 30, 31, 31, 31};
+        //int[] haiIds = {31, 31, 31, 32, 32, 32, 33, 33, 33, 30, 30, 30, 29, 29};
+        //int[] haiIds = {0, 0, 1, 1, 2, 2, 6, 6, 7, 7, 8, 8, 9, 9};
+        //int[] haiIds = {31, 31, 31, 32, 32, 32, 33, 33, 3, 4, 5, 6, 7, 8};
+        //int[] haiIds = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4};
+        //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 27, 27, 29, 28, 28};
+        //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 27, 27, 28, 28, 28};
+        //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 5, 6, 7, 27, 27};
+        //int[] haiIds = {0, 0, 0, 2, 2, 2, 3, 3, 3, 5, 6, 7, 27, 27};
+        //int[] haiIds = {0, 0, 0, 2, 2, 2, 3, 3, 3, 4, 4, 4, 10, 10};
+        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 10, 10}; // イッツー
+        //int[] haiIds = {0, 1, 2, 9, 10, 11, 18, 19, 20, 33, 33, 33, 27, 27};
+        //int[] haiIds = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4}; // リーチタンピンイーペーコー
+        //int[] haiIds = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7}; // リーチタンピンイーペーコー
+        //int[] haiIds = {1, 1, 2, 2, 3, 3, 4, 5, 6, 10, 10, 10, 11, 12}; // リーチタンピンイーペーコー
 
         return haiIds;
     }

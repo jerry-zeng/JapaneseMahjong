@@ -135,9 +135,7 @@ public abstract class Mahjong
         m_reachbou = reachbou;
     }
 
-    /**
-     * 起家のプレイヤーインデックスを取得する。
-     */
+    // 起家のプレイヤーインデックスを取得する
     public int getChiichaIndex() {
         return m_iChiicha;
     }
@@ -192,9 +190,6 @@ public abstract class Mahjong
 
     // -----------------------virtual methods start---------------------------
     #region virtual methods.
-    /**
-     * プレイヤーの自風を設定する。
-     */
     public void setJikaze()
     {
         EKaze kaze = (EKaze)m_iOya;
@@ -255,65 +250,12 @@ public abstract class Mahjong
         return getPlayer(kaze).getName();
     }
 
-    /**
-     * 山に割れ目を設定する。
-     */
-    protected void setWareme(Sai[] sais)
-    {
-        int sum = sais[0].Num + sais[1].Num; 
-
-        int waremePlayer = (getChiichaIndex() - sum - 1) % 4;
-        if( waremePlayer < 0 )
-            waremePlayer += 4;
-
-        int startHaisIndex = ( (4- waremePlayer) % 4 ) * 34 + sum * 2;
-
-        m_wareme = startHaisIndex - 1; // 开始拿牌位置-1.
-
-        getYama().setTsumoHaisStartIndex(startHaisIndex);
-    }
-
-    /**
-     * 配牌する。
-     */
-    protected virtual void Haipai()
-    {
-        // everyone picks 3x4 hais.
-        for( int i = 0, j = m_iOya; i < m_players.Count * 12; j++ ) 
-        {
-            if( j >= m_players.Count )
-                j = 0;
-
-            // pick 4 hais oncely.
-            Hai[] hais = m_yama.PickHaipai();
-            for( int h = 0; h < hais.Length; h++ )
-            {
-                m_players[j].getTehai().addJyunTehai( hais[h] );
-
-                i++;
-            }
-        }
-
-        // then everyone picks 1 hai.
-        for( int i = 0, j = m_iOya; i < 4; i++,j++ )
-        {
-            if( j >= m_players.Count )
-                j = 0;
-            
-            m_players[j].getTehai().addJyunTehai( m_yama.PickTsumoHai() );
-        }
-    }
-
-    /**
-     * 表ドラ、槓ドラの配列を取得する。
-     */
+    // 表ドラ、槓ドラの配列を取得する
     public Hai[] getOmotoDoras() {
         return getYama().getOmoteDoraHais();
     }
 
-    /**
-     * 里ドラ、槓ドラの配列を取得する。
-     */
+    // 里ドラ、槓ドラの配列を取得する
     public Hai[] getUraDoras() {
         return getYama().getUraDoraHais();
     }
@@ -322,9 +264,7 @@ public abstract class Mahjong
         return getYama().getAllDoraHais();
     }
 
-    /**
-     * ツモの残り数を取得する。
-     */
+    // ツモの残り数を取得する
     public int getTsumoRemain() {
         return getYama().getTsumoNokori();
     }
@@ -334,9 +274,7 @@ public abstract class Mahjong
         return m_players[0].getJikaze();
     }
 
-    /**
-     * 自風を取得する。
-     */
+    // 自風を取得する
     public EKaze getJiKaze() {
         return m_players[m_iOya].getJikaze();
     }
@@ -350,9 +288,7 @@ public abstract class Mahjong
         }
     }
 
-    /**
-     * 手牌をコピーする。
-     */
+    // 手牌をコピーする
     public void copyTehai(Tehai tehai, EKaze kaze)
     {
         if( activePlayer.getJikaze() == (EKaze)kaze ) {
@@ -363,17 +299,13 @@ public abstract class Mahjong
         }
     }
 
-    /**
-     * 手牌をコピーする。
-     */
+    // 手牌をコピーする
     public void copyTehaiUi(Tehai tehai, EKaze kaze)
     {
         Tehai.copy(tehai, getPlayer(kaze).getTehai(), true);
     }
 
-    /**
-     * 河をコピーする。
-     */
+    // 河をコピーする
     public void copyHou(Hou hou, EKaze kaze)
     {
         Hou.copy(hou, getPlayer(kaze).getHou());
@@ -430,6 +362,51 @@ public abstract class Mahjong
     public void setSutehaiIndex(int sutehaiIdx)
     {
         m_info.setSutehaiIndex(sutehaiIdx);
+    }
+
+    // 山に割れ目を設定する
+    protected void setWareme(Sai[] sais)
+    {
+        int sum = sais[0].Num + sais[1].Num; 
+
+        int waremePlayer = (getChiichaIndex() - sum - 1) % 4;
+        if( waremePlayer < 0 )
+            waremePlayer += 4;
+
+        int startHaisIndex = ( (4- waremePlayer) % 4 ) * 34 + sum * 2;
+
+        m_wareme = startHaisIndex - 1; // 开始拿牌位置-1.
+
+        getYama().setTsumoHaisStartIndex(startHaisIndex);
+    }
+
+    // 配牌する
+    protected virtual void Haipai()
+    {
+        // everyone picks 3x4 hais.
+        for( int i = 0, j = m_iOya; i < m_players.Count * 12; j++ ) 
+        {
+            if( j >= m_players.Count )
+                j = 0;
+
+            // pick 4 hais oncely.
+            Hai[] hais = m_yama.PickHaipai();
+            for( int h = 0; h < hais.Length; h++ )
+            {
+                m_players[j].getTehai().addJyunTehai( hais[h] );
+
+                i++;
+            }
+        }
+
+        // then everyone picks 1 hai.
+        for( int i = 0, j = m_iOya; i < 4; i++,j++ )
+        {
+            if( j >= m_players.Count )
+                j = 0;
+
+            m_players[j].getTehai().addJyunTehai( m_yama.PickTsumoHai() );
+        }
     }
 
     #endregion virtual methods.
