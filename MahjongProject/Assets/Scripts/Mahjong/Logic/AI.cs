@@ -41,28 +41,28 @@ public class AI : IPlayer
     }
 
 
-    public EventId HandleEvent(EventId evtID, EKaze kazeFrom, EKaze kazeTo) 
+    public EventID HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo) 
     {
-        EventId result = EventId.NAGASHI;
+        EventID result = EventID.Nagashi;
 
         switch(evtID) 
         {
-            case EventId.TSUMO:
+            case EventID.PickHai:
                 result = eventTsumo(kazeFrom, kazeTo);
             break;
 
-            case EventId.PON:
-            case EventId.CHII_CENTER:
-            case EventId.CHII_LEFT:
-            case EventId.CHII_RIGHT:
-            case EventId.DAIMINKAN:
-            case EventId.SUTEHAI:
-            case EventId.RON_CHECK:
-            case EventId.REACH:
+            case EventID.Pon:
+            case EventID.Chii_Center:
+            case EventID.Chii_Left:
+            case EventID.Chii_Right:
+            case EventID.DaiMinKan:
+            case EventID.SuteHai:
+            case EventID.Ron_Check:
+            case EventID.Reach:
                 result = eventSutehai(kazeFrom, kazeTo);
             break;
 
-            case EventId.SELECT_SUTEHAI:
+            case EventID.Select_SuteHai:
             {
                 m_info.copyTehai(m_tehai);
                 thinkSutehai(null);
@@ -73,7 +73,7 @@ public class AI : IPlayer
         return result;
     }
 
-    private EventId eventTsumo(EKaze kazeFrom, EKaze kazeTo)
+    private EventID eventTsumo(EKaze kazeFrom, EKaze kazeTo)
     {
         m_info.copyTehai(m_tehai);
         Hai tsumoHai = m_info.getTsumoHai();
@@ -81,12 +81,12 @@ public class AI : IPlayer
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
         int agariScore = m_info.getAgariScore(m_tehai, tsumoHai);
         if (agariScore > 0) 
-            return EventId.TSUMO_AGARI;
+            return EventID.Tsumo_Agari;
 
         // リーチの場合は、ツモ切りする。
         if (m_info.isReach()) {
             m_sutehaiIndex = 13;
-            return EventId.SUTEHAI;
+            return EventID.SuteHai;
         }
 
         thinkSutehai(tsumoHai);
@@ -99,15 +99,15 @@ public class AI : IPlayer
 
         // リーチする場合はイベント（リーチ）を返します。
         if (thinkReach(m_tehai))
-            return EventId.REACH;
+            return EventID.Reach;
 
-        return EventId.SUTEHAI;
+        return EventID.SuteHai;
     }
 
-    private EventId eventSutehai(EKaze kazeFrom, EKaze kazeTo)
+    private EventID eventSutehai(EKaze kazeFrom, EKaze kazeTo)
     {
         if (kazeFrom == m_info.getJikaze())
-            return EventId.NAGASHI;
+            return EventID.Nagashi;
 
         m_info.copyTehai(m_tehai);
         m_suteHai = m_info.getSuteHai();
@@ -117,10 +117,10 @@ public class AI : IPlayer
         {
             int agariScore = m_info.getAgariScore(m_tehai, m_suteHai);
             if (agariScore > 0)
-                return EventId.RON_AGARI;
+                return EventID.Ron_Agari;
         }
 
-        return EventId.NAGASHI;
+        return EventID.Nagashi;
     }
 
     // 振听.

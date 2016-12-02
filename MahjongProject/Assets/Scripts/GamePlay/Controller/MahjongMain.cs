@@ -12,7 +12,7 @@ public class MahjongMain : Mahjong
 {
     protected bool testHaipai = false;
 
-    protected EventId retEventID = EventId.None;
+    protected EventID retEventID = EventID.None;
     protected int score = 0;
     protected int iPlayer = 0;
 
@@ -270,7 +270,7 @@ public class MahjongMain : Mahjong
                 m_reachbou = 0;
 
                 // UIイベント（ツモあがり）を発行する。
-                PostUIEvent( EventId.TSUMO_AGARI, m_kazeFrom, m_kazeTo );
+                PostUIEvent( EventID.Tsumo_Agari, m_kazeFrom, m_kazeTo );
 
                 // 親を更新する。
                 if( m_iOya != getPlayerIndex( m_kazeFrom ) ) {
@@ -347,7 +347,7 @@ public class MahjongMain : Mahjong
         }
 
         // UIイベント（流局）を発行する。
-        PostUIEvent( EventId.RYUUKYOKU );
+        PostUIEvent( EventID.RyuuKyoku );
 
         // フラグを落としておく。
         for( int i = 0; i < m_tenpai.Length; i++ ) {
@@ -381,7 +381,7 @@ public class MahjongMain : Mahjong
         // イベントを処理する。
         switch( retEventID ) 
         {
-            case EventId.TSUMO_AGARI:// ツモあがり.
+            case EventID.Tsumo_Agari:// ツモあがり.
             {
                 if( activePlayer.isReach() ) {
                     AgariSetting.setOmoteDoraHais( getAllDoras() );
@@ -423,7 +423,7 @@ public class MahjongMain : Mahjong
                 m_reachbou = 0;
 
                 // UIイベント（ツモあがり）を発行する。
-                PostUIEvent( EventId.TSUMO_AGARI, m_kazeFrom, m_kazeTo );
+                PostUIEvent( EventID.Tsumo_Agari, m_kazeFrom, m_kazeTo );
 
                 // 親を更新する。
                 if( m_iOya != getPlayerIndex( m_kazeFrom ) ) {
@@ -440,7 +440,7 @@ public class MahjongMain : Mahjong
             }
             return true;
 
-            case EventId.RON_AGARI:// ロン
+            case EventID.Ron_Agari:// ロン
             {
                 if( activePlayer.isReach() ) {
                     AgariSetting.setOmoteDoraHais( getAllDoras() );
@@ -467,7 +467,7 @@ public class MahjongMain : Mahjong
                 m_reachbou = 0;
 
                 // UIイベント（ロン）を発行する。
-                PostUIEvent( EventId.RON_AGARI, m_kazeFrom, m_kazeTo );
+                PostUIEvent( EventID.Ron_Agari, m_kazeFrom, m_kazeTo );
 
                 // 親を更新する。
                 if( m_iOya != getPlayerIndex( m_kazeFrom ) ) {
@@ -501,7 +501,7 @@ public class MahjongMain : Mahjong
 
 
     // 自摸
-    public EventId tsumoEvent() 
+    public EventID tsumoEvent() 
     {
         // アクティブプレイヤーを設定する。
         activePlayer = getPlayer(m_kazeFrom);
@@ -509,28 +509,28 @@ public class MahjongMain : Mahjong
         m_isTsumo = true;
 
         // UIイベント（ツモ）を発行する。
-        PostUIEvent(EventId.TSUMO, m_kazeFrom, m_kazeFrom);
+        PostUIEvent(EventID.PickHai, m_kazeFrom, m_kazeFrom);
 
         // イベント（ツモ）を発行する。
-        EventId result = activePlayer.HandleEvent(EventId.TSUMO, m_kazeFrom, m_kazeFrom);
+        EventID result = activePlayer.HandleEvent(EventID.PickHai, m_kazeFrom, m_kazeFrom);
 
         m_isTenhou = false;
         m_isTsumo = false;
 
         // UIイベント（進行待ち）を発行する。
-        PostUIEvent(EventId.UI_WAIT_PROGRESS, m_kazeFrom, m_kazeFrom);
+        PostUIEvent(EventID.UI_Wait_Progress, m_kazeFrom, m_kazeFrom);
 
         int sutehaiIndex;
         Hai[] kanHais;
 
-        if( result != EventId.REACH ) {
+        if( result != EventID.Reach ) {
             activePlayer.setIppatsu(false);
         }
 
         // イベントを処理する。
         switch( result ) 
         {
-            case EventId.ANKAN: 
+            case EventID.Ankan: 
             {
                 m_isChiihou = false;
 
@@ -540,10 +540,10 @@ public class MahjongMain : Mahjong
                 activePlayer.getTehai().setAnKan( kanHais[sutehaiIndex] );
 
                 // イベントを通知する。
-                result = PostGameEvent( EventId.ANKAN, m_kazeFrom, m_kazeFrom );
+                result = PostGameEvent( EventID.Ankan, m_kazeFrom, m_kazeFrom );
 
                 // UIイベント（進行待ち）を発行する。
-                PostUIEvent( EventId.UI_WAIT_PROGRESS );
+                PostUIEvent( EventID.UI_Wait_Progress );
 
                 // ツモ牌を取得する。
                 m_tsumoHai = m_yama.PickRinshanTsumoHai();
@@ -555,10 +555,10 @@ public class MahjongMain : Mahjong
             }
             break;
 
-            case EventId.TSUMO_AGARI:// ツモあがり
+            case EventID.Tsumo_Agari:// ツモあがり
                 break;
 
-            case EventId.SUTEHAI:// 捨牌
+            case EventID.SuteHai:// 捨牌
             {
                 // 捨牌のインデックスを取得する。
                 sutehaiIndex = activePlayer.getSutehaiIndex();
@@ -566,7 +566,7 @@ public class MahjongMain : Mahjong
                 // 理牌の間をとる。
                 m_infoUi.setSutehaiIndex( sutehaiIndex );
 
-                PostUIEvent( EventId.UI_WAIT_RIHAI, m_kazeFrom, m_kazeFrom );
+                PostUIEvent( EventID.UI_Wait_Rihai, m_kazeFrom, m_kazeFrom );
 
                 if( sutehaiIndex >= activePlayer.getTehai().getJyunTehaiLength() ) {// ツモ切り
                     Hai.copy( m_suteHai, m_tsumoHai );
@@ -588,11 +588,11 @@ public class MahjongMain : Mahjong
                 }
 
                 // イベントを通知する。
-                result = PostGameEvent( EventId.SUTEHAI, m_kazeFrom, m_kazeFrom );
+                result = PostGameEvent( EventID.SuteHai, m_kazeFrom, m_kazeFrom );
             }
             break;
 
-            case EventId.REACH: 
+            case EventID.Reach: 
             {
                 // 捨牌のインデックスを取得する。
                 sutehaiIndex = activePlayer.getSutehaiIndex();
@@ -604,7 +604,7 @@ public class MahjongMain : Mahjong
 
                 activePlayer.setSuteHaisCount( m_suteHaisCount );
 
-                PostUIEvent( EventId.UI_WAIT_RIHAI, m_kazeFrom, m_kazeFrom );
+                PostUIEvent( EventID.UI_Wait_Rihai, m_kazeFrom, m_kazeFrom );
 
                 if( sutehaiIndex >= activePlayer.getTehai().getJyunTehaiLength() ) {// ツモ切り
                     Hai.copy( m_suteHai, m_tsumoHai );
@@ -630,7 +630,7 @@ public class MahjongMain : Mahjong
                 activePlayer.setIppatsu( true );
 
                 // イベントを通知する。
-                result = PostGameEvent( EventId.REACH, m_kazeFrom, m_kazeFrom );
+                result = PostGameEvent( EventID.Reach, m_kazeFrom, m_kazeFrom );
             }
             break;
         }
@@ -639,18 +639,18 @@ public class MahjongMain : Mahjong
     }
 
 
-    public override void PostUIEvent(EventId eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton)
+    public override void PostUIEvent(EventID eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton)
     {
         EventManager.Get().SendEvent(eventId, kazeFrom, kazeTo);
     }
 
 
-    public EventId PostGameEvent(EventId eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton) 
+    public EventID PostGameEvent(EventID eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton) 
     {
         // UIイベントを発行する。
         PostUIEvent(eventId, kazeFrom, kazeTo);
 
-        EventId ret = EventId.NAGASHI;
+        EventID ret = EventID.Nagashi;
         int iSuteHai;
 
         //--------------------------------check if someone will Ron.----------------------------
@@ -658,13 +658,13 @@ public class MahjongMain : Mahjong
 
         switch( eventId ) 
         {
-            case EventId.PON:
-            case EventId.CHII_CENTER:
-            case EventId.CHII_LEFT:
-            case EventId.CHII_RIGHT:
-            case EventId.DAIMINKAN:
-            case EventId.SUTEHAI:
-            case EventId.REACH:
+            case EventID.Pon:
+            case EventID.Chii_Center:
+            case EventID.Chii_Left:
+            case EventID.Chii_Right:
+            case EventID.DaiMinKan:
+            case EventID.SuteHai:
+            case EventID.Reach:
             {
                 nextKaze = kazeFrom.Next();
 
@@ -673,9 +673,9 @@ public class MahjongMain : Mahjong
                     // アクティブプレイヤーを設定する。
                     activePlayer = getPlayer(nextKaze);
 
-                    ret = activePlayer.HandleEvent(EventId.RON_CHECK, kazeFrom, nextKaze);
+                    ret = activePlayer.HandleEvent(EventID.Ron_Check, kazeFrom, nextKaze);
 
-                    if( ret == EventId.RON_AGARI ) {
+                    if( ret == EventID.Ron_Agari ) {
                         // アクティブプレイヤーを設定する。
                         this.m_kazeFrom = nextKaze;
                         this.m_kazeTo = kazeFrom;
@@ -704,7 +704,7 @@ public class MahjongMain : Mahjong
             kazeTo = nextKaze;
             ret = activePlayer.HandleEvent(eventId, kazeFrom, kazeTo);
 
-            if (ret != EventId.NAGASHI) 
+            if (ret != EventID.Nagashi) 
             {
                 for (int k = 0; k < 4; k++) {
                     m_players[k].setIppatsu(false);
@@ -714,7 +714,7 @@ public class MahjongMain : Mahjong
             // イベントを処理する。
             switch (ret)
             {
-                case EventId.TSUMO_AGARI:// ツモあがり
+                case EventID.Tsumo_Agari:// ツモあがり
                 {
                     // アクティブプレイヤーを設定する。
                     this.m_kazeFrom = nextKaze;
@@ -723,7 +723,7 @@ public class MahjongMain : Mahjong
                 }
                 goto NOTIFYLOOP_End;
 
-                case EventId.RON_AGARI:// ロン
+                case EventID.Ron_Agari:// ロン
                 {
                     // アクティブプレイヤーを設定する。
                     this.m_kazeFrom = kazeTo;
@@ -732,7 +732,7 @@ public class MahjongMain : Mahjong
                 }
                 goto NOTIFYLOOP_End;
 
-                case EventId.PON: 
+                case EventID.Pon: 
                 {
                     m_isChiihou = false;
 
@@ -744,7 +744,7 @@ public class MahjongMain : Mahjong
                     activePlayer.getTehai().setPon( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
                     getPlayer( this.m_kazeTo ).getHou().setNaki( true );
 
-                    PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
+                    PostGameEvent( EventID.Select_SuteHai, this.m_kazeFrom, this.m_kazeTo );
 
                     // 捨牌のインデックスを取得する。
                     iSuteHai = activePlayer.getSutehaiIndex();
@@ -759,11 +759,11 @@ public class MahjongMain : Mahjong
                     m_suteHaisCount++;
 
                     // イベントを通知する。
-                    ret = PostGameEvent( EventId.PON, this.m_kazeFrom, this.m_kazeTo );
+                    ret = PostGameEvent( EventID.Pon, this.m_kazeFrom, this.m_kazeTo );
                 }
                 goto NOTIFYLOOP_End;
 
-                case EventId.CHII_LEFT: 
+                case EventID.Chii_Left: 
                 {
                     m_isChiihou = false;
 
@@ -775,7 +775,7 @@ public class MahjongMain : Mahjong
                     activePlayer.getTehai().setChiiLeft( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
                     getPlayer( this.m_kazeTo ).getHou().setNaki( true );
 
-                    PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
+                    PostGameEvent( EventID.Select_SuteHai, this.m_kazeFrom, this.m_kazeTo );
 
                     // 捨牌のインデックスを取得する。
                     iSuteHai = activePlayer.getSutehaiIndex();
@@ -790,11 +790,11 @@ public class MahjongMain : Mahjong
                     m_suteHaisCount++;
 
                     // イベントを通知する。
-                    ret = PostGameEvent( EventId.CHII_LEFT, this.m_kazeFrom, this.m_kazeTo );
+                    ret = PostGameEvent( EventID.Chii_Left, this.m_kazeFrom, this.m_kazeTo );
                 }
                 goto NOTIFYLOOP_End;
 
-                case EventId.CHII_CENTER: 
+                case EventID.Chii_Center: 
                 {
                     m_isChiihou = false;
 
@@ -806,7 +806,7 @@ public class MahjongMain : Mahjong
                     activePlayer.getTehai().setChiiCenter( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
                     getPlayer( this.m_kazeTo ).getHou().setNaki( true );
 
-                    PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
+                    PostGameEvent( EventID.Select_SuteHai, this.m_kazeFrom, this.m_kazeTo );
 
                     // 捨牌のインデックスを取得する。
                     iSuteHai = activePlayer.getSutehaiIndex();
@@ -821,11 +821,11 @@ public class MahjongMain : Mahjong
                     m_suteHaisCount++;
 
                     // イベントを通知する。
-                    ret = PostGameEvent( EventId.CHII_CENTER, this.m_kazeFrom, this.m_kazeTo );
+                    ret = PostGameEvent( EventID.Chii_Center, this.m_kazeFrom, this.m_kazeTo );
                 }
                 goto NOTIFYLOOP_End;
 
-                case EventId.CHII_RIGHT: 
+                case EventID.Chii_Right: 
                 {
                     m_isChiihou = false;
 
@@ -837,7 +837,7 @@ public class MahjongMain : Mahjong
                     activePlayer.getTehai().setChiiRight( m_suteHai, getRelation( this.m_kazeFrom, this.m_kazeTo ) );
                     getPlayer( this.m_kazeTo ).getHou().setNaki( true );
 
-                    PostGameEvent( EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo );
+                    PostGameEvent( EventID.Select_SuteHai, this.m_kazeFrom, this.m_kazeTo );
 
                     // 捨牌のインデックスを取得する。
                     iSuteHai = activePlayer.getSutehaiIndex();
@@ -852,11 +852,11 @@ public class MahjongMain : Mahjong
                     m_suteHaisCount++;
 
                     // イベントを通知する。
-                    ret = PostGameEvent( EventId.CHII_RIGHT, this.m_kazeFrom, this.m_kazeTo );
+                    ret = PostGameEvent( EventID.Chii_Right, this.m_kazeFrom, this.m_kazeTo );
                 }
                 goto NOTIFYLOOP_End;
 
-                case EventId.DAIMINKAN: 
+                case EventID.DaiMinKan: 
                 {
                     m_isChiihou = false;
 
@@ -869,10 +869,10 @@ public class MahjongMain : Mahjong
                     getPlayer( this.m_kazeTo ).getHou().setNaki( true );
 
                     // イベントを通知する。
-                    ret = PostGameEvent( EventId.DAIMINKAN, this.m_kazeFrom, this.m_kazeTo );
+                    ret = PostGameEvent( EventID.DaiMinKan, this.m_kazeFrom, this.m_kazeTo );
 
                     // UIイベント（進行待ち）を発行する。
-                    PostUIEvent( EventId.UI_WAIT_PROGRESS );
+                    PostUIEvent( EventID.UI_Wait_Progress );
 
                     // ツモ牌を取得する。
                     m_tsumoHai = m_yama.PickRinshanTsumoHai();
@@ -885,7 +885,7 @@ public class MahjongMain : Mahjong
                 goto NOTIFYLOOP_End;
             }
 
-            if (eventId == EventId.SELECT_SUTEHAI) {
+            if (eventId == EventID.Select_SuteHai) {
                 return ret;
             }
         } // end for().

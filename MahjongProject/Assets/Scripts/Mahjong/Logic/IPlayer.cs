@@ -13,5 +13,5 @@ public interface IPlayer : IEventReceiver
 
 public interface IEventReceiver 
 {
-    EventId HandleEvent(EventId a_eventId, EKaze kazeFrom, EKaze kazeTo);
+    EventID HandleEvent(EventID a_eventId, EKaze kazeFrom, EKaze kazeTo);
 }

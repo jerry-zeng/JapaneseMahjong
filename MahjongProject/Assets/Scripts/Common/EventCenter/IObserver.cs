@@ -1,5 +1,5 @@
 ﻿
-public interface IObserver : IEventListener<EventId, object[]> {
+public interface IObserver : IEventListener<EventID, object[]> {
 }
 
 public interface IEventListener<TEventType, TArgument>{

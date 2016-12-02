@@ -414,6 +414,6 @@ public abstract class Mahjong
 
     // abstract methods.
     public abstract void initialize();
-    public abstract void PostUIEvent(EventId eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton);
+    public abstract void PostUIEvent(EventID eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton);
 }
 

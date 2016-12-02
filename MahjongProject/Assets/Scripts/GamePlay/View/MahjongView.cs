@@ -103,24 +103,24 @@ public class MahjongView : UIObject, IObserver
 
 
     // handle ui event.
-    public void OnHandleEvent(EventId evtID, object[] args) 
+    public void OnHandleEvent(EventID evtID, object[] args) 
     {
         switch(evtID)
         {
-        case EventId.Init_Game: // game init /
+        case EventID.Init_Game: // game init /
             {
                 Init();
                 Clear();
             }
             break;
 
-        case EventId.Saifuri_For_Qin: 
+        case EventID.Saifuri: 
             {
                 SetSaisButton( evtID );
             }
             break;
 
-        case EventId.Init_PlayerInfoUI: 
+        case EventID.Init_PlayerInfoUI: 
             {
                 List<Player> players = Model.getPlayers();
                 for( int i = 0; i < players.Count; i++ ) {
@@ -137,7 +137,7 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
-        case EventId.SetYama_BeforeHaipai: 
+        case EventID.SetYama_BeforeHaipai: 
             {
                 // Yama.
                 const int MaxLength = YamaUI.MaxYamaPairInPlayer * 2;
@@ -167,13 +167,13 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
-        case EventId.Saifuri_For_Haipai: 
+        case EventID.Saifuri_For_Haipai: 
             {
                 SetSaisButton( evtID );
             }
             break;
 
-        case EventId.SetUI_AfterHaipai: // 配牌 /
+        case EventID.SetUI_AfterHaipai: // 配牌 /
             {
                 /// set game info.
                 gameInfo.SetKyoku( Model.getBaKaze(), Model.getkyoku() );
@@ -229,8 +229,8 @@ public class MahjongView : UIObject, IObserver
     }
 
 
-    EventId lastSaifuriTarget = 0;
-    void SetSaisButton(EventId saiTarget) {
+    EventID lastSaifuriTarget = 0;
+    void SetSaisButton(EventID saiTarget) {
         if( saisButton == null ){
             saisButton = saifuriPanel.transform.FindChild("SaisButton").GetComponent<UIButton>();
             saisButton.onClick.Clear();
@@ -240,7 +240,7 @@ public class MahjongView : UIObject, IObserver
             saiTip = saifuriPanel.transform.FindChild("tip").GetComponent<UILabel>();            
         }
 
-        if( saiTarget == EventId.Saifuri_For_Qin ) {
+        if( saiTarget == EventID.Saifuri ) {
             saiTip.text = "Saifuri for deciding Chiicha";
         }
         else {
@@ -266,12 +266,12 @@ public class MahjongView : UIObject, IObserver
         saifuriPanel.SetActive(false);
 
 
-        EventId evtID = EventId.None;
-        if( lastSaifuriTarget == EventId.On_Saifuri_For_Qin_End ) {
-            evtID = EventId.On_Saifuri_For_Qin_End;
+        EventID evtID = EventID.None;
+        if( lastSaifuriTarget == EventID.On_Saifuri_End ) {
+            evtID = EventID.On_Saifuri_End;
         }
         else {
-            evtID = EventId.On_Saifuri_For_Haipai_End;
+            evtID = EventID.On_Saifuri_For_Haipai_End;
         }
 
         EventManager.Get().SendEvent(evtID);

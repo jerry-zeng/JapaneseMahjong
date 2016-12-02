@@ -26,7 +26,7 @@ public class Player
     public int getSutehaiIndex() {
         return this._iplayer.getSutehaiIndex();
     }
-    public EventId HandleEvent(EventId evtID, EKaze kazeFrom, EKaze kazeTo) {
+    public EventID HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo) {
         return this._iplayer.HandleEvent(evtID, kazeFrom, kazeTo);
     }
     #endregion proxy.

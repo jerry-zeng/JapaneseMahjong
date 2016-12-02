@@ -205,7 +205,7 @@ public class Info
     }
 
 
-    public void postUiEvent(EventId eventId, EKaze kazeFrom, EKaze kazeTo) {
+    public void postUiEvent(EventID eventId, EKaze kazeFrom, EKaze kazeTo) {
         _game.PostUIEvent(eventId, kazeFrom, kazeTo);
     }
 

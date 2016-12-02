@@ -17,7 +17,7 @@ public class InitGameState : MahjongState
 
         yield return new WaitForEndOfFrame();
 
-        EventManager.Get().SendEvent( EventId.Init_Game );
+        EventManager.Get().SendEvent( EventID.Init_Game );
 
         owner.ChangeState<PrepareState>();
     }

@@ -59,12 +59,12 @@ public class GameMain : StateMachine, IObserver
         eventDelegates.Clear();
     }
 
-    public void OnHandleEvent(EventId evtID, object[] args) 
+    public void OnHandleEvent(EventID evtID, object[] args) 
     {
         switch(evtID)
         {
-        case EventId.On_Saifuri_For_Qin_End:
-        case EventId.On_Saifuri_For_Haipai_End:
+        case EventID.On_Saifuri_End:
+        case EventID.On_Saifuri_For_Haipai_End:
             CallDelegates();
             break;
 

@@ -48,21 +48,21 @@ public class EventManager
 
 
     // 
-    public void SendEvent(EventId evtId) {
+    public void SendEvent(EventID evtId) {
         SendEvent(evtId, new object[]{});
     }
-    public void SendEvent(EventId evtId, object arg0) {
+    public void SendEvent(EventID evtId, object arg0) {
         SendEvent(evtId, new object[]{ arg0 });
     }
-    public void SendEvent(EventId evtId, object arg0, object arg1) {
+    public void SendEvent(EventID evtId, object arg0, object arg1) {
         SendEvent(evtId, new object[]{ arg0, arg1 });
     }
-    public void SendEvent(EventId evtId, object arg0, object arg1, object arg2) {
+    public void SendEvent(EventID evtId, object arg0, object arg1, object arg2) {
         SendEvent(evtId, new object[]{ arg0, arg1, arg2 });
     }
 
     // send event.
-    public void SendEvent(EventId evtId, object[] args) {
+    public void SendEvent(EventID evtId, object[] args) {
         for( int i = 0; i < observerList.Count; i++ ) {
             IObserver observer = (IObserver)observerList[i];
             if( observer != null ) {

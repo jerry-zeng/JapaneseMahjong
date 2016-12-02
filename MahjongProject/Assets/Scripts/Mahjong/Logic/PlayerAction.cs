@@ -147,11 +147,11 @@ public class PlayerAction
     }
 
 
-    private EventId _chiiEventId;
-    public EventId getChiiEventId() {
+    private EventID _chiiEventId;
+    public EventID getChiiEventId() {
         return _chiiEventId;
     }
-    public void setChiiEventId(EventId a_chiiEventId) {
+    public void setChiiEventId(EventID a_chiiEventId) {
         _chiiEventId = a_chiiEventId;
     }
 

@@ -38,7 +38,7 @@ public class Man : IPlayer
     private Tehai m_tehai = new Tehai();
     private Hou m_hou = new Hou();
 
-    public EventId HandleEvent(EventId evtID, EKaze kazeFrom, EKaze kazeTo) 
+    public EventID HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo) 
     {
         int sutehaiIdx = 0;
         int agariScore = 0;
@@ -47,7 +47,7 @@ public class Man : IPlayer
         int indexNum = 0;
         int[] indexs = new int[14];
         int menuNum = 0;
-        EventId[] eventId = new EventId[4];
+        EventID[] eventId = new EventID[4];
         int jyunTehaiLength;
 
         Hai[] kanHais = new Hai[4];
@@ -64,7 +64,7 @@ public class Man : IPlayer
 
         switch (evtID) 
         {
-            case EventId.TSUMO:
+            case EventID.PickHai:
             {
                 // 手牌をコピーする。
                 m_info.copyTehai(m_tehai, m_info.getJikaze());
@@ -77,7 +77,7 @@ public class Man : IPlayer
                         m_playerAction.setValidReach(true);
                         m_playerAction.m_indexs = indexs;
                         m_playerAction.m_indexNum = indexNum;
-                        eventId[menuNum] = EventId.REACH;
+                        eventId[menuNum] = EventID.Reach;
                         menuNum++;
                     }
                 }
@@ -86,7 +86,7 @@ public class Man : IPlayer
                 if (agariScore > 0) {
                     m_playerAction.setValidTsumo(true);
                     m_playerAction.setDispMenu(true);
-                    eventId[menuNum] = EventId.TSUMO_AGARI;
+                    eventId[menuNum] = EventID.Tsumo_Agari;
                     menuNum++;
                 }
 
@@ -95,7 +95,7 @@ public class Man : IPlayer
                     kanNum = m_tehai.validKan(tsumoHai, kanHais);
                     if (kanNum > 0) {
                         m_playerAction.setValidKan(true, kanHais, kanNum);
-                        eventId[menuNum] = EventId.ANKAN;
+                        eventId[menuNum] = EventID.Ankan;
                         menuNum++;
                     }
                 }
@@ -105,7 +105,7 @@ public class Man : IPlayer
                         m_playerAction.Init();
                         this.m_sutehaiIndex = 13;
 
-                        return EventId.SUTEHAI;
+                        return EventID.SuteHai;
                     }
                 }
 
@@ -114,7 +114,7 @@ public class Man : IPlayer
                 {
                     // 入力を待つ。
                     m_playerAction.setState( EActionState.Sutehai_Select );
-                    m_info.postUiEvent(EventId.UI_INPUT_PLAYER_ACTION, kazeFrom, kazeTo);
+                    m_info.postUiEvent(EventID.UI_Input_Player_Action, kazeFrom, kazeTo);
                     m_playerAction.actionWait();
 
                     if (m_playerAction.isDispMenu()) 
@@ -125,7 +125,7 @@ public class Man : IPlayer
                         {
                             m_playerAction.Init();
 
-                            if (eventId[menuSelect] == EventId.REACH) {
+                            if (eventId[menuSelect] == EventID.Reach) {
                                 m_playerAction.m_indexs = indexs;
                                 m_playerAction.m_indexNum = indexNum;
                                 m_playerAction.setReachSelect(0);
@@ -134,7 +134,7 @@ public class Man : IPlayer
                                 {
                                     // 入力を待つ。
                                     m_playerAction.setState( EActionState.Reach_Select );
-                                    m_info.postUiEvent(EventId.UI_INPUT_PLAYER_ACTION, kazeFrom, kazeTo);
+                                    m_info.postUiEvent(EventID.UI_Input_Player_Action, kazeFrom, kazeTo);
                                     m_playerAction.actionWait();
                                     sutehaiIdx = m_playerAction.getReachSelect();
 
@@ -148,8 +148,8 @@ public class Man : IPlayer
                                 m_playerAction.Init();
                                 this.m_sutehaiIndex = indexs[sutehaiIdx];
                             } 
-                            else if ((eventId[menuSelect] == EventId.ANKAN) ||
-                                 (eventId[menuSelect] == EventId.KAN)) 
+                            else if ((eventId[menuSelect] == EventID.Ankan) ||
+                                 (eventId[menuSelect] == EventID.Kakan)) 
                             {
                                 if (kanNum > 1) 
                                 {
@@ -159,7 +159,7 @@ public class Man : IPlayer
                                         m_playerAction.setValidKan(false, kanHais, kanNum);
                                         //m_playerAction.setChiiEventId(eventId[iChii]);
                                         m_playerAction.setState( EActionState.Kan_Select );
-                                        m_info.postUiEvent(EventId.UI_INPUT_PLAYER_ACTION, kazeFrom, kazeTo);
+                                        m_info.postUiEvent(EventID.UI_Input_Player_Action, kazeFrom, kazeTo);
                                         m_playerAction.actionWait();
                                         int kanSelect = m_playerAction.getKanSelect();
                                         m_playerAction.Init();
@@ -192,9 +192,9 @@ public class Man : IPlayer
                 m_playerAction.Init();
                 this.m_sutehaiIndex = sutehaiIdx;
             }
-            return EventId.SUTEHAI;
+            return EventID.SuteHai;
 
-            case EventId.SELECT_SUTEHAI:
+            case EventID.Select_SuteHai:
             {
                 m_info.copyTehai(m_tehai, m_info.getJikaze());
                 jyunTehaiLength = m_tehai.getJyunTehaiLength();
@@ -216,9 +216,9 @@ public class Man : IPlayer
                 m_playerAction.Init();
                 this.m_sutehaiIndex = sutehaiIdx;
             }
-            return EventId.SUTEHAI;
+            return EventID.SuteHai;
 
-            case EventId.RON_CHECK:
+            case EventID.Ron_Check:
             {
                 m_info.copyTehai(m_tehai, m_info.getJikaze());
                 suteHai = m_info.getSuteHai();
@@ -281,14 +281,14 @@ public class Man : IPlayer
                         m_playerAction.setMenuSelect(5);
                         m_playerAction.setState( EActionState.Ron_Select );
 
-                        m_info.postUiEvent(EventId.UI_INPUT_PLAYER_ACTION, kazeFrom, kazeTo);
+                        m_info.postUiEvent(EventID.UI_Input_Player_Action, kazeFrom, kazeTo);
 
                         m_playerAction.actionWait();
 
                         int menuSelect = m_playerAction.getMenuSelect();
                         if (menuSelect < 1) {
                             m_playerAction.Init();
-                            return EventId.RON_AGARI;
+                            return EventID.Ron_Agari;
                         }
 
                         m_playerAction.Init();
@@ -297,11 +297,11 @@ public class Man : IPlayer
             }
             break;
 
-            case EventId.SUTEHAI:
-            case EventId.REACH:
+            case EventID.SuteHai:
+            case EventID.Reach:
             {
                 if (kazeFrom == m_info.getJikaze()) {
-                    return EventId.NAGASHI;
+                    return EventID.Nagashi;
                 }
 
                 m_info.copyTehai(m_tehai, m_info.getJikaze());
@@ -361,7 +361,7 @@ public class Man : IPlayer
                     agariScore = m_info.getAgariScore(m_tehai, suteHai);
                     if (agariScore > 0) {
                         m_playerAction.setValidRon(true);
-                        eventId[menuNum] = EventId.RON_AGARI;
+                        eventId[menuNum] = EventID.Ron_Agari;
                         menuNum++;
                     }
                 }
@@ -370,7 +370,7 @@ public class Man : IPlayer
                 {
                     if (m_tehai.validPon(suteHai)) {
                         m_playerAction.setValidPon(true);
-                        eventId[menuNum] = EventId.PON;
+                        eventId[menuNum] = EventID.Pon;
                         menuNum++;
                     }
 
@@ -380,7 +380,7 @@ public class Man : IPlayer
                             m_playerAction.setValidChiiRight(true, sarashiHaiRight);
                             if (chiiCount == 0) {
                                 iChii = menuNum;
-                                eventId[menuNum] = EventId.CHII_RIGHT;
+                                eventId[menuNum] = EventID.Chii_Right;
                                 menuNum++;
                             }
                             chiiCount++;
@@ -390,7 +390,7 @@ public class Man : IPlayer
                             m_playerAction.setValidChiiCenter(true, sarashiHaiCenter);
                             if (chiiCount == 0) {
                                 iChii = menuNum;
-                                eventId[menuNum] = EventId.CHII_CENTER;
+                                eventId[menuNum] = EventID.Chii_Center;
                                 menuNum++;
                             }
                             chiiCount++;
@@ -400,7 +400,7 @@ public class Man : IPlayer
                             m_playerAction.setValidChiiLeft(true, sarashiHaiLeft);
                             if (chiiCount == 0) {
                                 iChii = menuNum;
-                                eventId[menuNum] = EventId.CHII_LEFT;
+                                eventId[menuNum] = EventID.Chii_Left;
                                 menuNum++;
                             }
                             chiiCount++;
@@ -409,7 +409,7 @@ public class Man : IPlayer
 
                     if (m_tehai.validDaiMinKan(suteHai)) {
                         m_playerAction.setValidDaiMinKan(true);
-                        eventId[menuNum] = EventId.DAIMINKAN;
+                        eventId[menuNum] = EventID.DaiMinKan;
                         menuNum++;
                     }
                 }
@@ -418,15 +418,15 @@ public class Man : IPlayer
                 {
                     m_playerAction.setMenuNum(menuNum);
                     m_playerAction.setMenuSelect(5);
-                    m_info.postUiEvent(EventId.UI_INPUT_PLAYER_ACTION, kazeFrom, kazeTo);
+                    m_info.postUiEvent(EventID.UI_Input_Player_Action, kazeFrom, kazeTo);
                     m_playerAction.actionWait();
 
                     int menuSelect = m_playerAction.getMenuSelect();
                     if (menuSelect < menuNum) 
                     {
-                        if ((eventId[menuSelect] == EventId.CHII_LEFT) ||
-                        (eventId[menuSelect] == EventId.CHII_CENTER) ||
-                        (eventId[menuSelect] == EventId.CHII_RIGHT)) 
+                        if ((eventId[menuSelect] == EventID.Chii_Left) ||
+                        (eventId[menuSelect] == EventID.Chii_Center) ||
+                        (eventId[menuSelect] == EventID.Chii_Right)) 
                         {
                             if (chiiCount > 1) 
                             {
@@ -437,10 +437,10 @@ public class Man : IPlayer
                                     m_playerAction.setChiiEventId(eventId[iChii]);
                                     m_playerAction.setState( EActionState.Chii_Select );
 
-                                    m_info.postUiEvent(EventId.UI_INPUT_PLAYER_ACTION, kazeFrom, kazeTo);
+                                    m_info.postUiEvent(EventID.UI_Input_Player_Action, kazeFrom, kazeTo);
 
                                     m_playerAction.actionWait();
-                                    EventId chiiEventId = m_playerAction.getChiiEventId();
+                                    EventID chiiEventId = m_playerAction.getChiiEventId();
                                     m_playerAction.Init();
 
                                     return chiiEventId;
@@ -459,7 +459,7 @@ public class Man : IPlayer
             break;
         }
 
-        return EventId.NAGASHI;
+        return EventID.Nagashi;
     }
 
 }

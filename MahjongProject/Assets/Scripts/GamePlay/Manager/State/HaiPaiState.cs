@@ -16,14 +16,14 @@ public class HaiPaiState : MahjongState
         yield return new WaitForSeconds(1);
 
         owner.SetDelegate(OnSaifuriForHaipaiEnd);
-        EventManager.Get().SendEvent(EventId.Saifuri_For_Haipai);
+        EventManager.Get().SendEvent(EventID.Saifuri_For_Haipai);
     }
 
     void OnSaifuriForHaipaiEnd() {
         // haipai.
         logicOwner.SetWaremeAndHaipai();
 
-        EventManager.Get().SendEvent(EventId.SetUI_AfterHaipai);
+        EventManager.Get().SendEvent(EventID.SetUI_AfterHaipai);
         
         owner.ChangeState<LoopState_Start>();
     }
