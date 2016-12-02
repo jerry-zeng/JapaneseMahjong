@@ -23,10 +23,10 @@ public class Info
         return _sutehaiIdx;
     }
 
-    private Combi[] combis = new Combi[10]
+    private HaiCombi[] combis = new HaiCombi[10]
     {
-        new Combi(),new Combi(),new Combi(),new Combi(),new Combi(),
-        new Combi(),new Combi(),new Combi(),new Combi(),new Combi()
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi()
     };
 
 
@@ -144,9 +144,9 @@ public class Info
             {
                 addHai = new Hai(id);
                 tehai.addJyunTehai(addHai);
-                countFormat.setCountFormat(tehai, tsumoHai);
+                countFormat.setCounterFormat(tehai, tsumoHai);
 
-                if (countFormat.getCombis(combis) > 0)
+                if (countFormat.calculateCombisCount(combis) > 0)
                 {
                     indexs[index] = i;
                     index++;
@@ -162,9 +162,9 @@ public class Info
         {
             addHai = new Hai(id);
             tehai.addJyunTehai(addHai);
-            countFormat.setCountFormat(tehai, null);
+            countFormat.setCounterFormat(tehai, null);
 
-            if (countFormat.getCombis(combis) > 0)
+            if (countFormat.calculateCombisCount(combis) > 0)
             {
                 indexs[index] = 13;
                 index++;
@@ -189,9 +189,9 @@ public class Info
         {
             Hai addHai = new Hai(id);
             tehai.addJyunTehai(addHai);
-            countFormat.setCountFormat(tehai, null);
+            countFormat.setCounterFormat(tehai, null);
 
-            if (countFormat.getCombis(combis) > 0) {
+            if (countFormat.calculateCombisCount(combis) > 0) {
                 hais[index] = new Hai(id);
                 index++;
                 tehai.removeJyunTehai(addHai);

@@ -8,37 +8,37 @@ public class Tehai
 {
     // 純手牌の長さの最大値
     public readonly static int JYUN_TEHAI_LENGTH_MAX = 14;
-
     // 副露の最大値
     public readonly static int FUURO_MAX = 4;
 
     // 面子の長さ(3)
     public readonly static int MENTSU_LENGTH_3 = 3;
-
     // 面子の長さ(4)
     public readonly static int MENTSU_LENGTH_4 = 4;
 
 
     // 純手牌
-    private Hai[] _jyunTehai = new Hai[JYUN_TEHAI_LENGTH_MAX];
-
+    private Hai[] _jyunTehai;
     // 純手牌の長さ
     private int _jyunTehaiLength;
 
     // 副露の配列
-    private Fuuro[] _fuuros = new Fuuro[FUURO_MAX];
-
+    private Fuuro[] _fuuros;
     // 副露の個数
-    private int _fuuroNums;
+    private int _fuuroCount;
 
 
     public Tehai() 
     {
         initialize();
 
+        _jyunTehai = new Hai[JYUN_TEHAI_LENGTH_MAX];
+
         for( int i = 0; i < JYUN_TEHAI_LENGTH_MAX; i++ ) {
             _jyunTehai[i] = new Hai();
         }
+
+        _fuuros = new Fuuro[FUURO_MAX];
 
         for( int i = 0; i < FUURO_MAX; i++ ) {
             _fuuros[i] = new Fuuro();
@@ -48,7 +48,7 @@ public class Tehai
     public void initialize()
     {
         _jyunTehaiLength = 0;
-        _fuuroNums = 0;
+        _fuuroCount = 0;
     }
 
     // 手牌をコピーする
@@ -59,9 +59,10 @@ public class Tehai
             Tehai.copyJyunTehai(dest._jyunTehai, src._jyunTehai, dest._jyunTehaiLength);
         }
 
-        dest._fuuroNums = src._fuuroNums;
-        copyFuuros(dest._fuuros, src._fuuros, dest._fuuroNums);
+        dest._fuuroCount = src._fuuroCount;
+        copyFuuros(dest._fuuros, src._fuuros, dest._fuuroCount);
     }
+
 
     // 純手牌を取得する
     public Hai[] getJyunTehai()
@@ -152,13 +153,13 @@ public class Tehai
     // チー(左)の可否をチェックする
     public bool validChiiLeft(Hai suteHai, Hai[] sarashiHais)
     {
+        if (_fuuroCount >= FUURO_MAX)
+            return false;
+        
         if (suteHai.isTsuu())
             return false;
 
         if (suteHai.getNum() == Hai.NUM_8 || suteHai.getNum() == Hai.NUM_9)
-            return false;
-
-        if (_fuuroNums >= FUURO_MAX)
             return false;
 
         int noKindLeft = suteHai.getNumKind();
@@ -190,7 +191,7 @@ public class Tehai
     {
         Hai[] sarashiHais = new Hai[2];
 
-        if (!validChiiLeft(suteHai, sarashiHais))
+        if( !validChiiLeft(suteHai, sarashiHais) )
             return false;
 
         Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
@@ -220,8 +221,8 @@ public class Tehai
 
                         hais[3] = new Hai();
 
-                        _fuuros[_fuuroNums].Update(EFuuroType.MinShun, hais, relation, newPickIndex);
-                        _fuuroNums++;
+                        _fuuros[_fuuroCount].Update(EFuuroType.MinShun, hais, relation, newPickIndex);
+                        _fuuroCount++;
 
                         return true;
                     }
@@ -235,13 +236,13 @@ public class Tehai
     // チー(中央)の可否をチェックする
     public bool validChiiCenter(Hai suteHai, Hai[] sarashiHais)
     {
+        if (_fuuroCount >= FUURO_MAX)
+            return false;
+
         if (suteHai.isTsuu())
             return false;
 
         if (suteHai.getNum() == Hai.NUM_1 || suteHai.getNum() == Hai.NUM_9)
-            return false;
-
-        if (_fuuroNums >= FUURO_MAX)
             return false;
 
         int noKindCenter = suteHai.getNumKind();
@@ -273,7 +274,7 @@ public class Tehai
     {
         Hai[] sarashiHais = new Hai[2];
 
-        if (!validChiiCenter(suteHai, sarashiHais))
+        if( !validChiiCenter(suteHai, sarashiHais) )
             return false;
 
         Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
@@ -303,8 +304,8 @@ public class Tehai
 
                         hais[3] = new Hai();
 
-                        _fuuros[_fuuroNums].Update(EFuuroType.MinShun, hais, relation, newPickIndex);
-                        _fuuroNums++;
+                        _fuuros[_fuuroCount].Update(EFuuroType.MinShun, hais, relation, newPickIndex);
+                        _fuuroCount++;
 
                         return true;
                     }
@@ -318,13 +319,13 @@ public class Tehai
     // チー(右)の可否をチェックする
     public bool validChiiRight(Hai suteHai, Hai[] sarashiHais)
     {
+        if (_fuuroCount >= FUURO_MAX)
+            return false;
+
         if (suteHai.isTsuu())
             return false;
 
         if (suteHai.getNum() == Hai.NUM_1 || suteHai.getNum() == Hai.NUM_2)
-            return false;
-
-        if (_fuuroNums >= FUURO_MAX)
             return false;
 
         int noKindRight = suteHai.getNumKind();
@@ -356,7 +357,7 @@ public class Tehai
     {
         Hai[] sarashiHais = new Hai[2];
 
-        if (!validChiiRight(suteHai, sarashiHais))
+        if( !validChiiRight(suteHai, sarashiHais) )
             return false;
 
         Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
@@ -386,8 +387,8 @@ public class Tehai
 
                         hais[3] = new Hai();
 
-                        _fuuros[_fuuroNums].Update(EFuuroType.MinShun, hais, relation, newPickIndex);
-                        _fuuroNums++;
+                        _fuuros[_fuuroCount].Update(EFuuroType.MinShun, hais, relation, newPickIndex);
+                        _fuuroCount++;
 
                         return true;
                     }
@@ -401,16 +402,17 @@ public class Tehai
     // ポン(碰)の可否をチェックする
     public bool validPon(Hai suteHai)
     {
-        if (_fuuroNums >= FUURO_MAX)
+        if (_fuuroCount >= FUURO_MAX)
             return false;
 
-        for (int i = 0, count = 1; i < _jyunTehaiLength; i++)
+        int count = 1; // include the suteHai.
+        for (int i = 0; i < _jyunTehaiLength; i++)
         {
             if(_jyunTehai[i].ID == suteHai.ID)
             {
                 count++;
 
-                if (count >= MENTSU_LENGTH_3)
+                if (count >= Tehai.MENTSU_LENGTH_3)
                     return true;
             }
         }
@@ -421,36 +423,34 @@ public class Tehai
     // ポンを設定する
     public bool setPon(Hai suteHai, int relation)
     {
-        if (!validPon(suteHai))
+        if( !validPon(suteHai) )
             return false;
 
         Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
 
-        int iHais = 0;
-        hais[iHais] = new Hai(suteHai);
-        int newPickIndex = iHais;
+        hais[0] = new Hai(suteHai);
+        int newPickIndex = 0;
 
-        iHais++;
-
+        int count = 1;
         for (int i = 0; i < _jyunTehaiLength; i++) 
         {
             if( _jyunTehai[i].ID == suteHai.ID)
             {
-                hais[iHais] = new Hai(_jyunTehai[i]);
-                iHais++;
+                hais[count] = new Hai(_jyunTehai[i]);
+                count++;
 
                 removeJyunTehai(i);
                 i--;
 
-                if (iHais >= MENTSU_LENGTH_3)
+                if (count >= Tehai.MENTSU_LENGTH_3)
                     break;
             }
         }
 
-        hais[iHais] = new Hai();
+        hais[count] = new Hai();
 
-        _fuuros[_fuuroNums].Update(EFuuroType.MinKou, hais, relation, newPickIndex);
-        _fuuroNums++;
+        _fuuros[_fuuroCount].Update(EFuuroType.MinKou, hais, relation, newPickIndex);
+        _fuuroCount++;
 
         return true;
     }
@@ -458,7 +458,7 @@ public class Tehai
     // 槓の可否をチェックする
     public int validKan(Hai addHai, Hai[] kanHais)
     {
-        if (_fuuroNums >= FUURO_MAX)
+        if (_fuuroCount >= FUURO_MAX)
             return 0;
 
         int kanCount = 0;
@@ -466,7 +466,7 @@ public class Tehai
         addJyunTehai(addHai);
 
         // 加カンのチェック
-        for (int i = 0; i < _fuuroNums; i++) 
+        for (int i = 0; i < _fuuroCount; i++) 
         {
             if (_fuuros[i].Type == EFuuroType.MinKou)
             {
@@ -482,13 +482,14 @@ public class Tehai
         }
 
         int id = _jyunTehai[0].ID;
-        int count = 1;
+
+        int count = 1; // include the addHai
         for (int i = 1; i < _jyunTehaiLength; i++) 
         {
             if (id == _jyunTehai[i].ID)
             {
                 count++;
-                if (count >= MENTSU_LENGTH_4) {
+                if (count >= Tehai.MENTSU_LENGTH_4) {
                     kanHais[kanCount] = new Hai(_jyunTehai[i]);
                     kanCount++;
                 }
@@ -506,15 +507,16 @@ public class Tehai
 
     public bool validDaiMinKan(Hai suteHai)
     {
-        if (_fuuroNums >= FUURO_MAX)
+        if (_fuuroCount >= FUURO_MAX)
             return false;
 
-        for (int i = 0, count = 1; i < _jyunTehaiLength; i++)
+        int count = 1;
+        for (int i = 0; i < _jyunTehaiLength; i++)
         {
             if(_jyunTehai[i].ID == suteHai.ID)
             {
                 count++;
-                if (count >= MENTSU_LENGTH_4)
+                if (count >= Tehai.MENTSU_LENGTH_4)
                     return true;
             }
         }
@@ -527,30 +529,28 @@ public class Tehai
     {
         Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
 
-        int iHais = 0;
-        hais[iHais] = new Hai(suteHai);
+        hais[0] = new Hai(suteHai);
+        int newPickIndex = 0;
 
-        int newPickIndex = iHais;
-
-        iHais++;
+        int count = 1;
 
         for (int i = 0; i < _jyunTehaiLength; i++)
         {
             if( _jyunTehai[i].ID == suteHai.ID)
             {
-                hais[iHais] = new Hai(_jyunTehai[i]);
-                iHais++;
+                hais[count] = new Hai(_jyunTehai[i]);
+                count++;
 
                 removeJyunTehai(i);
                 i--;
 
-                if (iHais >= MENTSU_LENGTH_4)
+                if (count >= Tehai.MENTSU_LENGTH_4)
                     break;
             }
         }
 
-        _fuuros[_fuuroNums].Update(EFuuroType.DaiMinKan, hais, relation, newPickIndex);
-        _fuuroNums++;
+        _fuuros[_fuuroCount].Update(EFuuroType.DaiMinKan, hais, relation, newPickIndex);
+        _fuuroCount++;
 
         return true;
     }
@@ -558,10 +558,10 @@ public class Tehai
     // 加槓の可否をチェックする
     public bool validKaKan(Hai tsumoHai)
     {
-        if (_fuuroNums >= FUURO_MAX)
+        if (_fuuroCount >= FUURO_MAX)
             return false;
 
-        for (int i = 0; i < _fuuroNums; i++)
+        for (int i = 0; i < _fuuroCount; i++)
         {
             if (_fuuros[i].Type == EFuuroType.MinKou)
             {
@@ -576,22 +576,23 @@ public class Tehai
     // 加槓を設定する
     public bool setKaKan(Hai tsumoHai)
     {
-        if (!validKaKan(tsumoHai))
+        if( !validKaKan(tsumoHai) )
             return false;
 
-        Hai[] hais = null;
+        int relation = (int)ERelation.JiBun; //0;
+        int newPickIndex = 3;
 
-        for (int i = 0; i < _fuuroNums; i++) 
+        for (int i = 0; i < _fuuroCount; i++) 
         {
             if (_fuuros[i].Type == EFuuroType.MinKou) 
             {
-                hais = _fuuros[i].Hais;
+                Hai[] hais = _fuuros[i].Hais;
 
                 if(hais[0].ID == tsumoHai.ID)
                 {
-                    Hai.copy(hais[3], tsumoHai);
+                    Hai.copy(hais[newPickIndex], tsumoHai);
 
-                    _fuuros[i].Update(EFuuroType.KaKan, hais, 3);
+                    _fuuros[i].Update(EFuuroType.KaKan, hais, relation, newPickIndex);
                 }
             }
         }
@@ -599,53 +600,61 @@ public class Tehai
         return true;
     }
 
-    // 暗槓を設定する
-    public bool setAnKan(Hai tsumoHai, int relation)
+    // 暗槓の可否をチェックする
+    public bool validAnKan(Hai tsumoHai)
     {
-        Hai[] fuuroHais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
+        if (_fuuroCount >= FUURO_MAX)
+            return false;
 
-        for (int i = 0; i < _fuuroNums; i++) 
-        {
-            if (_fuuros[i].Type == EFuuroType.MinKou) 
-            {
-                fuuroHais = _fuuros[i].Hais;
-
-                if( fuuroHais[0].ID == tsumoHai.ID)
-                {
-                    Hai.copy(fuuroHais[3], tsumoHai);
-                    removeJyunTehai(tsumoHai);
-
-                    _fuuros[i].Update(EFuuroType.KaKan, fuuroHais, 3);
-                    //m_fuuroNums++;
-
-                    return true;
-                }
-            }
-        }
-
-        int iHais = 0;
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
-
+        int count = 1;
         for (int i = 0; i < _jyunTehaiLength; i++)
         {
             if(_jyunTehai[i].ID == tsumoHai.ID)
             {
-                hais[iHais] = new Hai(_jyunTehai[i]);
-                iHais++;
+                count++;
+                if (count >= Tehai.MENTSU_LENGTH_4)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    // 暗槓を設定する
+    public bool setAnKan(Hai tsumoHai)
+    {
+        if( !validAnKan(tsumoHai) )
+            return false;
+
+        int relation = (int)ERelation.JiBun; //0;
+
+        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
+
+        hais[0] = new Hai(tsumoHai);
+        int newPickIndex = 3;
+
+        int count = 1;
+        for (int i = 0; i < _jyunTehaiLength; i++)
+        {
+            if(_jyunTehai[i].ID == tsumoHai.ID)
+            {
+                hais[count] = new Hai(_jyunTehai[i]);
+                count++;
 
                 removeJyunTehai(i);
                 i--;
 
-                if (iHais >= MENTSU_LENGTH_4)
+                if (count >= Tehai.MENTSU_LENGTH_4)
                     break;
             }
         }
 
-        _fuuros[_fuuroNums].Update(EFuuroType.AnKan, hais, relation, MENTSU_LENGTH_4 - 1);
-        _fuuroNums++;
+        _fuuros[_fuuroCount].Update(EFuuroType.AnKan, hais, relation, newPickIndex);
+        _fuuroCount++;
 
         return true;
     }
+
 
     // 副露の配列を取得する
     public Fuuro[] getFuuros()
@@ -654,15 +663,16 @@ public class Tehai
     }
 
     // 副露の個数を取得する
-    public int getFuuroNum()
+    public int getFuuroCount()
     {
-        return _fuuroNums;
+        return _fuuroCount;
     }
+
 
     // 鸣听Flag
     public bool isNaki()
     {
-        for(int i = 0; i < _fuuroNums; i++)
+        for(int i = 0; i < _fuuroCount; i++)
         {
             if(_fuuros[i].Type != EFuuroType.AnKan)
                 return true;

@@ -13,6 +13,6 @@ public static class GameSettings
     public static int PlayerCount = 4;
 
     // 持ち点の初期値
-    public readonly static int TENBOU_INIT = 25000;
+    public static int TENBOU_INIT = 25000;
 
 }

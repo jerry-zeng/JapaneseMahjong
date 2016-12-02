@@ -120,9 +120,9 @@ public class Player
         for( int id = 0; id < Hai.ID_ITEM_MAX; id++ )
         {
             Hai addHai = new Hai(id);
-            _countFormat.setCountFormat(_tehai, addHai);
+            _countFormat.setCounterFormat(_tehai, addHai);
 
-            if( _countFormat.getCombis(null) > 0 )
+            if( _countFormat.calculateCombisCount(null) > 0 )
                 return true;
         }
 

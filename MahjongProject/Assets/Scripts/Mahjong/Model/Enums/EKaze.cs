@@ -6,8 +6,6 @@ public enum EKaze
     Nan = 1,
     Sya = 2,
     Pei = 3,
-
-    None = 100,
 }
 
 public static class EKazeExtension
@@ -21,7 +19,7 @@ public static class EKazeExtension
             case EKaze.Sya: return EKaze.Pei;
             case EKaze.Pei: return EKaze.Ton;
         }
-        return EKaze.None;
+        return EKaze.Nan;
     }
 
     public static EKaze Pre(this EKaze kaze)
@@ -33,7 +31,7 @@ public static class EKazeExtension
             case EKaze.Sya: return EKaze.Nan;
             case EKaze.Pei: return EKaze.Sya;
         }
-        return EKaze.None;
+        return EKaze.Pei;
     }
 }
 

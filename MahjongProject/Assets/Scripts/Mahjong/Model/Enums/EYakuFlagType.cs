@@ -10,7 +10,7 @@ public enum EYakuFlagType
     // 一発
     IPPATU,
     // ツモ 
-    TUMO,
+    TSUMO,
     // 海底 
     HAITEI,
     // 河底 
@@ -20,7 +20,7 @@ public enum EYakuFlagType
     // 搶槓 
     CHANKAN,
     // ダブル立直 
-    DOUBLEREACH,
+    DOUBLE_REACH,
     // 天和 
     TENHOU,
     // 地和 
@@ -37,5 +37,5 @@ public enum EYakuFlagType
     KUITAN,
 
     // 役の数 
-    YAKUFLG_COUNT
+    Count
 }

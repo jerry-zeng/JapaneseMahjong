@@ -4,79 +4,76 @@
 /// Agari(あがり) = 胡牌
 /// </summary>
 
-public class AgariSetting 
+public sealed class AgariSetting 
 {
     // 役成立フラグの配列
-    private bool[] yakuFlag = new bool[(int)EYakuFlagType.YAKUFLG_COUNT];
+    private static bool[] _yakuFlag = new bool[(int)EYakuFlagType.Count];
 
     // 自風の設定
-    private EKaze jiKaze = EKaze.None;
+    private static EKaze _jiKaze = EKaze.Ton;
 
     // 場風の設定
-    private EKaze baKaze = EKaze.Ton;
+    private static EKaze _baKaze = EKaze.Ton;
 
     // 表ドラ
-    private Hai[] omoteDoraHais = new Hai[4];
+    private static Hai[] _omoteDoraHais = new Hai[4];
 
     // 裏ドラ
-    private Hai[] uraDoraHais = new Hai[4];
+    private static Hai[] _uraDoraHais = new Hai[4];
 
 
-    public AgariSetting()
+    public static void Initialize(Mahjong game)
     {
-        for(int i = 0; i < yakuFlag.Length ; i++){
-            yakuFlag[i] = false;
+        for(int i = 0; i < _yakuFlag.Length; i++){
+            _yakuFlag[i] = false;
         }
-    }
 
-    public AgariSetting(Mahjong game) : this()
-    {
-        this.omoteDoraHais = game.getOmotoDoras();
-        this.uraDoraHais = game.getUraDoras();
-        this.jiKaze = game.getJiKaze();
-        this.baKaze = game.getBaKaze();
+        _omoteDoraHais = game.getOmotoDoras();
+        _uraDoraHais = game.getUraDoras();
+        _jiKaze = game.getJiKaze();
+        _baKaze = game.getBaKaze();
     }
 
 
-    public void setYakuFlag(int yakuNum, bool flg) {
-        yakuFlag[yakuNum] = flg;
+    public static void setYakuFlag(int yakuNum, bool flg) {
+        _yakuFlag[yakuNum] = flg;
     }
 
-    public bool getYakuFlag(int yakuNum) {
-        return yakuFlag[yakuNum];
-    }
-
-
-    public void setJikaze(EKaze jikaze) {
-        this.jiKaze = jikaze;
-    }
-
-    public EKaze getJikaze() {
-        return this.jiKaze;
+    public static bool getYakuFlag(int yakuNum) {
+        return _yakuFlag[yakuNum];
     }
 
 
-    public void setBakaze(EKaze bakaze) {
-        this.baKaze = bakaze;
+    public static void setJikaze(EKaze jikaze) {
+        _jiKaze = jikaze;
     }
-    public EKaze getBakaze() {
-        return this.baKaze;
+
+    public static EKaze getJikaze() {
+        return _jiKaze;
+    }
+
+
+    public static void setBakaze(EKaze bakaze) {
+        _baKaze = bakaze;
+    }
+    public static EKaze getBakaze() {
+        return _baKaze;
     }
 
 
     // 表ドラ
-    public void setOmoteDoraHais(Hai[] omoteDoraHais) {
-        this.omoteDoraHais = omoteDoraHais;
+    public static void setOmoteDoraHais(Hai[] omoteDoraHais) {
+        _omoteDoraHais = omoteDoraHais;
     }
-    public Hai[] getOmoteDoraHais() {
-        return this.omoteDoraHais;
+    public static Hai[] getOmoteDoraHais() {
+        return _omoteDoraHais;
     }
 
     // 裏ドラ
-    public void setUraDoraHais(Hai[] uraDoraHais) {
-        this.omoteDoraHais = uraDoraHais;
+    public static void setUraDoraHais(Hai[] uraDoraHais) {
+        _uraDoraHais = uraDoraHais;
     }
-    public Hai[] getUraDoraHais() {
-        return this.uraDoraHais;
+    public static Hai[] getUraDoraHais() {
+        return _uraDoraHais;
     }
 }

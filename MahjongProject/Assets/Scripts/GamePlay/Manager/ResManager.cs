@@ -1,12 +1,47 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 
 public class ResManager 
 {
-    public static  string getString(int id) {
-        return id.ToString();
+    public static bool UseJapanese = false;
+
+    private static Dictionary<string, string> StringTable;
+
+    public static void LoadStringTable()
+    {
+        if( StringTable == null ){
+            StringTable = new Dictionary<string, string>();
+
+            string fileName = "string_cn";
+            if(UseJapanese) fileName = "string_jp";
+
+            TextAsset ta = Resources.Load<TextAsset>("Table/" + fileName);
+
+            List<string> valueList = new List<string>();
+
+            List<object> stringList = (List<object>)MiniJSON.Deserialize(ta.text);
+            for( int i = 0; i < stringList.Count; i++ )
+            {
+                Dictionary<string, object> kv = (Dictionary<string, object>)stringList[i];
+
+                foreach(var kvs in kv)
+                    valueList.Add(kvs.Value.ToString());
+            }
+
+            for( int i = 0; i < valueList.Count-1; i += 2 )
+                StringTable.Add( valueList[i], valueList[i+1] );
+        }
     }
-    public static string getString(string key) {
+
+    public static string getString(string key)
+    {
+        LoadStringTable();
+
+        string value;
+        if( StringTable.TryGetValue(key, out value) ){
+            return value;
+        }
         return key;
     }
 
@@ -14,7 +49,7 @@ public class ResManager
         return Object.Instantiate(Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/MahjongPai")) as GameObject;
     }
 
-    /*
+
     public static MahjongPai getMahjongObject() {
         return null;
     }
@@ -27,7 +62,7 @@ public class ResManager
 
         return true;
     }
-*/
+
     public static GameObject CreatePlayerUIObject() {
         return Object.Instantiate(Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/PlayerUI")) as GameObject;
     }

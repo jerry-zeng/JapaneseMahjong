@@ -3,104 +3,99 @@
 public class CountFormat 
 {
     #region internal class.
-    public class Count 
-    {
-        public int _numKind = 0;
-        public int _num = 0;
-
-        public void initialize()
-        {
-            _numKind = 0;
-            _num = 0;
-        }
-    }
-
     public class CombiManager 
     {
         // 上がりの組み合わせの配列の最大値
         public const int COMBI_MAX = 10;
 
         // 上がりの組み合わせの配列
-        public Combi[] _combis;
+        public HaiCombi[] combis;
 
         // 上がりの組み合わせの配列の有効な個数
-        public int _combiNum = 0;
+        public int combiCount = 0;
 
         // カウントの配列の残りの個数
-        public int _remain = 0;
+        public int remain = 0;
 
-        public Combi _current;
+        public HaiCombi current = new HaiCombi();
 
 
-        public CombiManager(){
-            _current = new Combi();
-
-            _combis = new Combi[COMBI_MAX];
-            for (int i = 0; i < _combis.Length; i++) {
-                _combis[i] = new Combi();
+        public CombiManager()
+        {
+            combis = new HaiCombi[COMBI_MAX];
+            for (int i = 0; i < combis.Length; i++) {
+                combis[i] = new HaiCombi();
             }
         }
 
         public void initialize(int remain)
         {
-            this._combiNum = 0;
-            this._remain = remain;
+            this.combiCount = 0;
+            this.remain = remain;
 
-            _current._atamaNumKind = 0;
-            _current._shunNum = 0;
-            _current._kouNum = 0;
+            current.atamaNumKind = 0;
+            current.shunCount = 0;
+            current.kouCount = 0;
         }
 
         public void add()
         {
-            Combi.copy(_combis[_combiNum], _current);
-            _combiNum++;
+            HaiCombi.copy(combis[combiCount], current);
+            combiCount++;
         }
     }
     #endregion internal class.
 
 
     // カウント(count)の最大値
-    public const int COUNT_MAX = 14 + 2;
+    public const int COUNTER_MAX = 14 + 2;
 
     // カウントの配列
-    public Count[] _counts;
+    private HaiCounterInfo[] _counterArr;
 
     // カウントの配列の有効な個数
-    public int _countNum;
+    private int _counterNum;
 
     // 上がりの組み合わせの配列を管理
     private CombiManager _combiManager;
 
 
-    public CountFormat(){
+    public CountFormat()
+    {
         _combiManager = new CombiManager();
 
-        _counts = new Count[COUNT_MAX];
-        for (int i = 0; i < COUNT_MAX; i++) {
-            _counts[i] = new Count();
+        _counterArr = new HaiCounterInfo[COUNTER_MAX];
+        for (int i = 0; i < _counterArr.Length; i++) {
+            _counterArr[i] = new HaiCounterInfo();
         }
     }
 
-
-    private int getTotalCountLength()
+    public HaiCounterInfo[] getCounterArray()
     {
-        int totalCountLength = 0;
+        return _counterArr;
+    }
+    public int getCounterArrLength()
+    {
+        return _counterNum;
+    }
 
-        for (int i = 0; i < _countNum; i++) {
-            totalCountLength += _counts[i]._num;
-        }
-
-        return totalCountLength;
+    public HaiCombi[] getCombis()
+    {
+        return _combiManager.combis;
+    }
+    public int getCombisLength()
+    {
+        return _combiManager.combiCount;
     }
 
 
-    public void setCountFormat(Tehai tehai, Hai addHai)
+    public void setCounterFormat(Tehai tehai, Hai addHai)
     {
-        for (int i = 0; i < _counts.Length; i++) {
-            _counts[i].initialize();
+        for (int i = 0; i < _counterArr.Length; i++)
+        {
+            _counterArr[i].reset();
         }
-        _countNum = 0;
+        _counterNum = 0;
 
         int addHaiNumKind = 0;
         bool set = true;
@@ -111,8 +106,8 @@ public class CountFormat
         }
 
         Hai[] jyunTehais = tehai.getJyunTehai();
-        int jyunTehaiNumKind;
         int jyunTehaiLength = tehai.getJyunTehaiLength();
+        int jyunTehaiNumKind;
 
         for (int i = 0; i < jyunTehaiLength; )
         {
@@ -121,81 +116,69 @@ public class CountFormat
             if(!set && (jyunTehaiNumKind > addHaiNumKind))
             {
                 set = true;
-                _counts[_countNum]._numKind = addHaiNumKind;
-                _counts[_countNum]._num = 1;
-                _countNum++;
+                _counterArr[_counterNum].numKind = addHaiNumKind;
+                _counterArr[_counterNum].count = 1;
+                _counterNum++;
                 continue;
             }
 
-            _counts[_countNum]._numKind = jyunTehaiNumKind;
-            _counts[_countNum]._num = 1;
+            _counterArr[_counterNum].numKind = jyunTehaiNumKind;
+            _counterArr[_counterNum].count = 1;
 
             if (!set && (jyunTehaiNumKind == addHaiNumKind))
             {
                 set = true;
-                _counts[_countNum]._num++;
+                _counterArr[_counterNum].count++;
             }
 
             while (++i < jyunTehaiLength) 
             {
                 if (jyunTehaiNumKind == jyunTehais[i].getNumKind()) {
-                    _counts[_countNum]._num++;
+                    _counterArr[_counterNum].count++;
                 }
                 else {
                     break;
                 }
             }
 
-            _countNum++;
+            _counterNum++;
         }
 
         if(!set){
-            _counts[_countNum]._numKind = addHaiNumKind;
-            _counts[_countNum]._num = 1;
-            _countNum++;
+            _counterArr[_counterNum].numKind = addHaiNumKind;
+            _counterArr[_counterNum].count = 1;
+            _counterNum++;
         }
 
-        for (int i = 0; i < _countNum; i++)
+        for (int i = 0; i < _counterNum; i++)
         {
             // 5つ目の追加牌は無効とする
-            if (_counts[i]._num > 4)
-                _counts[i]._num--;
+            if (_counterArr[i].count > 4)
+                _counterArr[i].count--;
         }
     }
 
-
-    public Combi[] getCombis()
+    public int calculateCombisCount(HaiCombi[] combis)
     {
-        return _combiManager._combis;
-    }
-
-    public int getCombiNum()
-    {
-        return _combiManager._combiNum;
-    }
-
-
-    public int getCombis(Combi[] combis)
-    {
-        _combiManager.initialize( getTotalCountLength() );
+        _combiManager.initialize( getTotalCounterLength() );
         searchCombi(0);
 
-        if( _combiManager._combiNum == 0 ) 
+        if( _combiManager.combiCount == 0 ) 
         {
             _chiitoitsu = checkChiitoitsu();
 
             if( _chiitoitsu ) {
-                _combiManager._combiNum = 1;
+                _combiManager.combiCount = 1;
             }
             else 
             {
                 _kokushi = checkKokushi();
                 if( _kokushi )
-                    _combiManager._combiNum = 1;
+                    _combiManager.combiCount = 1;
             }
         }
 
-        return _combiManager._combiNum;
+        return _combiManager.combiCount;
     }
 
 
@@ -206,12 +189,13 @@ public class CountFormat
         return _chiitoitsu;
     }
 
-    private bool checkChiitoitsu()
+    bool checkChiitoitsu()
     {
         int count = 0;
-        for (int i = 0; i < _countNum; i++) 
+
+        for (int i = 0; i < _counterNum; i++) 
         {
-            if (_counts[i]._num == 2) {
+            if (_counterArr[i].count == 2) {
                 count++;
             }
             else {
@@ -219,9 +203,7 @@ public class CountFormat
             }
         }
 
-        if (count == 7)
-            return true;
-        return false;
+        return count == 7;
     }
 
 
@@ -232,7 +214,7 @@ public class CountFormat
         return _kokushi;
     }
 
-    private bool checkKokushi()
+    bool checkKokushi()
     {
         //牌の数を調べるための配列 (0番地は使用しない）
         int[] checkId = {
@@ -242,63 +224,68 @@ public class CountFormat
         int[] countHai = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         //手牌のIDを検索する
-        for(int i = 0; i < _countNum; i++)
+        for(int i = 0; i < _counterNum; i++)
         {
             for(int j = 0; j < checkId.Length; j++)
             {
-                if(Hai.NumKindToID(_counts[i]._numKind) == checkId[j])
-                    countHai[j] = _counts[i]._num;
+                if(Hai.NumKindToID(_counterArr[i].numKind) == checkId[j])
+                    countHai[j] = _counterArr[i].count;
             }
         }
 
+        //条件を満たしていれば不成立
         bool atama = false;
 
         //国士無双が成立しているか調べる(手牌がすべて1.9字牌 すべての１,９字牌を持っている）
         for(int i = 0; i < countHai.Length; i++)
         {
             //0枚の牌があれば不成立
-            if(countHai[i] == 0){
+            if(countHai[i] == 0)
                 return false;
-            }
-            if(countHai[i] == 2){
+
+            if(countHai[i] == 2)
                 atama = true;
-            }
         }
 
-        //条件を満たしていれば成立
-        if(atama){
-            return true;
-        } 
-        else {
-            return false;
-        }
+        return atama;
     }
 
 
-    private void searchCombi(int iSearch)
+    int getTotalCounterLength()
+    {
+        int totalCountLength = 0;
+
+        for (int i = 0; i < _counterNum; i++) {
+            totalCountLength += _counterArr[i].count;
+        }
+
+        return totalCountLength;
+    }
+
+    void searchCombi(int iSearch)
     {
         // 検索位置を更新する。
-        for(; iSearch < _countNum; iSearch++)
+        for(; iSearch < _counterNum; iSearch++)
         {
-            if(_counts[iSearch]._num > 0)
+            if(_counterArr[iSearch].count > 0)
                 break;
         }
 
-        if(iSearch >= _countNum)
+        if(iSearch >= _counterNum)
             return;
 
         // 頭をチェック(check)する。
-        if(_combiManager._current._atamaNumKind == 0) 
+        if(_combiManager.current.atamaNumKind == 0) 
         {
-            if (_counts[iSearch]._num >= 2)
+            if (_counterArr[iSearch].count >= 2)
             {
                 // 頭を確定する。
-                _counts[iSearch]._num -= 2;
-                _combiManager._remain -= 2;
-                _combiManager._current._atamaNumKind = _counts[iSearch]._numKind;
+                _counterArr[iSearch].count -= 2;
+                _combiManager.remain -= 2;
+                _combiManager.current.atamaNumKind = _counterArr[iSearch].numKind;
 
                 // 上がりの組み合わせを見つけたら追加する。
-                if (_combiManager._remain <= 0) {
+                if (_combiManager.remain <= 0) {
                     _combiManager.add();
                 } 
                 else {
@@ -306,9 +293,9 @@ public class CountFormat
                 }
 
                 // 確定した頭を戻す。
-                _counts[iSearch]._num += 2;
-                _combiManager._remain += 2;
-                _combiManager._current._atamaNumKind = 0;
+                _counterArr[iSearch].count += 2;
+                _combiManager.remain += 2;
+                _combiManager.current.atamaNumKind = 0;
             }
         }
 
@@ -317,22 +304,22 @@ public class CountFormat
         int center = iSearch + 1;
         int right = iSearch + 2;
 
-        if( !Hai.isTsuu(_counts[left]._numKind) ) 
+        if( !Hai.isTsuu(_counterArr[left].numKind) ) 
         {
-            if ((_counts[left]._numKind + 1 == _counts[center]._numKind) && (_counts[center]._num > 0)) 
+            if ((_counterArr[left].numKind + 1 == _counterArr[center].numKind) && (_counterArr[center].count > 0)) 
             {
-                if ((_counts[left]._numKind + 2 == _counts[right]._numKind) && (_counts[right]._num > 0)) 
+                if ((_counterArr[left].numKind + 2 == _counterArr[right].numKind) && (_counterArr[right].count > 0)) 
                 {
                     // 順子を確定する
-                    _counts[left]._num --;
-                    _counts[center]._num --;
-                    _counts[right]._num --;
-                    _combiManager._remain -= 3;
-                    _combiManager._current._shunNumKinds[_combiManager._current._shunNum] = _counts[left]._numKind;
-                    _combiManager._current._shunNum++;
+                    _counterArr[left].count --;
+                    _counterArr[center].count --;
+                    _counterArr[right].count --;
+                    _combiManager.remain -= 3;
+                    _combiManager.current.shunNumKinds[_combiManager.current.shunCount] = _counterArr[left].numKind;
+                    _combiManager.current.shunCount++;
 
                     // 上がりの組み合わせを見つけたら追加する。
-                    if (_combiManager._remain <= 0) {
+                    if (_combiManager.remain <= 0) {
                         _combiManager.add();
                     } 
                     else {
@@ -340,26 +327,26 @@ public class CountFormat
                     }
 
                     // 確定した順子を戻す。
-                    _counts[left]._num ++;
-                    _counts[center]._num ++;
-                    _counts[right]._num ++;
-                    _combiManager._remain += 3;
-                    _combiManager._current._shunNum --;
+                    _counterArr[left].count ++;
+                    _counterArr[center].count ++;
+                    _counterArr[right].count ++;
+                    _combiManager.remain += 3;
+                    _combiManager.current.shunCount --;
                 }
             }
         }
 
         // 刻子をチェックする。
-        if (_counts[iSearch]._num >= 3)
+        if (_counterArr[iSearch].count >= 3)
         {
             // 刻子を確定する。
-            _counts[iSearch]._num -= 3;
-            _combiManager._remain -= 3;
-            _combiManager._current._kouNumKinds[_combiManager._current._kouNum] = _counts[iSearch]._numKind;
-            _combiManager._current._kouNum ++;
+            _counterArr[iSearch].count -= 3;
+            _combiManager.remain -= 3;
+            _combiManager.current.kouNumKinds[_combiManager.current.kouCount] = _counterArr[iSearch].numKind;
+            _combiManager.current.kouCount ++;
 
             // 上がりの組み合わせを見つけたら追加する。
-            if (_combiManager._remain <= 0) {
+            if (_combiManager.remain <= 0) {
                 _combiManager.add();
             } 
             else {
@@ -367,9 +354,10 @@ public class CountFormat
             }
 
             // 確定した刻子を戻す。/
-            _combiManager._remain += 3;
-            _counts[iSearch]._num += 3;
-            _combiManager._current._kouNum --;
+            _combiManager.remain += 3;
+            _counterArr[iSearch].count += 3;
+            _combiManager.current.kouCount --;
         }
     }
+
 }

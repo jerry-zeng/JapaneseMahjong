@@ -320,7 +320,7 @@ public class Hai
         get{ return _id; }
     }
 
-    public int getID()
+    protected int getID()
     {
         return _id;
     }

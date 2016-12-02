@@ -57,7 +57,7 @@ public class FuuroUI : UIObject
                     {
                         for( int j = 0; j < hais.Length; j++ ) 
                         {
-                            if( hais[j].getID() < 0 )
+                            if( hais[j].ID < 0 )
                                 continue;
 
                             shouldSetLand = (j == newPickIndex);
@@ -84,7 +84,7 @@ public class FuuroUI : UIObject
                     {
                         for( int j = 0; j < hais.Length; j++ ) 
                         {
-                            if( hais[j].getID() < 0 )
+                            if( hais[j].ID < 0 )
                                 continue;
 
                             shouldSetLand = false;

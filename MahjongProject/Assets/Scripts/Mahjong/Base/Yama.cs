@@ -1,7 +1,7 @@
 ﻿
 /// <summary>
 /// 山を管理する, 所有堆起来的牌叫山牌
-/// 最后的7幢牌，共14个，叫牌山
+/// 最后的7幢牌，共14张，叫牌山
 /// </summary>
 
 public class Yama 
@@ -20,37 +20,45 @@ public class Yama
 
 
     // 山牌の配列
-    private Hai[] _yamaHais = new Hai[YAMA_HAIS_MAX];
+    private Hai[] _yamaHais;
+
 
     // ツモ牌の配列
-    private Hai[] _tsumoHais = new Hai[TSUMO_HAIS_MAX];
+    private Hai[] _tsumoHais;
 
     // リンシャン(岭上开花)牌の配列
-    private Hai[] _rinshanHais = new Hai[RINSHAN_HAIS_MAX];
-
-    // リンシャン牌の位置
-    private int _rinshanHaisIndex;
+    private Hai[] _rinshanHais;
 
     // ツモ牌のインデックス(index)
     private int _tsumoHaisIndex;
 
+    // リンシャン牌の位置
+    private int _rinshanHaisIndex;
+
+
     // 表ドラ牌の配列
-    private Hai[] _omoteDoraHais = new Hai[DORA_HAIS_MAX];
+    private Hai[] _omoteDoraHais;
 
     // 裏ドラ牌の配列
-    private Hai[] _uraDoraHais = new Hai[DORA_HAIS_MAX];
+    private Hai[] _uraDoraHais;
 
 
     public Yama()
     {
-        setTsumoHaisStartIndex(0);
+        _yamaHais = new Hai[YAMA_HAIS_MAX];
+        _tsumoHais = new Hai[TSUMO_HAIS_MAX];
+        _rinshanHais = new Hai[RINSHAN_HAIS_MAX];
+        _omoteDoraHais = new Hai[DORA_HAIS_MAX];
+        _uraDoraHais = new Hai[DORA_HAIS_MAX];
 
         for (int i = Hai.ID_ITEM_MIN; i < Hai.ID_ITEM_MAX; i++)
         {
-            for (int j = 0; j < 4; j++) {
+            for( int j = 0; j < 4; j++ ){
                 _yamaHais[(i * 4) + j] = new Hai(i);
             }
         }
+
+        setTsumoHaisStartIndex(0);
     }
 
     // temply implement.
@@ -58,6 +66,19 @@ public class Yama
     {
         return _yamaHais;
     }
+
+    // ツモ牌の残り数を取得する
+    public int getTsumoNokori()
+    {
+        return TSUMO_HAIS_MAX - _rinshanHaisIndex - _tsumoHaisIndex;
+    }
+
+    // リンシャン(岭上开花)牌の残り数を取得する
+    public int getRinshanNokori()
+    {
+        return RINSHAN_HAIS_MAX - _rinshanHaisIndex;
+    }
+
 
     // 洗牌する
     public void XiPai()
@@ -77,24 +98,12 @@ public class Yama
         }
     }
 
-    // ツモ牌を取得する
-    public Hai PickTsumoHai()
-    {
-        if (_tsumoHaisIndex >= (TSUMO_HAIS_MAX - _rinshanHaisIndex))
-            return null;
-
-        Hai tsumoHai = new Hai(_tsumoHais[_tsumoHaisIndex]);
-        _tsumoHaisIndex++;
-
-        return tsumoHai;
-    }
-
     /// <summary>
     /// 初始拿牌.
     /// </summary>
     public Hai[] PickHaipai()
     {
-        if( _tsumoHaisIndex >= (TSUMO_HAIS_MAX - _rinshanHaisIndex) )
+        if( getTsumoNokori() <= 0 )
             return null;
 
         Hai[] hais = new Hai[4];
@@ -103,7 +112,7 @@ public class Yama
             hais[i] = new Hai( _tsumoHais[_tsumoHaisIndex] );
 
             _tsumoHaisIndex++;
-            if( _tsumoHaisIndex >= (TSUMO_HAIS_MAX - _rinshanHaisIndex) ) {
+            if( getTsumoNokori() <= 0 ) {
                 //break;
             }
         }
@@ -111,12 +120,23 @@ public class Yama
         return hais;
     }
 
-    /**
-     * リンシャン(岭上开花)牌を取得する。
-     */
+
+    // ツモ牌を取得する
+    public Hai PickTsumoHai()
+    {
+        if( getTsumoNokori() <= 0)
+            return null;
+
+        Hai tsumoHai = new Hai(_tsumoHais[_tsumoHaisIndex]);
+        _tsumoHaisIndex++;
+
+        return tsumoHai;
+    }
+
+    // リンシャン(岭上开花)牌を取得する
     public Hai PickRinshanTsumoHai()
     {
-        if (_rinshanHaisIndex >= RINSHAN_HAIS_MAX)
+        if( getRinshanNokori() <= 0 )
             return null;
 
         Hai rinshanHai = new Hai(_rinshanHais[_rinshanHaisIndex]);
@@ -125,9 +145,7 @@ public class Yama
         return rinshanHai;
     }
 
-    /**
-     * 表ドラの配列を取得する。
-     */
+    // 表ドラの配列を取得する
     public Hai[] getOmoteDoraHais()
     {
         int omoteDoraHaisLength = _rinshanHaisIndex + 1;
@@ -139,9 +157,7 @@ public class Yama
         return omoteDoraHais;
     }
 
-    /**
-     * 裏ドラの配列を取得する。
-     */
+    // 裏ドラの配列を取得する
     public Hai[] getUraDoraHais()
     {
         int uraDoraHaisLength = _rinshanHaisIndex + 1;
@@ -246,17 +262,7 @@ public class Yama
         return true;
     }
 
-    /**
-     * ツモ牌の残り数を取得する。
-     */
-    public int getTsumoNokori()
-    {
-        return TSUMO_HAIS_MAX - _tsumoHaisIndex - _rinshanHaisIndex;
-    }
-
-    /**
-     * 红ドラ牌。
-     */
+    // 赤ドラ牌
     public void setRedDora(int id, int num)
     {
         if(num <= 0) 

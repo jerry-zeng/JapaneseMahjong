@@ -363,7 +363,7 @@ public class UIScrollView : MonoBehaviour
 		if (mStarted && Application.isPlaying) CheckScrollbars();
 	}
 
-	void Start ()
+    protected void Start ()
 	{
 		mStarted = true;
 		if (Application.isPlaying) CheckScrollbars();

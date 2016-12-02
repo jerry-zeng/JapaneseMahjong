@@ -12,10 +12,11 @@ public class Fuuro
     // 構成牌
     private Hai[] _hais;
 
-    // 他家との関係(和其他人的关系)
-    private int _relation = -1;
+    // 他家との関係(和其他人的关系, 新牌从谁那里得来)
+    private int _fromRelation = -1;
 
     // index of the new hai in m_hais that is newly picked by player or from others(AI). 
+    // 新牌的位置.
     private int _newPickIndex = -1;
 
 
@@ -43,8 +44,8 @@ public class Fuuro
 
     public int Relation
     {
-        get{ return _relation; }
-        set{ _relation = value; }
+        get{ return _fromRelation; }
+        set{ _fromRelation = value; }
     }
 
     public int NewPickIndex
@@ -61,12 +62,6 @@ public class Fuuro
         Relation = newRelation;
         NewPickIndex = newPick;
     }
-    public void Update(EFuuroType newType, Hai[] newHais, int newPick)
-    {
-        Type = newType;
-        Hais = newHais;
-        NewPickIndex = newPick;
-    }
 
     /// <summary>
     /// Copy the specified src furro to dest.
@@ -76,7 +71,7 @@ public class Fuuro
     public static void copy(Fuuro dest, Fuuro src)
     {
         dest._type = src._type;
-        dest._relation = src._relation;
+        dest._fromRelation = src._fromRelation;
         dest._newPickIndex = src._newPickIndex;
 
         for (int i = 0; i < Mahjong.MENTSU_HAI_MEMBERS_4; i++) {

@@ -12,7 +12,6 @@ public class MahjongMain : Mahjong
 {
     bool testHaipai = false;
 
-    AgariSetting arg_setting;
     EventId retEid = EventId.None;
     int score = 0;
     int iPlayer = 0;
@@ -124,8 +123,9 @@ public class MahjongMain : Mahjong
         Haipai();
     }
 
-    public void PrepareToStart() {
-        arg_setting = new AgariSetting( this );
+    public void PrepareToStart()
+    {
+        AgariSetting.Initialize(this);
     }
 
     public bool IsLastKyoku() {
@@ -226,30 +226,29 @@ public class MahjongMain : Mahjong
             {
                 m_kazeFrom = m_kazeTo = m_players[j].getJikaze();
 
-                m_score = new AgariScore();
-                m_score.setNagashiMangan( m_agariInfo ); // visitor.
+                AgariScoreManager.SetNagashiMangan( m_agariInfo ); // visitor.
 
                 iPlayer = getPlayerIndex( m_kazeFrom );
                 if( m_iOya == iPlayer ) // count chii cha score.
                 {
-                    score = m_agariInfo.m_score._oyaRon + (m_honba * 300);
+                    score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
 
                     for( int l = 0; l < 3; l++ ) {
                         iPlayer = (iPlayer + 1) % 4;
-                        m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._oyaTsumo + (m_honba * 100) );
+                        m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                     }
                 }
                 else 
                 {
-                    score = m_agariInfo.m_score._koRon + (m_honba * 300);
+                    score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
 
                     for( int l = 0; l < 3; l++ ) {
                         iPlayer = (iPlayer + 1) % 4;
                         if( m_iOya == iPlayer ) {
-                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._oyaTsumo + (m_honba * 100) );
+                            m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                         }
                         else {
-                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._koTsumo + (m_honba * 100) );
+                            m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.koTsumo + (m_honba * 100) );
                         }
                     }
                 }
@@ -257,7 +256,7 @@ public class MahjongMain : Mahjong
                 //1. add NagashiMangan score.
                 activePlayer.increaseTenbou( score );
 
-                m_agariInfo.m_agariScore = score - (m_honba * 300);
+                m_agariInfo.agariScore = score - (m_honba * 300);
 
                 // 点数を清算する。//2. add reach bou score.
                 activePlayer.increaseTenbou( m_reachbou * 1000 );
@@ -378,36 +377,35 @@ public class MahjongMain : Mahjong
             case EventId.TSUMO_AGARI:// ツモあがり.
             {
                 if( activePlayer.isReach() ) {
-                    arg_setting.setOmoteDoraHais( m_yama.getAllDoraHais() );
+                    AgariSetting.setOmoteDoraHais( getAllDoras() );
                 }
 
-                m_score = new AgariScore();
-                m_score.getAgariScore( activePlayer.getTehai(), m_tsumoHai, combis, arg_setting, m_agariInfo );
+                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_tsumoHai, combis, ref m_agariInfo );
 
                 iPlayer = getPlayerIndex( m_kazeFrom );
                 if( m_iOya == iPlayer ) {
-                    score = m_agariInfo.m_score._oyaRon + (m_honba * 300);
+                    score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
                     for( int i = 0; i < 3; i++ ) {
                         iPlayer = (iPlayer + 1) % 4;
-                        m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._oyaTsumo + (m_honba * 100) );
+                        m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                     }
                 }
                 else {
-                    score = m_agariInfo.m_score._koRon + (m_honba * 300);
+                    score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
                     for( int i = 0; i < 3; i++ ) {
                         iPlayer = (iPlayer + 1) % 4;
                         if( m_iOya == iPlayer ) {
-                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._oyaTsumo + (m_honba * 100) );
+                            m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                         }
                         else {
-                            m_players[iPlayer].reduceTenbou( m_agariInfo.m_score._koTsumo + (m_honba * 100) );
+                            m_players[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.koTsumo + (m_honba * 100) );
                         }
                     }
                 }
 
                 activePlayer.increaseTenbou( score ); //1. add Tsumo score.
 
-                m_agariInfo.m_agariScore = score - (m_honba * 300);
+                m_agariInfo.agariScore = score - (m_honba * 300);
 
                 // 点数を清算する。//2. add reach bou score.
                 activePlayer.increaseTenbou( m_reachbou * 1000 );
@@ -436,23 +434,22 @@ public class MahjongMain : Mahjong
             case EventId.RON_AGARI:// ロン
             {
                 if( activePlayer.isReach() ) {
-                    arg_setting.setOmoteDoraHais( m_yama.getAllDoraHais() );
+                    AgariSetting.setOmoteDoraHais( getAllDoras() );
                 }
 
-                m_score = new AgariScore();
-                m_score.getAgariScore( activePlayer.getTehai(), m_suteHai, combis, arg_setting, m_agariInfo );
+                AgariScoreManager.GetAgariScore( activePlayer.getTehai(), m_suteHai, combis, ref m_agariInfo );
 
                 if( m_iOya == getPlayerIndex( m_kazeFrom ) ) {
-                    score = m_agariInfo.m_score._oyaRon + (m_honba * 300);
+                    score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
                 }
                 else {
-                    score = m_agariInfo.m_score._koRon + (m_honba * 300);
+                    score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
                 }
 
                 getPlayer( m_kazeFrom ).increaseTenbou( score );
                 getPlayer( m_kazeTo ).reduceTenbou( score );
 
-                m_agariInfo.m_agariScore = score - (m_honba * 300);
+                m_agariInfo.agariScore = score - (m_honba * 300);
 
                 // 点数を清算する。
                 activePlayer.increaseTenbou( m_reachbou * 1000 );
@@ -530,7 +527,7 @@ public class MahjongMain : Mahjong
                 activePlayer.getTehai().addJyunTehai( m_tsumoHai );
                 sutehaiIndex = activePlayer.getSutehaiIndex();
                 kanHais = m_playerAction.getKanHais();
-                activePlayer.getTehai().setAnKan( kanHais[sutehaiIndex], getRelation( this.m_kazeFrom, this.m_kazeTo ) );
+                activePlayer.getTehai().setAnKan( kanHais[sutehaiIndex] );
 
                 // イベントを通知する。
                 result = PostGameEvent( EventId.ANKAN, m_kazeFrom, m_kazeFrom );
@@ -632,12 +629,12 @@ public class MahjongMain : Mahjong
     }
 
 
-    public override void PostUIEvent(EventId eventId, EKaze kazeFrom = EKaze.None, EKaze kazeTo = EKaze.None) {
+    public override void PostUIEvent(EventId eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton) {
         EventManager.Get().SendEvent(eventId, kazeFrom, kazeTo);
     }
 
 
-    public EventId PostGameEvent(EventId eventId, EKaze kazeFrom = EKaze.None, EKaze kazeTo = EKaze.None) 
+    public EventId PostGameEvent(EventId eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton) 
     {
         // UIイベントを発行する。
         PostUIEvent(eventId, kazeFrom, kazeTo);

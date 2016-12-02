@@ -187,10 +187,10 @@ public class AI : IPlayer
 
     private readonly static int HYOUKA_SHUU = 1;
 
-    private Combi[] combis = new Combi[10]
+    private HaiCombi[] combis = new HaiCombi[10]
     {
-        new Combi(),new Combi(),new Combi(),new Combi(),new Combi(),
-        new Combi(),new Combi(),new Combi(),new Combi(),new Combi()
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi()
     };
 
 
@@ -200,7 +200,7 @@ public class AI : IPlayer
         int maxScore = 0;
 
         m_sutehaiIndex = 13;
-        countFormat.setCountFormat(m_tehai, null);
+        countFormat.setCounterFormat(m_tehai, null);
         maxScore = getCountFormatScore(countFormat);
 
         Hai hai = new Hai();
@@ -217,7 +217,7 @@ public class AI : IPlayer
         {
             m_tehai.copyJyunTehaiIndex(hai, i);
             m_tehai.removeJyunTehai(i);
-            countFormat.setCountFormat(m_tehai, addHai);
+            countFormat.setCounterFormat(m_tehai, addHai);
             score = getCountFormatScore(countFormat);
 
             if (score > maxScore) {
@@ -260,9 +260,9 @@ public class AI : IPlayer
             for(int i = 0; i < haiTable.Length; i++) 
             {
                 Hai hai = haiTable[i];
-                countFormat.setCountFormat(tehai, hai);
+                countFormat.setCounterFormat(tehai, hai);
 
-                if (countFormat.getCombis(combis) > 0)
+                if (countFormat.calculateCombisCount(combis) > 0)
                     return true;
             }
         }
@@ -272,25 +272,28 @@ public class AI : IPlayer
     private int getCountFormatScore(CountFormat countFormat)
     {
         int score = 0;
+        HaiCounterInfo[] countArr;
 
-        for (int i = 0; i < countFormat._countNum; i++) 
+        for (int i = 0; i < countFormat.getCounterArrLength(); i++) 
         {
-            if ((countFormat._counts[i]._numKind & Hai.KIND_SHUU) != 0)
-                score += countFormat._counts[i]._num * HYOUKA_SHUU;
+            countArr = countFormat.getCounterArray();
 
-            if (countFormat._counts[i]._num == 2)
+            if ((countArr[i].numKind & Hai.KIND_SHUU) != 0)
+                score += countArr[i].count * HYOUKA_SHUU;
+
+            if (countArr[i].count == 2)
                 score += 4;
 
-            if (countFormat._counts[i]._num >= 3)
+            if (countArr[i].count >= 3)
                 score += 8;
 
-            if ((countFormat._counts[i]._numKind & Hai.KIND_SHUU) > 0)
+            if ((countArr[i].numKind & Hai.KIND_SHUU) > 0)
             {
-                if ((countFormat._counts[i]._numKind + 1) == countFormat._counts[i + 1]._numKind) {
+                if ((countArr[i].numKind + 1) == countArr[i + 1].numKind) {
                     score += 4;
                 }
 
-                if ((countFormat._counts[i]._numKind + 2) == countFormat._counts[i + 2]._numKind) {
+                if ((countArr[i].numKind + 2) == countArr[i + 2].numKind) {
                     score += 4;
                 }
             }

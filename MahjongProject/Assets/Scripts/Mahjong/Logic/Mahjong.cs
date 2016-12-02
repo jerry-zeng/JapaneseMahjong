@@ -34,17 +34,17 @@ public abstract class Mahjong
     // 本場
     protected int m_honba;
 
-    // プレイヤーの人数
-    protected int m_playerNum;
-
     // プレイヤーに提供する情報
     protected Info m_info;
 
-    // プレイヤーの配列
-    protected List<Player> m_players;
-
     // UIに提供する情報
     protected GameInfo m_infoUi;
+
+    // プレイヤーの人数
+    protected int m_playerNum;
+
+    // プレイヤーの配列
+    protected List<Player> m_players;
 
     // サイコロの配列
     protected Sai[] m_sais = new Sai[] { new Sai(), new Sai() };
@@ -66,7 +66,6 @@ public abstract class Mahjong
 
     // 捨牌数量.
     protected int m_suteHaisCount = 0;
-
     protected SuteHai[] m_suteHais = new SuteHai[SUTE_HAI_MAX];
 
     // 割れ目
@@ -78,15 +77,14 @@ public abstract class Mahjong
 
     protected bool[] m_tenpai = new bool[4];
 
-    protected Combi[] combis = new Combi[10]
+    protected HaiCombi[] combis = new HaiCombi[10]
     {
-        new Combi(),new Combi(),new Combi(),
-        new Combi(),new Combi(),new Combi(),
-        new Combi(),new Combi(),new Combi(),new Combi()
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi()
     };
 
     protected AgariInfo m_agariInfo = new AgariInfo();
-    protected AgariScore m_score;
 
 
     protected bool m_isTenhou = false;
@@ -320,6 +318,10 @@ public abstract class Mahjong
         return getYama().getUraDoraHais();
     }
 
+    public Hai[] getAllDoras(){
+        return getYama().getAllDoraHais();
+    }
+
     /**
      * ツモの残り数を取得する。
      */
@@ -380,53 +382,49 @@ public abstract class Mahjong
 
     public int getAgariScore(Tehai tehai, Hai addHai)
     {
-        AgariSetting setting = new AgariSetting(this);
-
-        setting.setOmoteDoraHais(getOmotoDoras());
+        AgariSetting.setOmoteDoraHais(getOmotoDoras());
 
         if( activePlayer.isReach() ) {
             if( activePlayer.isDoubleReach() ) {
-                setting.setYakuFlag((int)EYakuFlagType.DOUBLEREACH, true);
+                AgariSetting.setYakuFlag((int)EYakuFlagType.DOUBLE_REACH, true);
             }
             else {
-                setting.setYakuFlag((int)EYakuFlagType.REACH, true);
+                AgariSetting.setYakuFlag((int)EYakuFlagType.REACH, true);
             }
         }
 
         if( m_isTsumo ) {
-            setting.setYakuFlag((int)EYakuFlagType.TUMO, true);
+            AgariSetting.setYakuFlag((int)EYakuFlagType.TSUMO, true);
             if( m_isTenhou ) {
-                setting.setYakuFlag((int)EYakuFlagType.TENHOU, true);
+                AgariSetting.setYakuFlag((int)EYakuFlagType.TENHOU, true);
             }
             else if( m_isChiihou ) {
-                setting.setYakuFlag((int)EYakuFlagType.TIHOU, true);
+                AgariSetting.setYakuFlag((int)EYakuFlagType.TIHOU, true);
             }
         }
 
         if( m_isTsumo && m_isRinshan ) {
-            setting.setYakuFlag((int)EYakuFlagType.RINSYAN, true);
+            AgariSetting.setYakuFlag((int)EYakuFlagType.RINSYAN, true);
         }
 
         if( m_isLast ) {
             if( m_isTsumo ) {
-                setting.setYakuFlag((int)EYakuFlagType.HAITEI, true);
+                AgariSetting.setYakuFlag((int)EYakuFlagType.HAITEI, true);
             }
             else {
-                setting.setYakuFlag((int)EYakuFlagType.HOUTEI, true);
+                AgariSetting.setYakuFlag((int)EYakuFlagType.HOUTEI, true);
             }
         }
 
         if( activePlayer.isIppatsu() ) {
-            setting.setYakuFlag((int)EYakuFlagType.IPPATU, true);
+            AgariSetting.setYakuFlag((int)EYakuFlagType.IPPATU, true);
         }
 
         if( GameSettings.UseKuitan ) {
-            setting.setYakuFlag((int)EYakuFlagType.KUITAN, true);
+            AgariSetting.setYakuFlag((int)EYakuFlagType.KUITAN, true);
         }
 
-        m_score = new AgariScore();
-
-        return m_score.getAgariScore(tehai, addHai, combis, setting, m_agariInfo);
+        return AgariScoreManager.GetAgariScore(tehai, addHai, combis, ref m_agariInfo);
     }
 
     public void setSutehaiIndex(int sutehaiIdx)
@@ -439,6 +437,6 @@ public abstract class Mahjong
 
     // abstract methods.
     public abstract void initialize();
-    public abstract void PostUIEvent(EventId eventId, EKaze kazeFrom = EKaze.None, EKaze kazeTo = EKaze.None);
+    public abstract void PostUIEvent(EventId eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton);
 }
 
