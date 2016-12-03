@@ -15,24 +15,42 @@ public abstract class Mahjong
     public readonly static int SUTE_HAI_MAX = 136;
 
 
+    public static Mahjong current;
+
     #region Fields.
     // 山
     protected Yama m_yama;
 
+    // 本場
+    protected int m_honba;
+
     // 局
     protected int m_kyoku;
 
-    // 摸入牌
-    protected Hai m_tsumoHai;
-
-    // 打出牌
-    protected Hai m_suteHai;
+    // 連荘
+    protected bool m_renchan;
 
     // リーチ棒の数
     protected int m_reachbou;
 
-    // 本場
-    protected int m_honba;
+    // プレイヤーの配列
+    protected List<Player> m_playerList;
+    protected bool[] m_tenpaiFlags;
+
+    // サイコロの配列
+    protected Sai[] m_sais;
+
+    // 割れ目
+    protected int m_wareme;
+
+    // 親のプレイヤーインデックス
+    protected int m_oyaIndex;
+
+    // 起家のプレイヤーインデックス
+    protected int m_chiichaIndex;
+
+    // 捨牌数量.
+    protected List<SuteHai> m_suteHaiList;
 
     // プレイヤーに提供する情報
     protected Info m_info;
@@ -40,23 +58,6 @@ public abstract class Mahjong
     // UIに提供する情報
     protected GameInfo m_infoUi;
 
-    // プレイヤーの人数
-    protected int m_playerNum;
-
-    // プレイヤーの配列
-    protected List<Player> m_players;
-
-    // サイコロの配列
-    protected Sai[] m_sais = new Sai[] { new Sai(), new Sai() };
-
-    // 親のプレイヤーインデックス
-    protected int m_iOya;
-
-    // 起家のプレイヤーインデックス
-    protected int m_iChiicha;
-
-    // 連荘
-    protected bool m_renchan;
 
     // イベントを発行した風
     protected EKaze m_kazeFrom;
@@ -64,21 +65,15 @@ public abstract class Mahjong
     // イベントの対象となった風
     protected EKaze m_kazeTo;
 
-    // 捨牌数量.
-    protected int m_suteHaisCount = 0;
-    protected SuteHai[] m_suteHais = new SuteHai[SUTE_HAI_MAX];
-
-    // 割れ目
-    protected int m_wareme;
-
-    // アクティブプレイヤー
+    // current player
     protected Player activePlayer;
-    protected PlayerAction m_playerAction = new PlayerAction();
 
-    protected bool[] m_tenpai = new bool[4];
+    // 摸入牌
+    protected Hai m_tsumoHai = new Hai();
+    // 打出牌
+    protected Hai m_suteHai = new Hai();
 
     protected HaiCombi[] m_combis = new HaiCombi[0];
-
     protected AgariInfo m_agariInfo = new AgariInfo();
 
 
@@ -95,12 +90,14 @@ public abstract class Mahjong
     public Player getActivePlayer() {
         return activePlayer;
     }
-    public int getSuteHaisCount() {
-        return m_suteHaisCount;
+
+    public PlayerAction getPlayerAction()
+    {
+        return getActivePlayer().getAction();
     }
 
-    public SuteHai[] getSuteHais() {
-        return m_suteHais;
+    public SuteHai[] getSuteHaiList() {
+        return m_suteHaiList.ToArray();
     }
 
     public Yama getYama() {
@@ -119,7 +116,7 @@ public abstract class Mahjong
         return m_tsumoHai;
     }
 
-    public Hai getSuteHai() {
+    public Hai getSuTehai() {
         return m_suteHai;
     }
 
@@ -132,15 +129,15 @@ public abstract class Mahjong
 
     // 起家のプレイヤーインデックスを取得する
     public int getChiichaIndex() {
-        return m_iChiicha;
+        return m_chiichaIndex;
     }
 
     public Sai[] getSais() {
         return m_sais;
     }
 
-    public bool[] getTenpai() {
-        return m_tenpai;
+    public bool[] getTenpaiFlags() {
+        return m_tenpaiFlags;
     }
 
     public int getHonba() {
@@ -152,7 +149,14 @@ public abstract class Mahjong
     }
 
     public List<Player> getPlayers() {
-        return m_players;
+        return m_playerList;
+    }
+
+    public Info getInfo(){
+        return m_info;
+    }
+    public GameInfo getInfoUI(){
+        return m_infoUi;
     }
 
     #endregion get&set-properties.
@@ -166,13 +170,13 @@ public abstract class Mahjong
 
         ERelation relation;
         if( fromKaze == toKaze ) {
-            relation = ERelation.JiBun;
+            relation = ERelation.JiBun; //自家
         }
         else if( (fromKaze + 1) % 4 == toKaze ) {
             relation = ERelation.ShiMoCha; //下家.
         }
         else if( (fromKaze + 2) % 4 == toKaze ) {
-            relation = ERelation.ToiMen;
+            relation = ERelation.ToiMen;  //对家
         }
         else //if( (fromKaze + 3) % 4 == toKaze )
         {
@@ -185,14 +189,14 @@ public abstract class Mahjong
 
     // -----------------------virtual methods start---------------------------
     #region virtual methods.
-    public void setJikaze()
+    // プレイヤーの自風を設定する
+    public void setPlayerKaze()
     {
-        EKaze kaze = (EKaze)m_iOya;
+        EKaze kaze = (EKaze)m_oyaIndex;
 
-        for( int i = 0; i < m_players.Count; i++)
+        for( int i = 0; i < m_playerList.Count; i++)
         {
-            // プレイヤーの自風を設定する。
-            m_players[i].setJikaze( kaze );
+            m_playerList[i].JiKaze = kaze;
 
             kaze = kaze.Next();
         }
@@ -212,37 +216,39 @@ public abstract class Mahjong
     /// <summary>
     /// get player from kaze.
     /// </summary>
-    public Player getPlayer( int kaze )
+    public Player getPlayer( int index )
     { 
-        return getPlayer((EKaze)kaze);
+        if(index >= 0 && index < m_playerList.Count)
+            return m_playerList[index];
+        return null;
     }
 
     public Player getPlayer( EKaze kaze )
     { 
-        return m_players.Find((p) => p.getJikaze() == kaze);
+        return m_playerList.Find((p) => p.JiKaze == kaze);
     }
 
     /// <summary>
     /// get player index from kaze.
     /// </summary>
     public int getPlayerIndex( EKaze kaze ) { 
-        return m_players.FindIndex( (p) => p.getJikaze() == kaze );
+        return m_playerList.FindIndex( (p) => p.JiKaze == kaze );
     }
 
     public int getPlayerSuteHaisCount(EKaze kaze) {
-        return getPlayer(kaze).getSuteHaisCount();
+        return getPlayer(kaze).SuteHaisCount;
     }
 
     public virtual bool isReach(EKaze kaze) {
-        return getPlayer(kaze).isReach();
+        return getPlayer(kaze).IsReach;
     }
 
     public int getTenbou(EKaze kaze) {
-        return getPlayer(kaze).getTenbou();
+        return getPlayer(kaze).Tenbou;
     }
 
     public string getName(EKaze kaze) {
-        return getPlayer(kaze).getName();
+        return getPlayer(kaze).Name;
     }
 
     // 表ドラ、槓ドラの配列を取得する
@@ -266,12 +272,12 @@ public abstract class Mahjong
 
     public EKaze getManKaze()
     {
-        return m_players[0].getJikaze();
+        return m_playerList[0].JiKaze;
     }
 
     // 自風を取得する
     public EKaze getJiKaze() {
-        return m_players[m_iOya].getJikaze();
+        return m_playerList[m_oyaIndex].JiKaze;
     }
 
     public EKaze getBaKaze() {
@@ -286,24 +292,24 @@ public abstract class Mahjong
     // 手牌をコピーする
     public void copyTehai(Tehai tehai, EKaze kaze)
     {
-        if( activePlayer.getJikaze() == (EKaze)kaze ) {
-            Tehai.copy(tehai, activePlayer.getTehai(), true);
+        if( activePlayer.JiKaze == (EKaze)kaze ) {
+            Tehai.copy(tehai, activePlayer.Tehai, true);
         }
         else {
-            Tehai.copy(tehai, getPlayer(kaze).getTehai(), false);
+            Tehai.copy(tehai, getPlayer(kaze).Tehai, false);
         }
     }
 
     // 手牌をコピーする
     public void copyTehaiUi(Tehai tehai, EKaze kaze)
     {
-        Tehai.copy(tehai, getPlayer(kaze).getTehai(), true);
+        Tehai.copy(tehai, getPlayer(kaze).Tehai, true);
     }
 
     // 河をコピーする
     public void copyHou(Hou hou, EKaze kaze)
     {
-        Hou.copy(hou, getPlayer(kaze).getHou());
+        Hou.copy(hou, getPlayer(kaze).Hou);
     }
 
 
@@ -311,8 +317,8 @@ public abstract class Mahjong
     {
         AgariParam param = new AgariParam(this);
 
-        if( activePlayer.isReach() ) {
-            if( activePlayer.isDoubleReach() ) {
+        if( activePlayer.IsReach ) {
+            if( activePlayer.IsDoubleReach ) {
                 param.setYakuFlag((int)EYakuFlagType.DOUBLE_REACH, true);
             }
             else {
@@ -343,7 +349,7 @@ public abstract class Mahjong
             }
         }
 
-        if( activePlayer.isIppatsu() ) {
+        if( activePlayer.IsIppatsu ) {
             param.setYakuFlag((int)EYakuFlagType.IPPATU, true);
         }
 
@@ -379,36 +385,42 @@ public abstract class Mahjong
     protected virtual void Haipai()
     {
         // everyone picks 3x4 hais.
-        for( int i = 0, j = m_iOya; i < m_players.Count * 12; j++ ) 
+        for( int i = 0, j = m_oyaIndex; i < m_playerList.Count * 12; j++ ) 
         {
-            if( j >= m_players.Count )
+            if( j >= m_playerList.Count )
                 j = 0;
 
             // pick 4 hais oncely.
             Hai[] hais = m_yama.PickHaipai();
             for( int h = 0; h < hais.Length; h++ )
             {
-                m_players[j].getTehai().addJyunTehai( hais[h] );
+                m_playerList[j].Tehai.addJyunTehai( hais[h] );
 
                 i++;
             }
         }
 
         // then everyone picks 1 hai.
-        for( int i = 0, j = m_iOya; i < 4; i++,j++ )
+        for( int i = 0, j = m_oyaIndex; i < 4; i++,j++ )
         {
-            if( j >= m_players.Count )
+            if( j >= m_playerList.Count )
                 j = 0;
 
-            m_players[j].getTehai().addJyunTehai( m_yama.PickTsumoHai() );
+            m_playerList[j].Tehai.addJyunTehai( m_yama.PickTsumoHai() );
         }
     }
 
     #endregion virtual methods.
 
 
+    public Mahjong()
+    {
+        current = this;
+        initialize();
+    }
+
     // abstract methods.
-    public abstract void initialize();
-    public abstract void PostUIEvent(EventID eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton);
+    protected abstract void initialize();
+    public abstract void PostUIEvent(UIEventID eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton);
 }
 

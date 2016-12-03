@@ -6,7 +6,7 @@ using System.Collections.Generic;
  * 麻将界面。
  */
 
-public class MahjongView : UIObject, IObserver 
+public class MahjongView : UIObject, IUIObserver 
 {
 
     private Dictionary<int, PlayerUI> playerUIDic = new Dictionary<int, PlayerUI>( 4 );
@@ -103,32 +103,32 @@ public class MahjongView : UIObject, IObserver
 
 
     // handle ui event.
-    public void OnHandleEvent(EventID evtID, object[] args) 
+    public void OnHandleEvent(UIEventID evtID, object[] args) 
     {
         switch(evtID)
         {
-        case EventID.Init_Game: // game init /
+            case UIEventID.Init_Game: // game init /
             {
                 Init();
                 Clear();
             }
             break;
 
-        case EventID.Saifuri: 
+            case UIEventID.Saifuri: 
             {
                 SetSaisButton( evtID );
             }
             break;
 
-        case EventID.Init_PlayerInfoUI: 
+            case UIEventID.Init_PlayerInfoUI: 
             {
                 List<Player> players = Model.getPlayers();
                 for( int i = 0; i < players.Count; i++ ) {
                     Player player = players[i];
                     PlayerUI ui = playerUIDic[i];
 
-                    ui.SetKaze( player.getJikaze() );
-                    ui.SetTenbou( player.getTenbou() );
+                    ui.SetKaze( player.JiKaze );
+                    ui.SetTenbou( player.Tenbou );
                     ui.Reach( false );
 
                     ui.SetOyaKaze( i == Model.getChiichaIndex() );
@@ -137,7 +137,7 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
-        case EventID.SetYama_BeforeHaipai: 
+            case UIEventID.SetYama_BeforeHaipai: 
             {
                 // Yama.
                 const int MaxLength = YamaUI.MaxYamaPairInPlayer * 2;
@@ -167,13 +167,13 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
-        case EventID.Saifuri_For_Haipai: 
+            case UIEventID.Saifuri_For_Haipai: 
             {
                 SetSaisButton( evtID );
             }
             break;
 
-        case EventID.SetUI_AfterHaipai: // 配牌 /
+            case UIEventID.SetUI_AfterHaipai: // 配牌 /
             {
                 /// set game info.
                 gameInfo.SetKyoku( Model.getBaKaze(), Model.getkyoku() );
@@ -187,7 +187,7 @@ public class MahjongView : UIObject, IObserver
 
                     PlayerUI ui = playerUIDic[i];
 
-                    ui.SetTehai( player.getTehai().getJyunTehai() );
+                    ui.SetTehai( player.Tehai.getJyunTehai() );
                     ui.SetAllHaisVisiable( true );
                 }
 
@@ -221,16 +221,13 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
-            
-        
-        default:
-            break;
         }
     }
 
 
-    EventID lastSaifuriTarget = 0;
-    void SetSaisButton(EventID saiTarget) {
+    UIEventID lastSaifuriTarget = 0;
+    void SetSaisButton(UIEventID saiTarget) 
+    {
         if( saisButton == null ){
             saisButton = saifuriPanel.transform.FindChild("SaisButton").GetComponent<UIButton>();
             saisButton.onClick.Clear();
@@ -240,7 +237,7 @@ public class MahjongView : UIObject, IObserver
             saiTip = saifuriPanel.transform.FindChild("tip").GetComponent<UILabel>();            
         }
 
-        if( saiTarget == EventID.Saifuri ) {
+        if( saiTarget == UIEventID.Saifuri ) {
             saiTip.text = "Saifuri for deciding Chiicha";
         }
         else {
@@ -266,15 +263,15 @@ public class MahjongView : UIObject, IObserver
         saifuriPanel.SetActive(false);
 
 
-        EventID evtID = EventID.None;
-        if( lastSaifuriTarget == EventID.On_Saifuri_End ) {
-            evtID = EventID.On_Saifuri_End;
+        UIEventID evtID = UIEventID.None;
+        if( lastSaifuriTarget == UIEventID.On_Saifuri_End ) {
+            evtID = UIEventID.On_Saifuri_End;
         }
         else {
-            evtID = EventID.On_Saifuri_For_Haipai_End;
+            evtID = UIEventID.On_Saifuri_For_Haipai_End;
         }
 
-        EventManager.Get().SendEvent(evtID);
+        EventManager.Get().SendUIEvent(evtID);
     }
 
 

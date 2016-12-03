@@ -1,115 +1,126 @@
-﻿
+﻿using System;
+
 /// <summary>
 /// Player.
 /// </summary>
 
 public class Player
 {
+    private string _name;
     private IPlayer _iplayer;
 
-    public Player(IPlayer player)
+    public Player(string name, IPlayer player)
     {
+        this._name = name;
         this._iplayer = player;
     }
 
-    private IPlayer getPlayer() {
-        return this._iplayer;
-    }
-
     #region proxy.
-    public string getName() {
-        return this._iplayer.getName();
+    public bool IsAI
+    {
+        get{ return _iplayer.IsAI; }
     }
-    public bool isAI() {
-        return this._iplayer.isAI();
+    public PlayerAction getAction()
+    {
+        return _iplayer.getAction();
     }
-    public int getSutehaiIndex() {
-        return this._iplayer.getSutehaiIndex();
+    public int getSutehaiIndex()
+    {
+        return _iplayer.getAction().SutehaiIndex;
     }
-    public EventID HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo) {
-        return this._iplayer.HandleEvent(evtID, kazeFrom, kazeTo);
+    public EventID HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction)
+    {
+        _iplayer.HandleEvent(evtID, kazeFrom, kazeTo, onAction);
+        return EventID.None;
     }
     #endregion proxy.
 
 
+    public string Name
+    {
+        get{ return _name; }
+    }
+
     // 手牌
     private Tehai _tehai = new Tehai();
-    public Tehai getTehai() {
-        return _tehai;
+    public Tehai Tehai
+    {
+        get{ return _tehai; }
     }
 
     // 河
     private Hou _hou = new Hou();
-    public Hou getHou() {
-        return _hou;
+    public Hou Hou
+    {
+        get{ return _hou; }
     }
 
     // 自風
     private EKaze _jikaze;
-    public EKaze getJikaze() {
-        return _jikaze;
-    }
-    public void setJikaze(EKaze jikaze) {
-        this._jikaze = jikaze;
+    public EKaze JiKaze
+    {
+        get{ return _jikaze; }
+        set{ _jikaze = value; }
     }
 
     // 点棒
     private int _tenbou;
-    public int getTenbou() {
-        return _tenbou;
-    }
-    public void setTenbou(int tenbou) {
-        this._tenbou = tenbou;
-    }
-
-    // 点棒を増やします
-    public void increaseTenbou(int ten) {
-        _tenbou += ten;
-    }
-
-    // 点棒を減らします
-    public void reduceTenbou(int ten) {
-        _tenbou -= ten;
+    public int Tenbou 
+    {
+        get{ return _tenbou; }
+        set{ _tenbou = value; }
     }
 
     // リーチ
     private bool _reach;
-    public bool isReach() {
-        return _reach;
-    }
-    public void setReach(bool reach) {
-        this._reach = reach;
+    public bool IsReach
+    {
+        get{ return _reach; }
+        set{ _reach = value; }
     }
 
     // ダブルリーチ
     private bool _doubleReach;
-    public bool isDoubleReach() {
-        return _doubleReach;
-    }
-    public void setDoubleReach(bool a_doubleReach) {
-        this._doubleReach = a_doubleReach;
-    }
-
-    // 捨牌数
-    private int _suteHaisCount;
-    public void setSuteHaisCount(int a_suteHaisCount) {
-        this._suteHaisCount = a_suteHaisCount;
-    }
-    public int getSuteHaisCount() {
-        return _suteHaisCount;
+    public bool IsDoubleReach
+    {
+        get{ return _doubleReach; }
+        set{ _doubleReach = value; }
     }
 
     // 一発
     private bool _ippatsu;
-    public void setIppatsu(bool a_ippatsu) {
-        this._ippatsu = a_ippatsu;
-    }
-    public bool isIppatsu() {
-        return _ippatsu;
+    public bool IsIppatsu
+    {
+        get{ return _ippatsu; }
+        set{ _ippatsu = value; }
     }
 
+    // 捨牌数
+    private int _suteHaisCount;
+    public int SuteHaisCount
+    {
+        get{ return _suteHaisCount; }
+        set{ _suteHaisCount = value; }
+    }
 
     private CountFormat _countFormat = new CountFormat();
+    public CountFormat FormatWorker
+    {
+        get{ return _countFormat; }
+    }
+
+
+    // 点棒を増やします
+    public void increaseTenbou(int value)
+    {
+        Tenbou += value;
+    }
+
+    // 点棒を減らします
+    public void reduceTenbou(int value)
+    {
+        Tenbou -= value;
+    }
 
     // 听牌
     public bool isTenpai()
@@ -117,12 +128,12 @@ public class Player
         if( _reach == true )
             return true;
 
-        for( int id = 0; id < Hai.ID_ITEM_MAX; id++ )
+        for( int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++ )
         {
             Hai addHai = new Hai(id);
-            _countFormat.setCounterFormat(_tehai, addHai);
+            FormatWorker.setCounterFormat(_tehai, addHai);
 
-            if( _countFormat.calculateCombisCount(null) > 0 )
+            if( FormatWorker.calculateCombisCount(null) > 0 )
                 return true;
         }
 
@@ -140,11 +151,17 @@ public class Player
 
         // リーチを初期化します。
         _reach = false;
-
-        _ippatsu = false;
         _doubleReach = false;
+        _ippatsu = false;
 
         _suteHaisCount = 0;
+
+        AttachAI();
+    }
+
+    public void AttachAI()
+    {
+        _iplayer.AttachToPlayer(this);
     }
 
 }

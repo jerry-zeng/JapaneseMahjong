@@ -13,11 +13,10 @@ public class InitGameState : MahjongState
     }
 
     IEnumerator InitData() {
-        logicOwner.initialize();
 
         yield return new WaitForEndOfFrame();
 
-        EventManager.Get().SendEvent( EventID.Init_Game );
+        EventManager.Get().SendUIEvent( UIEventID.Init_Game );
 
         owner.ChangeState<PrepareState>();
     }

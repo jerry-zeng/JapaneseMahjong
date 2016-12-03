@@ -1,17 +1,12 @@
 ﻿
-public interface IPlayer : IEventReceiver 
+public interface IPlayer 
 {
-    // name.
-    string getName();
+    bool IsAI { get; }
 
-    // is ai or man.
-    bool isAI();
+    void AttachToPlayer( Player owner );
 
-    // 捨牌
-    int getSutehaiIndex();
+    PlayerAction getAction();
+    void HandleEvent(EventID eventID, EKaze kazeFrom, EKaze kazeTo, System.Action<EventID> onAction);
+    EventID DoAction(EventID result);
 }
 
-public interface IEventReceiver 
-{
-    EventID HandleEvent(EventID a_eventId, EKaze kazeFrom, EKaze kazeTo);
-}

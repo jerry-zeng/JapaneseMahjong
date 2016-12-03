@@ -6,68 +6,86 @@ using System.Collections.Generic;
 public class EventManager 
 {
     private List<IObserver> observerList = null;
+    private List<IUIObserver> uiObserverList = null;
 
-    private EventManager() {
+    private EventManager() 
+    {
         observerList = new List<IObserver>();
+        uiObserverList = new List<IUIObserver>();
     }
 
     private static EventManager instance = null;
     public static EventManager Get()
     {
-        if(instance == null){
+        if(instance == null)
             instance = new EventManager();
-        }
         return instance;
     }
 
 
-    public static void CleanUp() {
+    public static void CleanUp()
+    {
         instance.observerList.Clear();
+        instance.uiObserverList.Clear();
         instance = null;
     }
 
     // add
-    public void addObserver(IObserver observer) {
-        if(observer == null){
+    public void addObserver(IObserver observer) 
+    {
+        if(observer == null)
             return;
-        }
-        if(!observerList.Contains(observer)){
-            observerList.Add(observer);
-        }
+        
+        if(!observerList.Contains(observer))
+            observerList.Add(observer);        
     }
-
     // remove
-    public void removeObserver(IObserver observer) {
-        if(observer == null){
+    public void removeObserver(IObserver observer) 
+    {
+        if(observer == null)
             return;
-        }
-        if(observerList.Contains(observer)){
+        
+        if(observerList.Contains(observer))
             observerList.Remove(observer);
-        }
     }
 
+    public void addObserver(IUIObserver observer) 
+    {
+        if(observer == null)
+            return;
+        
+        if(!uiObserverList.Contains(observer))
+            uiObserverList.Add(observer);
+    }
+    public void removeObserver(IUIObserver observer) 
+    {
+        if(observer == null)
+            return;
+        
+        if(uiObserverList.Contains(observer))
+            uiObserverList.Remove(observer);
+    }
 
-    // 
-    public void SendEvent(EventID evtId) {
-        SendEvent(evtId, new object[]{});
-    }
-    public void SendEvent(EventID evtId, object arg0) {
-        SendEvent(evtId, new object[]{ arg0 });
-    }
-    public void SendEvent(EventID evtId, object arg0, object arg1) {
-        SendEvent(evtId, new object[]{ arg0, arg1 });
-    }
-    public void SendEvent(EventID evtId, object arg0, object arg1, object arg2) {
-        SendEvent(evtId, new object[]{ arg0, arg1, arg2 });
-    }
 
     // send event.
-    public void SendEvent(EventID evtId, object[] args) {
-        for( int i = 0; i < observerList.Count; i++ ) {
+    public void SendGameEvent(EventID evtID, params object[] args) 
+    {
+        for( int i = 0; i < observerList.Count; i++ ) 
+        {
             IObserver observer = (IObserver)observerList[i];
-            if( observer != null ) {
-                observer.OnHandleEvent(evtId, args);
-            }
+            if( observer != null )
+                observer.OnHandleEvent(evtID, args);
+        }
+    }
+
+    // send ui event.
+    public void SendUIEvent(UIEventID evtID, params object[] args) 
+    {
+        for( int i = 0; i < uiObserverList.Count; i++ ) 
+        {
+            IUIObserver observer = (IUIObserver)uiObserverList[i];
+            if( observer != null )
+                observer.OnHandleEvent(evtID, args);
         }
     }
 }

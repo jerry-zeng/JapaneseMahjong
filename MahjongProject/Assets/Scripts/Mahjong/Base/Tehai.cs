@@ -24,6 +24,18 @@ public class Tehai
     // 副露の配列
     private List<Fuuro> _fuuros = new List<Fuuro>(FUURO_MAX);
 
+
+    public Tehai()
+    {
+        initialize();
+    }
+
+    public Tehai( Tehai src )
+    {
+        initialize();
+        copy( this, src, true );
+    }
+
     public void initialize()
     {
         _jyunTehais.Clear();

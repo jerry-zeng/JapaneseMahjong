@@ -4,10 +4,6 @@ public enum EventID
 {
     None = 0,
 
-    // ゲームの開始 
-    Start_Game = 1,
-    // 局の開始 
-    Start_Kyoku,
     // pick a tsumo hai. 
     PickHai,
     // 捨牌の選択 
@@ -30,48 +26,20 @@ public enum EventID
     Kakan,
     // 暗槓 
     Ankan,
+    // ロンのチェック 
+    Ron_Check,
     // ツモあがり 
     Tsumo_Agari,
     // ロンあがり 
     Ron_Agari,
     // 流し 
     Nagashi,
-    // 流局 
-    RyuuKyoku,
-    // 局の終了 
-    End_Kyoku,
-    // ゲームの終了 
-    End_Game,
+}
 
-    // ロンのチェック 
-    Ron_Check,
-    // 理牌待ち 
-    UI_Wait_Rihai,
-    // 進行待ち 
-    UI_Wait_Progress,
-    // プレイヤーアクションの入力 
-    UI_Input_Player_Action,
-    // 連荘
-    RenChan,
-    // Saifuri
-    Saifuri,
-    // 配牌
-    HaiPai,
-
-
-    //-----------------------------About UI Event----------------------------
-    Init_Game = 100,
-
-
-    On_Saifuri_End,
-
-    Init_PlayerInfoUI,
-
-    Saifuri_For_Haipai,
-    On_Saifuri_For_Haipai_End,
-
-    SetYama_BeforeHaipai,
-    SetUI_AfterHaipai,
-
-
+public static class EventIDHelper
+{
+    public static UIEventID ToUIEventID( this EventID evt)
+    {
+        return (UIEventID)((int)evt);
+    }
 }

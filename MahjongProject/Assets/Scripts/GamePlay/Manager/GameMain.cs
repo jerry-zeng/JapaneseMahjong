@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class GameMain : StateMachine, IObserver
+public class GameMain : StateMachine, IUIObserver
 {
 
     private static GameMain _instance;
@@ -59,17 +59,14 @@ public class GameMain : StateMachine, IObserver
         eventDelegates.Clear();
     }
 
-    public void OnHandleEvent(EventID evtID, object[] args) 
+    public void OnHandleEvent(UIEventID evtID, object[] args) 
     {
         switch(evtID)
         {
-        case EventID.On_Saifuri_End:
-        case EventID.On_Saifuri_For_Haipai_End:
-            CallDelegates();
-            break;
-
-        default:
-            break;
+            case UIEventID.On_Saifuri_End:
+            case UIEventID.On_Saifuri_For_Haipai_End:
+                CallDelegates();
+                break;
         }
     }
 }

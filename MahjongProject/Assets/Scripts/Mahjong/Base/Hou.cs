@@ -13,6 +13,13 @@ public class Hou
     // 捨牌の配列.
     protected List<SuteHai> _suteHais = new List<SuteHai>(SUTE_HAIS_LENGTH_MAX);
 
+    public Hou(){
+        
+    }
+    public Hou( Hou src ){
+        copy(this, src);
+    }
+
 
     public void initialize()
     {

@@ -1,144 +1,160 @@
-﻿
-/// <summary>
-/// AIを実装するクラスです
-/// </summary>
+﻿using System;
+
 
 public class AI : IPlayer 
 {
-    // Infoのコンストラクタ
-    private Info m_info;
-
-    // AIの名前
-    private string m_name;
-
-    // 捨牌のインデックス
-    private int m_sutehaiIndex;
+    protected Player _owner;
+    protected PlayerAction _action = new PlayerAction();
+    protected Action<EventID> _onAction;
 
     // 手牌
-    private Tehai m_tehai = new Tehai();
+    protected Tehai Tehai
+    {
+        get{ return _owner.Tehai; }
+    }
 
     // 河
-    private Hou m_hou = new Hou();
-
-    // 捨牌
-    private Hai m_suteHai = new Hai();
-
-
-    public AI(Info a_info, string a_name)
+    protected Hou Hou
     {
-        this.m_info = a_info;
-        this.m_name = a_name;
+        get{ return _owner.Hou; }
     }
 
-    public string getName() {
-        return m_name;
-    }
-    public bool isAI() {
-        return true;
-    }
-    public int getSutehaiIndex() {
-        return m_sutehaiIndex;
-    }
-
-
-    public EventID HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo) 
+    // Infoのコンストラクタ
+    protected Info MahjongInfo
     {
-        EventID result = EventID.Nagashi;
+        get{ return Mahjong.current.getInfo(); }
+    }
+
+
+    public bool IsAI
+    {
+        get{ return true; }
+    }
+
+    public void AttachToPlayer( Player owner )
+    {
+        this._owner = owner;
+    }
+
+    public PlayerAction getAction()
+    {
+        return _action;
+    }
+
+    public EventID DoAction(EventID result)
+    {
+        if(_onAction != null) _onAction.Invoke(result);
+        return result;
+    }
+
+
+    public void HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction) 
+    {
+        this._onAction = onAction;
 
         switch(evtID) 
         {
             case EventID.PickHai:
-                result = eventTsumo(kazeFrom, kazeTo);
+            {
+                eventPickHai(kazeFrom, kazeTo);
+            }
             break;
 
+            case EventID.SuteHai:
             case EventID.Pon:
             case EventID.Chii_Center:
             case EventID.Chii_Left:
             case EventID.Chii_Right:
-            case EventID.DaiMinKan:
-            case EventID.SuteHai:
+            case EventID.DaiMinKan:            
             case EventID.Ron_Check:
             case EventID.Reach:
-                result = eventSutehai(kazeFrom, kazeTo);
+            {
+                eventSutehai(kazeFrom, kazeTo);
+            }               
             break;
 
             case EventID.Select_SuteHai:
             {
-                m_info.copyTehai(m_tehai);
+                MahjongInfo.copyTehai(Tehai);
                 thinkSutehai(null);
             }
             break;
-        }
 
-        return result;
+            default:
+            {
+                DoAction(EventID.Nagashi);
+            }
+            break;
+        }
     }
 
-    private EventID eventTsumo(EKaze kazeFrom, EKaze kazeTo)
+
+    protected EventID eventPickHai(EKaze kazeFrom, EKaze kazeTo)
     {
-        m_info.copyTehai(m_tehai);
-        Hai tsumoHai = m_info.getTsumoHai();
+        MahjongInfo.copyTehai(Tehai);
+        Hai tsumoHai = MahjongInfo.getTsumoHai();
 
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
-        int agariScore = m_info.getAgariScore(m_tehai, tsumoHai);
-        if (agariScore > 0) 
-            return EventID.Tsumo_Agari;
+        int agariScore = MahjongInfo.getAgariScore(Tehai, tsumoHai);
+        if (agariScore > 0)
+            return DoAction(EventID.Tsumo_Agari);
 
         // リーチの場合は、ツモ切りする。
-        if (m_info.isReach()) {
-            m_sutehaiIndex = 13;
-            return EventID.SuteHai;
+        if (MahjongInfo.isReach()) {
+            _action.SutehaiIndex = 13;
+            return DoAction(EventID.SuteHai);
         }
 
         thinkSutehai(tsumoHai);
 
         // 捨牌を決めたので手牌を更新します。
-        if (m_sutehaiIndex != 13) {
-            m_tehai.removeJyunTehai(m_sutehaiIndex);
-            m_tehai.addJyunTehai(tsumoHai);
+        if (_action.SutehaiIndex != 13) {
+            Tehai.removeJyunTehai(_action.SutehaiIndex);
+            Tehai.addJyunTehai(tsumoHai);
         }
 
         // リーチする場合はイベント（リーチ）を返します。
-        if (thinkReach(m_tehai))
-            return EventID.Reach;
+        if (thinkReach(Tehai))
+            return DoAction(EventID.Reach);
 
-        return EventID.SuteHai;
+        return DoAction(EventID.SuteHai);
     }
 
-    private EventID eventSutehai(EKaze kazeFrom, EKaze kazeTo)
+    protected EventID eventSutehai(EKaze kazeFrom, EKaze kazeTo)
     {
-        if (kazeFrom == m_info.getJikaze())
-            return EventID.Nagashi;
+        if (kazeFrom == MahjongInfo.getJikaze())
+            return DoAction(EventID.Nagashi);
 
-        m_info.copyTehai(m_tehai);
-        m_suteHai = m_info.getSuteHai();
-        m_info.copyHou(m_hou, m_info.getJikaze());
+        MahjongInfo.copyTehai(Tehai);
+        MahjongInfo.copyHou(Hou, MahjongInfo.getJikaze());
 
         if(isFuriten() == false)
         {
-            int agariScore = m_info.getAgariScore(m_tehai, m_suteHai);
+            Hai m_suteHai = MahjongInfo.getSuteHai();
+            int agariScore = MahjongInfo.getAgariScore(Tehai, m_suteHai);
+
             if (agariScore > 0)
-                return EventID.Ron_Agari;
+                return DoAction(EventID.Ron_Agari);
         }
 
-        return EventID.Nagashi;
+        return DoAction(EventID.Nagashi);
     }
 
     // 振听.
-    private bool isFuriten()
+    protected bool isFuriten()
     {
         bool furiten = false;
-        Hai[] hais = new Hai[Hai.ID_ITEM_MAX];
-        int indexNum = m_info.getMachiIndexs(m_tehai, hais);
+
+        Hai[] hais = new Hai[Hai.ID_MAX+1];
+        int indexNum = MahjongInfo.getMachiIndexs(Tehai, hais);
 
         if (indexNum > 0) 
         {
-            SuteHai suteHaiTemp = new SuteHai();
-            SuteHai[] suteHais = m_hou.getSuteHais();
-            int suteHaisLength = suteHais.Length;
+            SuteHai[] suteHais = Hou.getSuteHais();
 
-            for (int i = 0; i < suteHaisLength; i++)
+            for (int i = 0; i < suteHais.Length; i++)
             {
-                suteHaiTemp = suteHais[i];
+                SuteHai suteHaiTemp = suteHais[i];
                 for (int j = 0; j < indexNum; j++)
                 {
                     if (suteHaiTemp.ID == hais[j].ID){
@@ -151,19 +167,15 @@ public class AI : IPlayer
                 // go out of double for().
             }
 
-            if (!furiten) 
+            if( furiten == false ) 
             {
-                suteHais = m_info.getSuteHais();
+                suteHais = MahjongInfo.getSuteHaiList();
+                int playerSuteHaisCount = MahjongInfo.getPlayerSuteHaisCount();
 
-                int suteHaisCount = 0;
-                int playerSuteHaisCount = 0;
-
-                suteHaisCount = m_info.getSuteHaisCount();
-                playerSuteHaisCount = m_info.getPlayerSuteHaisCount();
-
-                for (; playerSuteHaisCount < suteHaisCount - 1; playerSuteHaisCount++)
+                for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++)
                 {
-                    suteHaiTemp = suteHais[playerSuteHaisCount];
+                    SuteHai suteHaiTemp = suteHais[playerSuteHaisCount];
+
                     for (int j = 0; j < indexNum; j++)
                     {
                         if (suteHaiTemp.ID == hais[j].ID){
@@ -182,51 +194,15 @@ public class AI : IPlayer
     }
 
 
+    protected readonly static int HYOUKA_SHUU = 1;
 
-    private CountFormat countFormat = new CountFormat();
-
-    private readonly static int HYOUKA_SHUU = 1;
-
-    private HaiCombi[] combis = new HaiCombi[0];
-
-
-    private void thinkSutehai(Hai addHai)
+    protected CountFormat FormatWorker
     {
-        int score = 0;
-        int maxScore = 0;
-
-        m_sutehaiIndex = 13;
-        countFormat.setCounterFormat(m_tehai, null);
-        maxScore = getCountFormatScore(countFormat);
-
-        Hai hai = new Hai();
-
-        Hai[] jyunTehai = new Hai[Tehai.JYUN_TEHAI_LENGTH_MAX];
-        for( int i = 0; i < Tehai.JYUN_TEHAI_LENGTH_MAX; i++ ) {
-            jyunTehai[i] = new Hai();
-        }
-
-        int jyunTehaiLength = m_tehai.getJyunTehai().Length;
-        Tehai.copyJyunTehai(jyunTehai, m_tehai.getJyunTehai());
-
-        for (int i = 0; i < jyunTehaiLength; i++)
-        {
-            m_tehai.copyJyunTehaiIndex(hai, i);
-            m_tehai.removeJyunTehai(i);
-            countFormat.setCounterFormat(m_tehai, addHai);
-            score = getCountFormatScore(countFormat);
-
-            if (score > maxScore) {
-                maxScore = score;
-                m_sutehaiIndex = i;
-            }
-
-            m_tehai.addJyunTehai(hai);
-        }
+        get{ return _owner.FormatWorker; }
     }
 
-
-    private readonly static Hai[] haiTable = new Hai[] 
+    #region table
+    protected readonly static Hai[] haiTable = new Hai[] 
     {
         new Hai(Hai.ID_WAN_1), new Hai(Hai.ID_WAN_2),
         new Hai(Hai.ID_WAN_3), new Hai(Hai.ID_WAN_4),
@@ -248,24 +224,55 @@ public class AI : IPlayer
         new Hai(Hai.ID_HAKU), new Hai(Hai.ID_HATSU),
         new Hai(Hai.ID_CHUN) 
     };
+    #endregion
 
-    private bool thinkReach(Tehai tehai)
+    protected EventID thinkSutehai(Hai addHai)
     {
-        if (m_info.getTsumoRemain() >= 4) 
+        _action.SutehaiIndex = 13;
+        FormatWorker.setCounterFormat(Tehai, null);
+        int maxScore = getCountFormatScore(FormatWorker);
+
+        Hai[] jyunTehaiCopy = new Hai[Tehai.JYUN_TEHAI_LENGTH_MAX];
+        Tehai.copyJyunTehai(jyunTehaiCopy, Tehai.getJyunTehai());
+
+        int jyunTehaiLength = Tehai.getJyunTehai().Length;
+
+        for (int i = 0; i < jyunTehaiLength; i++)
+        {
+            Hai hai = new Hai();
+            Tehai.copyJyunTehaiIndex(hai, i);
+            Tehai.removeJyunTehai(i);
+
+            FormatWorker.setCounterFormat(Tehai, addHai);
+            int score = getCountFormatScore(FormatWorker);
+
+            if( score > maxScore ){
+                maxScore = score;
+                _action.SutehaiIndex = i;
+            }
+
+            Tehai.addJyunTehai(hai);
+        }
+
+        return EventID.Nagashi;
+    }
+
+    protected bool thinkReach(Tehai tehai)
+    {
+        if (MahjongInfo.getTsumoRemain() >= GameSettings.PlayerCount) 
         {
             for(int i = 0; i < haiTable.Length; i++) 
             {
-                Hai hai = haiTable[i];
-                countFormat.setCounterFormat(tehai, hai);
+                FormatWorker.setCounterFormat(tehai, haiTable[i]);
 
-                if (countFormat.calculateCombisCount(combis) > 0)
+                if(FormatWorker.calculateCombisCount( null ) > 0)
                     return true;
             }
         }
         return false;
     }
 
-    private int getCountFormatScore(CountFormat countFormat)
+    protected int getCountFormatScore(CountFormat countFormat)
     {
         int score = 0;
         HaiCounterInfo[] countArr = countFormat.getCounterArray();

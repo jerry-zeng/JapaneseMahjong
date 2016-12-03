@@ -1,10 +1,8 @@
 ﻿
 public class GameInfo : Info 
 {
-    protected PlayerAction _playerAction;
-
-    public GameInfo(Mahjong game, PlayerAction playerAction) : base(game) {
-        this.setPlayerAction(playerAction);
+    public GameInfo(Mahjong game) : base(game) {
+        
     }
 
     public Hai[] getUraDoraHais() {
@@ -15,11 +13,8 @@ public class GameInfo : Info
         return _game.getManKaze();
     }
 
-    public void setPlayerAction(PlayerAction playerAction) {
-        this._playerAction = playerAction;
-    }
     public PlayerAction getPlayerAction() {
-        return _playerAction;
+        return _game.getPlayerAction();
     }
 
 
@@ -32,7 +27,7 @@ public class GameInfo : Info
         return _game.getAgariInfo();
     }
 
-    public bool[] getTenpai() {
-        return _game.getTenpai();
+    public bool[] getTenpaiFlags() {
+        return _game.getTenpaiFlags();
     }
 }

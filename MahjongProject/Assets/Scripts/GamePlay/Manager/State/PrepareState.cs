@@ -14,7 +14,7 @@ public class PrepareState : MahjongState
 
         owner.SetDelegate(OnSaifuriForQinEnd);
 
-        EventManager.Get().SendEvent(EventID.Saifuri);
+        EventManager.Get().SendUIEvent(UIEventID.Saifuri);
     }
 
     void OnSaifuriForQinEnd() {
@@ -23,8 +23,8 @@ public class PrepareState : MahjongState
         // set jikazes.
         logicOwner.PrepareKyokuYama();
 
-        EventManager.Get().SendEvent(EventID.Init_PlayerInfoUI);
-        EventManager.Get().SendEvent(EventID.SetYama_BeforeHaipai);
+        EventManager.Get().SendUIEvent(UIEventID.Init_PlayerInfoUI);
+        EventManager.Get().SendUIEvent(UIEventID.SetYama_BeforeHaipai);
 
         owner.ChangeState<HaiPaiState>();
     }

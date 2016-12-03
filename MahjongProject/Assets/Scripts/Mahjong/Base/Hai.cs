@@ -84,11 +84,6 @@ public class Hai
     // IDの最大値 
     public readonly static int ID_MAX = ID_CHUN;
 
-    // IDの個数の最小値 
-    public readonly static int ID_ITEM_MIN = ID_WAN_1;
-    // IDの個数の最大値 
-    public readonly static int ID_ITEM_MAX = ID_MAX + 1;
-
     // 1 
     public readonly static int NUM_1 = 1;
     // 2 

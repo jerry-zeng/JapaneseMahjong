@@ -63,7 +63,7 @@ public class Info
 
     // 捨牌を取得する
     public Hai getSuteHai() {
-        return new Hai(_game.getSuteHai());
+        return new Hai(_game.getSuTehai());
     }
 
     public int getAgariScore() {
@@ -136,7 +136,7 @@ public class Info
             Hai.copy(haiTemp, jyunTehai[i]);
             tehai.removeJyunTehai(jyunTehai[i]);
 
-            for (int id = 0; id < Hai.ID_ITEM_MAX; id++)
+            for (int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
             {
                 addHai = new Hai(id);
                 tehai.addJyunTehai(addHai);
@@ -154,7 +154,7 @@ public class Info
             tehai.addJyunTehai(haiTemp);
         }
 
-        for (int id = 0; id < Hai.ID_ITEM_MAX; id++)
+        for (int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
         {
             addHai = new Hai(id);
             tehai.addJyunTehai(addHai);
@@ -175,42 +175,37 @@ public class Info
 
     public int getMachiIndexs(Tehai a_tehai, Hai[] hais)
     {
-        Tehai tehai = new Tehai();
-        Tehai.copy(tehai, a_tehai, true);
+        Tehai tehai = new Tehai(a_tehai);
 
         int index = 0;
         CountFormat countFormat = new CountFormat();
 
-        for (int id = 0; id < Hai.ID_ITEM_MAX; id++)
+        for (int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
         {
             Hai addHai = new Hai(id);
             tehai.addJyunTehai(addHai);
-            countFormat.setCounterFormat(tehai, null);
 
-            if (countFormat.calculateCombisCount(combis) > 0) {
+            countFormat.setCounterFormat(tehai, null);
+            if (countFormat.calculateCombisCount(combis) > 0)
+            {
                 hais[index] = new Hai(id);
                 index++;
-                tehai.removeJyunTehai(addHai);
-            } 
-            else {
-                tehai.removeJyunTehai(addHai);
             }
+
+            tehai.removeJyunTehai(addHai);
         }
 
         return index;
     }
 
 
-    public void postUiEvent(EventID eventId, EKaze kazeFrom, EKaze kazeTo) {
+    public void PostUiEvent(UIEventID eventId, EKaze kazeFrom, EKaze kazeTo)
+    {
         _game.PostUIEvent(eventId, kazeFrom, kazeTo);
     }
 
-    public int getSuteHaisCount() {
-        return _game.getSuteHaisCount();
-    }
-
-    public SuteHai[] getSuteHais() {
-        return _game.getSuteHais();
+    public SuteHai[] getSuteHaiList() {
+        return _game.getSuteHaiList();
     }
 
     public int getPlayerSuteHaisCount() {

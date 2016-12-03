@@ -51,10 +51,10 @@ public class Yama
         _omoteDoraHais = new Hai[DORA_HAIS_MAX];
         _uraDoraHais = new Hai[DORA_HAIS_MAX];
 
-        for (int i = Hai.ID_ITEM_MIN; i < Hai.ID_ITEM_MAX; i++)
+        for(int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
         {
-            for( int j = 0; j < 4; j++ ){
-                _yamaHais[(i * 4) + j] = new Hai(i);
+            for( int n = 0; n < 4; n++ ){
+                _yamaHais[(id * 4) + n] = new Hai(id);
             }
         }
 

@@ -44,6 +44,11 @@ public class SuteHai : Hai
     public SuteHai(Hai hai) : base(hai) {
     }
 
+    public SuteHai(SuteHai src) : base()
+    {
+        copy(this, src);
+    }
+
 
     public static void copy(SuteHai dest, SuteHai src)
     {

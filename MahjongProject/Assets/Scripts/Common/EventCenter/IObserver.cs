@@ -1,4 +1,8 @@
 ﻿
+public interface IUIObserver : IEventListener<UIEventID, object[]>{
+    
+}
+
 public interface IObserver : IEventListener<EventID, object[]> {
 }
 

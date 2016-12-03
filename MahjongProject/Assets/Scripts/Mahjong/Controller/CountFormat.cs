@@ -99,9 +99,8 @@ public class CountFormat
             }
         }
 
-        if( set == false ){
+        if( set == false )
             _counterArr.Add( new HaiCounterInfo(addHaiNumKind, 1) );
-        }
 
         for (int i = 0; i < _counterArr.Count; i++)
         {
@@ -111,6 +110,7 @@ public class CountFormat
         }
     }
 
+    // TODO: is the parameter 'combis' neccessary? and is it ref or in parameter?
     public int calculateCombisCount(HaiCombi[] combis)
     {
         _combiHelper.initialize( getTotalCounterLength() );
