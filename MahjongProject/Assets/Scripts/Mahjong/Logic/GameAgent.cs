@@ -129,13 +129,9 @@ public class GameAgent
         return _game.getPlayerAction();
     }
 
-    // 起家のプレイヤーインデックスを取得する
+    // 起(親)家のプレイヤーインデックスを取得する
     public int getChiichaIndex() {
         return _game.getChiichaIndex();
-    }
-
-    public int getOyaIndex(){
-        return _game.getOyaIndex();
     }
 
     public AgariInfo getAgariInfo() {

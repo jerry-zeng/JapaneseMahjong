@@ -163,6 +163,11 @@ public abstract class Player
         Tehai.Sort();
     }
 
+    public void SuteHai()
+    {
+        
+    }
+
     #endregion
 
     protected Action<EventID> _onAction;

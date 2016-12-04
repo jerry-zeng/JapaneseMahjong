@@ -55,7 +55,7 @@ public abstract class Mahjong
     protected EKaze m_kazeTo;
 
     // current player
-    protected Player activePlayer;
+    protected Player m_activePlayer;
 
     // 摸入牌
     protected Hai m_tsumoHai = new Hai();
@@ -65,8 +65,8 @@ public abstract class Mahjong
     protected HaiCombi[] m_combis = new HaiCombi[0];
     protected AgariInfo m_agariInfo = new AgariInfo();
 
-    protected bool m_isTenhou = false;
-    protected bool m_isChiihou = false;
+    protected bool m_isTenhou = false;  //天胡
+    protected bool m_isChiihou = false; //地胡
     protected bool m_isTsumo = false;
     protected bool m_isRinshan = false;
     protected bool m_isLast = false;
@@ -113,12 +113,6 @@ public abstract class Mahjong
         m_reachbou = reachbou;
     }
 
-    // 親のプレイヤーインデックスを取得する
-    public int getOyaIndex()
-    {
-        return m_oyaIndex;
-    }
-
     // 起家のプレイヤーインデックスを取得する
     public int getChiichaIndex()
     {
@@ -142,7 +136,7 @@ public abstract class Mahjong
 
     public Player getActivePlayer()
     {
-        return activePlayer;
+        return m_activePlayer;
     }
 
     public PlayerAction getPlayerAction()
@@ -230,8 +224,8 @@ public abstract class Mahjong
     // 手牌をコピーする
     public void copyTehai(Tehai tehai, EKaze kaze)
     {
-        if( activePlayer.JiKaze == kaze ) {
-            Tehai.copy(tehai, activePlayer.Tehai, true);
+        if( m_activePlayer.JiKaze == kaze ) {
+            Tehai.copy(tehai, m_activePlayer.Tehai, true);
         }
         else {
             Tehai.copy(tehai, getPlayer(kaze).Tehai, false);
@@ -249,8 +243,8 @@ public abstract class Mahjong
     {
         AgariParam param = new AgariParam(this);
 
-        if( activePlayer.IsReach ) {
-            if( activePlayer.IsDoubleReach ) {
+        if( m_activePlayer.IsReach ) {
+            if( m_activePlayer.IsDoubleReach ) {
                 param.setYakuFlag((int)EYakuFlagType.DOUBLE_REACH, true);
             }
             else {
@@ -281,7 +275,7 @@ public abstract class Mahjong
             }
         }
 
-        if( activePlayer.IsIppatsu ) {
+        if( m_activePlayer.IsIppatsu ) {
             param.setYakuFlag((int)EYakuFlagType.IPPATU, true);
         }
 

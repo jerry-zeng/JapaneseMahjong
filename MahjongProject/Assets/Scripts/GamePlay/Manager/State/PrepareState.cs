@@ -26,7 +26,7 @@ public class PrepareState : MahjongState
 
     void OnSaifuriForQinEnd(EPlayerInputType type, EKaze kaze, object[] args)
     {
-        logicOwner.SetChiicha();
+        logicOwner.SetRandomChiicha();
 
         // set jikazes.
         logicOwner.PrepareKyokuYama();
