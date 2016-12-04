@@ -153,8 +153,10 @@ public class YamaUI : UIObject
         }
     }
 
-    public void SetWareme() { 
-
+    public void SetWareme(int index) { 
+        if( mahjongYama.ContainsKey(index) ) {
+            mahjongYama[index].SetHighlight(true);
+        }
     }
 
     public void ShowAllYamaHais() {

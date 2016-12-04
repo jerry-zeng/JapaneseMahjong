@@ -31,6 +31,7 @@ public class Yama
 
     // ツモ牌のインデックス(index)
     private int _tsumoHaisIndex = 0;
+    private int _last_tsumoHaisIndex = -1;
 
     // リンシャン牌の位置
     private int _rinshanHaisIndex = 0;
@@ -79,6 +80,10 @@ public class Yama
         return RINSHAN_HAIS_MAX - _rinshanHaisIndex;
     }
 
+    public int getLastTsumoHaiIndex()
+    {
+        return _last_tsumoHaisIndex;
+    }
 
     // 洗牌する
     public void XiPai()
@@ -103,6 +108,8 @@ public class Yama
     /// </summary>
     public Hai[] PickHaipai()
     {
+        _last_tsumoHaisIndex = _tsumoHaisIndex;
+
         Hai[] hais = new Hai[4];
         for( int i = 0; i < hais.Length; i++ ) 
         {
@@ -121,6 +128,8 @@ public class Yama
         if( getTsumoNokori() <= 0)
             return null;
 
+        _last_tsumoHaisIndex = _tsumoHaisIndex;
+
         Hai tsumoHai = new Hai(_tsumoHais[_tsumoHaisIndex]);
         _tsumoHaisIndex++;
 
@@ -132,6 +141,8 @@ public class Yama
     {
         if( getRinshanNokori() <= 0 )
             return null;
+
+        _last_tsumoHaisIndex = _tsumoHaisIndex;
 
         Hai rinshanHai = new Hai(_rinshanHais[_rinshanHaisIndex]);
         _rinshanHaisIndex++;
@@ -255,18 +266,16 @@ public class Yama
     // 赤ドラ牌
     public void setRedDora(int id, int num)
     {
-        if(num <= 0) 
-            return;
+        if(num <= 0) return;
 
         for(int i = 0; i < _yamaHais.Length; i++) 
         {
-            if(_yamaHais[i].ID == id) {
+            if( _yamaHais[i].ID == id )
+            {
                 _yamaHais[i].IsRed = true;
 
                 num--;
-
-                if(num <= 0) 
-                    break;
+                if(num <= 0) break;
             }
         } 
     }

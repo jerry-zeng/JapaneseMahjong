@@ -12,3 +12,12 @@ public enum EFrontBack
     Front,
     Back
 }
+
+public enum EPlayerInputType
+{
+    None,
+    Saifuri,
+    SelectMenu,
+    SelectNaki,
+    SelectSutehai,
+}

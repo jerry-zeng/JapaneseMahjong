@@ -10,12 +10,16 @@ public class LoopState_PickHai : MahjongState
 
         logicOwner.PickNewTsumoHai();
 
+        int lastPickIndex = logicOwner.getYama().getLastTsumoHaiIndex();
+        EventManager.Get().SendUIEvent(UIEventID.PickHai, logicOwner.getActivePlayer(), lastPickIndex);
+
+        Debug.LogWarningFormat( "Player in kaze {0} picked a new tsumo hai", logicOwner.getActivePlayer().JiKaze.ToString() );
+
         if( logicOwner.IsLastHai() ) {
-            owner.ChangeState<LoopState_CheckRyuuKyoKu>();
+            //owner.ChangeState<LoopState_CheckRyuuKyoKu>();
         }
         else {
-            Debug.Log( string.Format( "player {0} pick a new tsumo hai", logicOwner.getActivePlayer()) );
-            owner.ChangeState<LoopState_CheckTsumo>();
+            //owner.ChangeState<LoopState_CheckTsumo>();
         }
     }
 }

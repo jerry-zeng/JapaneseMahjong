@@ -109,7 +109,7 @@ public class HouUI : UIObject
         return true;
     }
 
-    public bool setTedashi(bool a_tedashi) {
+    protected bool setTedashi(bool a_tedashi) {
         if( allHais.Count <= 0 ) {
             return false;
         }

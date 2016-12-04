@@ -1,54 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 
 
-public class AI : IPlayer 
+public class AI : Player 
 {
-    protected Player _owner;
-    protected PlayerAction _action = new PlayerAction();
-    protected Action<EventID> _onAction;
+    public AI(string name) : base(name){
 
-    // 手牌
-    protected Tehai Tehai
-    {
-        get{ return _owner.Tehai; }
     }
 
-    // 河
-    protected Hou Hou
-    {
-        get{ return _owner.Hou; }
-    }
-
-    // Infoのコンストラクタ
-    protected Info MahjongInfo
-    {
-        get{ return Mahjong.current.getInfo(); }
-    }
-
-
-    public bool IsAI
+    public override bool IsAI
     {
         get{ return true; }
     }
 
-    public void AttachToPlayer( Player owner )
-    {
-        this._owner = owner;
-    }
-
-    public PlayerAction getAction()
-    {
-        return _action;
-    }
-
-    public EventID DoAction(EventID result)
-    {
-        if(_onAction != null) _onAction.Invoke(result);
-        return result;
-    }
-
-
-    public void HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction) 
+    public override void HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction) 
     {
         this._onAction = onAction;
 
@@ -75,7 +40,7 @@ public class AI : IPlayer
 
             case EventID.Select_SuteHai:
             {
-                MahjongInfo.copyTehai(Tehai);
+                MahjongAgent.copyTehai(Tehai);
                 thinkSutehai(null);
             }
             break;
@@ -91,16 +56,16 @@ public class AI : IPlayer
 
     protected EventID eventPickHai(EKaze kazeFrom, EKaze kazeTo)
     {
-        MahjongInfo.copyTehai(Tehai);
-        Hai tsumoHai = MahjongInfo.getTsumoHai();
+        MahjongAgent.copyTehai(Tehai);
+        Hai tsumoHai = MahjongAgent.getTsumoHai();
 
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
-        int agariScore = MahjongInfo.getAgariScore(Tehai, tsumoHai);
+        int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
         if (agariScore > 0)
             return DoAction(EventID.Tsumo_Agari);
 
         // リーチの場合は、ツモ切りする。
-        if (MahjongInfo.isReach()) {
+        if (MahjongAgent.isReach()) {
             _action.SutehaiIndex = 13;
             return DoAction(EventID.SuteHai);
         }
@@ -122,16 +87,16 @@ public class AI : IPlayer
 
     protected EventID eventSutehai(EKaze kazeFrom, EKaze kazeTo)
     {
-        if (kazeFrom == MahjongInfo.getJikaze())
+        if (kazeFrom == MahjongAgent.getJikaze())
             return DoAction(EventID.Nagashi);
 
-        MahjongInfo.copyTehai(Tehai);
-        MahjongInfo.copyHou(Hou, MahjongInfo.getJikaze());
+        MahjongAgent.copyTehai(Tehai);
+        MahjongAgent.copyHou(Hou, MahjongAgent.getJikaze());
 
         if(isFuriten() == false)
         {
-            Hai m_suteHai = MahjongInfo.getSuteHai();
-            int agariScore = MahjongInfo.getAgariScore(Tehai, m_suteHai);
+            Hai m_suteHai = MahjongAgent.getSuteHai();
+            int agariScore = MahjongAgent.getAgariScore(Tehai, m_suteHai);
 
             if (agariScore > 0)
                 return DoAction(EventID.Ron_Agari);
@@ -143,63 +108,45 @@ public class AI : IPlayer
     // 振听.
     protected bool isFuriten()
     {
-        bool furiten = false;
-
-        Hai[] hais = new Hai[Hai.ID_MAX+1];
-        int indexNum = MahjongInfo.getMachiIndexs(Tehai, hais);
-
-        if (indexNum > 0) 
+        List<Hai> machiHais;
+        if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
         {
+            // check hou
             SuteHai[] suteHais = Hou.getSuteHais();
 
             for (int i = 0; i < suteHais.Length; i++)
             {
                 SuteHai suteHaiTemp = suteHais[i];
-                for (int j = 0; j < indexNum; j++)
+
+                for (int j = 0; j < machiHais.Count; j++)
                 {
-                    if (suteHaiTemp.ID == hais[j].ID){
-                        furiten = true;
-                        goto END_FURITENLOOP;
-                    }
+                    if (suteHaiTemp.ID == machiHais[j].ID)
+                        return true;
                 }
             }
-            END_FURITENLOOP: {
-                // go out of double for().
-            }
 
-            if( furiten == false ) 
+            // check sutehai
+            suteHais = MahjongAgent.getSuteHaiList();
+
+            int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount();
+            for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++)
             {
-                suteHais = MahjongInfo.getSuteHaiList();
-                int playerSuteHaisCount = MahjongInfo.getPlayerSuteHaisCount();
+                SuteHai suteHaiTemp = suteHais[playerSuteHaisCount];
 
-                for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++)
+                for (int j = 0; j < machiHais.Count; j++)
                 {
-                    SuteHai suteHaiTemp = suteHais[playerSuteHaisCount];
-
-                    for (int j = 0; j < indexNum; j++)
-                    {
-                        if (suteHaiTemp.ID == hais[j].ID){
-                            furiten = true;
-                            goto End_FURITENLOOP_2;
-                        }
-                    }
-                }
-                End_FURITENLOOP_2: {
-                    // go out of double for().
+                    if (suteHaiTemp.ID == machiHais[j].ID)
+                        return true;
                 }
             }
+
         }
 
-        return furiten;
+        return false;
     }
 
 
     protected readonly static int HYOUKA_SHUU = 1;
-
-    protected CountFormat FormatWorker
-    {
-        get{ return _owner.FormatWorker; }
-    }
 
     #region table
     protected readonly static Hai[] haiTable = new Hai[] 
@@ -259,7 +206,7 @@ public class AI : IPlayer
 
     protected bool thinkReach(Tehai tehai)
     {
-        if (MahjongInfo.getTsumoRemain() >= GameSettings.PlayerCount) 
+        if (MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount) 
         {
             for(int i = 0; i < haiTable.Length; i++) 
             {

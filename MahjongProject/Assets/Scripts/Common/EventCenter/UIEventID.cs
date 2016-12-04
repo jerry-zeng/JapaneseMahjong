@@ -1,8 +1,6 @@
 ﻿
 public enum UIEventID 
 {
-    None = 0,
-
     #region event id
     // pick a tsumo hai. 
     PickHai,
@@ -36,6 +34,7 @@ public enum UIEventID
     Nagashi,
     #endregion
 
+    OnPlayerInput,
 
     // ゲームの開始 
     Start_Game,

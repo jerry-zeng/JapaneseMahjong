@@ -5,8 +5,13 @@
 /// 手牌:拿到手上的牌
 /// </summary>
 
-public class Tehai 
+public class Tehai : IComparer<Hai>
 {
+    public int Compare(Hai x, Hai y)
+    {
+        return x.ID - y.ID;
+    }
+
     // 純手牌の長さの最大値
     public readonly static int JYUN_TEHAI_LENGTH_MAX = 14;
     // 副露の最大値
@@ -97,6 +102,10 @@ public class Tehai
         return true;
     }
 
+    public void Sort()
+    {
+        _jyunTehais.Sort( this );
+    }
 
     // 純手牌を取得する
     public Hai[] getJyunTehai()
@@ -105,19 +114,13 @@ public class Tehai
     }
 
     // 純手牌に牌を追加する
+    // _jyunTehais won't sort automatically on new hais added.
     public bool addJyunTehai(Hai hai)
     {
-        if (_jyunTehais.Count >= JYUN_TEHAI_LENGTH_MAX)
+        if( _jyunTehais.Count >= JYUN_TEHAI_LENGTH_MAX )
             return false;
 
-        for(int i = _jyunTehais.Count-1; i >= 0; i--)
-        {
-            if (_jyunTehais[i].ID <= hai.ID)
-            {
-                _jyunTehais.Insert(i, new Hai(hai));
-                break;
-            }
-        }
+        _jyunTehais.Add( new Hai(hai) );
 
         return true;
     }
@@ -125,7 +128,7 @@ public class Tehai
     // 純手牌から指定位置の牌を削除する
     public bool removeJyunTehai(int index)
     {
-        if (index >= _jyunTehais.Count)
+        if( index >= _jyunTehais.Count )
             return false;
 
         _jyunTehais.RemoveAt(index);
@@ -151,7 +154,7 @@ public class Tehai
         if(length <= 0)
             length = src.Length;
 
-        if(length > JYUN_TEHAI_LENGTH_MAX)
+        if( length > JYUN_TEHAI_LENGTH_MAX )
             return false;
 
         for (int i = 0; i < length; i++)
@@ -165,7 +168,7 @@ public class Tehai
     // 純手牌の指定位置の牌をコピーする
     public bool copyJyunTehaiIndex(Hai hai, int index)
     {
-        if (index >= _jyunTehais.Count)
+        if( index >= _jyunTehais.Count )
             return false;
 
         Hai.copy(hai, _jyunTehais[index]);
@@ -477,7 +480,7 @@ public class Tehai
     // 槓の可否をチェックする
     public int validKan(Hai addHai, Hai[] kanHais)
     {
-        if (_fuuros.Count >= FUURO_MAX)
+        if( _fuuros.Count >= FUURO_MAX )
             return 0;
 
         int kanCount = 0;
@@ -505,10 +508,10 @@ public class Tehai
         int count = 1; // include the addHai
         for (int i = 1; i < _jyunTehais.Count; i++) 
         {
-            if (id == _jyunTehais[i].ID)
+            if(id == _jyunTehais[i].ID)
             {
                 count++;
-                if (count >= Tehai.MENTSU_LENGTH_4) {
+                if( count >= Tehai.MENTSU_LENGTH_4 ) {
                     kanHais[kanCount] = new Hai(_jyunTehais[i]);
                     kanCount++;
                 }
@@ -526,7 +529,7 @@ public class Tehai
 
     public bool validDaiMinKan(Hai suteHai)
     {
-        if (_fuuros.Count >= FUURO_MAX)
+        if( _fuuros.Count >= FUURO_MAX )
             return false;
 
         int count = 1;
@@ -563,7 +566,7 @@ public class Tehai
                 removeJyunTehai(i);
                 i--;
 
-                if (count >= Tehai.MENTSU_LENGTH_4)
+                if( count >= Tehai.MENTSU_LENGTH_4 )
                     break;
             }
         }
@@ -576,7 +579,7 @@ public class Tehai
     // 加槓の可否をチェックする
     public bool validKaKan(Hai tsumoHai)
     {
-        if (_fuuros.Count >= FUURO_MAX)
+        if( _fuuros.Count >= FUURO_MAX )
             return false;
 
         for (int i = 0; i < _fuuros.Count; i++)
@@ -602,7 +605,7 @@ public class Tehai
 
         for (int i = 0; i < _fuuros.Count; i++) 
         {
-            if (_fuuros[i].Type == EFuuroType.MinKou) 
+            if( _fuuros[i].Type == EFuuroType.MinKou ) 
             {
                 Hai[] hais = _fuuros[i].Hais;
 
@@ -621,7 +624,7 @@ public class Tehai
     // 暗槓の可否をチェックする
     public bool validAnKan(Hai tsumoHai)
     {
-        if (_fuuros.Count >= FUURO_MAX)
+        if( _fuuros.Count >= FUURO_MAX )
             return false;
 
         int count = 1;
@@ -630,7 +633,7 @@ public class Tehai
             if(_jyunTehais[i].ID == tsumoHai.ID)
             {
                 count++;
-                if (count >= Tehai.MENTSU_LENGTH_4)
+                if( count >= Tehai.MENTSU_LENGTH_4 )
                     return true;
             }
         }
@@ -662,7 +665,7 @@ public class Tehai
                 removeJyunTehai(i);
                 i--;
 
-                if (count >= Tehai.MENTSU_LENGTH_4)
+                if( count >= Tehai.MENTSU_LENGTH_4 )
                     break;
             }
         }

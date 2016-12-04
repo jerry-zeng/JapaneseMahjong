@@ -79,9 +79,8 @@ public class Fuuro
         dest._fromRelation = src._fromRelation;
         dest._newPickIndex = src._newPickIndex;
 
-        for (int i = 0; i < Mahjong.MENTSU_HAI_MEMBERS_4; i++) {
+        for (int i = 0; i < src._hais.Length; i++)
             Hai.copy(dest._hais[i], src._hais[i]);
-        }
     }
 
 }

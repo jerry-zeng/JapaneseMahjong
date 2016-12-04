@@ -5,12 +5,10 @@ using System.Collections.Generic;
 
 public class PlayerUI : UIObject 
 {
-    public EKaze DeskKaze = EKaze.Ton;
-
+    private PlayerInfoUI playerInfo; // 玩家信息.
     private TehaiUI tehai; // 手牌.
     private YamaUI yama;   // 牌山.
     private HouUI hou;     // 河.
-    private PlayerInfoUI playerInfo; // 玩家信息.
     private FuuroUI fuuro; //副露.
 
     private int panelDepth = 0;
@@ -20,13 +18,28 @@ public class PlayerUI : UIObject
         Init();
     }
 
-    public override void Init() {
-        if( isInit == false ) {
+    public override void BindPlayer(Player p)
+    {
+        Init();
+
+        base.BindPlayer(p);
+
+        tehai.BindPlayer(p);
+        yama.BindPlayer(p);
+        hou.BindPlayer(p);
+        fuuro.BindPlayer(p);
+        playerInfo.BindPlayer(p);
+    }
+
+    public override void Init() 
+    {
+        if( isInit == false ) 
+        {
+            playerInfo = transform.Find("Info").GetComponent<PlayerInfoUI>();
             tehai = transform.Find("Tehai").GetComponent<TehaiUI>();
             yama = transform.Find("Yama").GetComponent<YamaUI>();
             hou = transform.Find("Hou").GetComponent<HouUI>();
             fuuro = transform.Find("Fuuro").GetComponent<FuuroUI>();
-            playerInfo = transform.Find("Info").GetComponent<PlayerInfoUI>();
 
             tehai.Init();
             yama.Init();
@@ -38,7 +51,8 @@ public class PlayerUI : UIObject
         }
     }
 
-    public override void Clear() {        
+    public override void Clear() 
+    {        
         if(!isInit) Init();
 
         tehai.Clear();
@@ -48,7 +62,8 @@ public class PlayerUI : UIObject
         playerInfo.Clear();
     }
 
-    public override void SetParentPanelDepth(int depth) { 
+    public override void SetParentPanelDepth(int depth) 
+    { 
         if( panelDepth != depth ){
             tehai.SetParentPanelDepth( depth );
             yama.SetParentPanelDepth( depth );
@@ -81,8 +96,8 @@ public class PlayerUI : UIObject
     public void SetTehai(Hai[] hais) {
         tehai.SetTehai(hais);
     }
-    public void PickHai( Hai hai, int newIndex = -1, bool isShow = false ) {
-        tehai.AddHai(hai, newIndex, isShow);
+    public void PickHai( Hai hai, bool newPicked = false, bool isShow = false ) {
+        tehai.AddHai(hai, newPicked, isShow);
     }
     public void SetAllHaisVisiable( bool visiable ) {
         tehai.SetAllHaisVisiable(visiable);
@@ -117,6 +132,10 @@ public class PlayerUI : UIObject
     public void HideAllYamaHais() {
         yama.HideAllYamaHais();
     }
+    public void HighlightHai(int index) { 
+        yama.SetWareme(index);
+    }
+
 
     // 副露.
     public void UpdateFuuro(Fuuro[] fuuros) {
@@ -136,7 +155,8 @@ public class PlayerUI : UIObject
 
 
 
-    public static MahjongPai CreateMahjongPai(Transform parent, Vector3 localPos, Hai info, bool isShow = true) {
+    public static MahjongPai CreateMahjongPai(Transform parent, Vector3 localPos, Hai info, bool isShow = true) 
+    {
         if( Hai.IsValidHai(info) == false ){
             Debug.LogError("PlayerUI: Invalid hai for ID == " + info.ID);
             return null;
@@ -167,7 +187,8 @@ public class PlayerUI : UIObject
         return pai;
     }
 
-    public static float GetMahjongRange(bool shouldSetLand) {
+    public static float GetMahjongRange(bool shouldSetLand)
+    {
         float ret = 0;
 
         if( shouldSetLand ) { // set landscape left.

@@ -4,59 +4,46 @@
 /// Player.
 /// </summary>
 
-public class Player
+public abstract class Player
 {
-    private string _name;
-    private IPlayer _iplayer;
+    protected string _name;
+    protected PlayerAction _action = new PlayerAction();
 
-    public Player(string name, IPlayer player)
+    public Player(string name)
     {
         this._name = name;
-        this._iplayer = player;
     }
-
-    #region proxy.
-    public bool IsAI
-    {
-        get{ return _iplayer.IsAI; }
-    }
-    public PlayerAction getAction()
-    {
-        return _iplayer.getAction();
-    }
-    public int getSutehaiIndex()
-    {
-        return _iplayer.getAction().SutehaiIndex;
-    }
-    public EventID HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction)
-    {
-        _iplayer.HandleEvent(evtID, kazeFrom, kazeTo, onAction);
-        return EventID.None;
-    }
-    #endregion proxy.
-
 
     public string Name
     {
         get{ return _name; }
     }
+    public PlayerAction getAction()
+    {
+        return _action;
+    }
+    public int getSutehaiIndex()
+    {
+        return _action.SutehaiIndex;
+    }
+
 
     // 手牌
-    private Tehai _tehai = new Tehai();
+    protected Tehai _tehai = new Tehai();
     public Tehai Tehai
     {
         get{ return _tehai; }
     }
 
     // 河
-    private Hou _hou = new Hou();
+    protected Hou _hou = new Hou();
     public Hou Hou
     {
         get{ return _hou; }
     }
 
     // 自風
-    private EKaze _jikaze;
+    protected EKaze _jikaze;
     public EKaze JiKaze
     {
         get{ return _jikaze; }
@@ -64,7 +51,7 @@ public class Player
     }
 
     // 点棒
-    private int _tenbou;
+    protected int _tenbou;
     public int Tenbou 
     {
         get{ return _tenbou; }
@@ -72,7 +59,7 @@ public class Player
     }
 
     // リーチ
-    private bool _reach;
+    protected bool _reach;
     public bool IsReach
     {
         get{ return _reach; }
@@ -80,7 +67,7 @@ public class Player
     }
 
     // ダブルリーチ
-    private bool _doubleReach;
+    protected bool _doubleReach;
     public bool IsDoubleReach
     {
         get{ return _doubleReach; }
@@ -88,7 +75,7 @@ public class Player
     }
 
     // 一発
-    private bool _ippatsu;
+    protected bool _ippatsu;
     public bool IsIppatsu
     {
         get{ return _ippatsu; }
@@ -96,26 +83,43 @@ public class Player
     }
 
     // 捨牌数
-    private int _suteHaisCount;
+    protected int _suteHaisCount;
     public int SuteHaisCount
     {
         get{ return _suteHaisCount; }
         set{ _suteHaisCount = value; }
     }
 
-    private CountFormat _countFormat = new CountFormat();
+    protected CountFormat _countFormat = new CountFormat();
     public CountFormat FormatWorker
     {
         get{ return _countFormat; }
     }
 
 
+    #region Logic
+
+    public virtual void Init() 
+    {
+        // 手牌を初期化します。
+        _tehai.initialize();
+
+        // 河を初期化します。
+        _hou.initialize();
+
+        // リーチを初期化します。
+        _reach = false;
+        _doubleReach = false;
+        _ippatsu = false;
+
+        _suteHaisCount = 0;
+    }
+
     // 点棒を増やします
     public void increaseTenbou(int value)
     {
         Tenbou += value;
     }
-
     // 点棒を減らします
     public void reduceTenbou(int value)
     {
@@ -141,27 +145,38 @@ public class Player
     }
 
 
-    public void Init() 
+    public void HaiPai(Hai[] hais)
     {
-        // 手牌を初期化します。
-        _tehai.initialize();
-
-        // 河を初期化します。
-        _hou.initialize();
-
-        // リーチを初期化します。
-        _reach = false;
-        _doubleReach = false;
-        _ippatsu = false;
-
-        _suteHaisCount = 0;
-
-        AttachAI();
+        for( int i = 0; i < hais.Length; i++ )
+        {
+            Tehai.addJyunTehai( hais[i] );
+        }
     }
 
-    public void AttachAI()
+    public void PickNewHai(Hai newHai)
     {
-        _iplayer.AttachToPlayer(this);
+        Tehai.addJyunTehai( newHai );
     }
 
+    public void SortTehai()
+    {
+        Tehai.Sort();
+    }
+
+    #endregion
+
+    protected Action<EventID> _onAction;
+    protected EventID DoAction(EventID result)
+    {
+        if(_onAction != null) _onAction.Invoke(result);
+        return result;
+    }
+
+    protected GameAgent MahjongAgent
+    {
+        get{ return GameAgent.Instance; }
+    }
+
+    public abstract bool IsAI { get; }
+    public abstract void HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction);
 }

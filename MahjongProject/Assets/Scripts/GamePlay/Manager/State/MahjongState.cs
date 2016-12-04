@@ -6,10 +6,10 @@ public class MahjongState : State
 {
 
     protected MahjongMain logicOwner;
-    protected GameMain owner;
+    protected GameManager owner;
 
     protected virtual void Awake() {
-        owner = GetComponent<GameMain>();
+        owner = GetComponent<GameManager>();
         logicOwner = owner.MahjongMain;
     }
 

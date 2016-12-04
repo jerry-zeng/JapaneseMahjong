@@ -2,21 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 
-/**
- * 麻将界面。
- */
 
 public class MahjongView : UIObject, IUIObserver 
 {
-
-    private Dictionary<int, PlayerUI> playerUIDic = new Dictionary<int, PlayerUI>( 4 );
+    private Dictionary<int, PlayerUI> playerUIDict = new Dictionary<int, PlayerUI>();
+    private Dictionary<EKaze, PlayerUI> playerUIDict_Kaze = new Dictionary<EKaze, PlayerUI>();
     private GameInfoUI gameInfo;
 
-    private MahjongMain Model {
-        get {
-            return GameMain.Instance.MahjongMain;
-        }
+
+    private MahjongMain Model
+    {
+        get { return GameManager.Instance.MahjongMain; }
     }
+
 
     void OnEnable() {
         EventManager.Get().addObserver(this);
@@ -29,78 +27,59 @@ public class MahjongView : UIObject, IUIObserver
     public override void Clear() {
         base.Clear();
 
-        gameInfo.Clear();
+        if(gameInfo != null)
+            gameInfo.Clear();
 
-        foreach( var kv in playerUIDic ) {
+        foreach( var kv in playerUIDict )
             kv.Value.Clear();
-        }
+
+        playerUIDict.Clear();
+        playerUIDict_Kaze.Clear();
     }
 
 
     public override void Init() 
     {
-        if( isInit == false ) {
-            gameInfo = transform.FindChild("Info_Panel/GameInfo").GetComponent<GameInfoUI>();
+        if( isInit == true )  return;
 
-            // init player uis.
-            for( int i = 0; i < GameSettings.PlayerCount; i++ ) 
-            {
-                string dir = "South_Panel";
-                float eulerAngleZ = 0;
+        string[] panelNames = new string[]{
+            "South_Panel", "East_Panel", "North_Panel", "West_Panel"
+        };
+        float[] eulerAngles = new float[]{
+            0f, 90f, 180f, -90f
+        };
 
-                if( i == 0 ) {
-                    dir = "South_Panel";
-                    eulerAngleZ = 0;
-                }
-                else if( i == 1 ) {
-                    dir = "East_Panel";
-                    eulerAngleZ = 90;
-                }
-                else if( i == 2 ) {
-                    dir = "North_Panel";
-                    eulerAngleZ = 180;
-                }
-                else if( i == 3 ) {
-                    dir = "West_Panel";
-                    eulerAngleZ = -90;
-                }
-                else {
-                    Debug.LogError("MahjongView: Unknown kaze...");
-                    continue;
-                }
+        // init player ui.
+        for( int i = 0; i < GameSettings.PlayerCount; i++ ) 
+        {
+            string dir = panelNames[i];
+            float eulerAngleZ = eulerAngles[i];
 
-                Transform dirParent = transform.FindChild(dir);
-                Transform uiTran = dirParent.FindChild("PlayerUI");
-                if( uiTran == null ){
-                    uiTran = ResManager.CreatePlayerUIObject().transform;
-                    uiTran.parent = dirParent;
-                    uiTran.localScale = Vector3.one;
-                    uiTran.localEulerAngles = new Vector3(0, 0, eulerAngleZ);
-                }
-
-                PlayerUI p = uiTran.GetComponent<PlayerUI>();
-                p.Init();
-                
-                UIPanel parentPanel = dirParent.GetComponent<UIPanel>();
-                p.SetParentPanelDepth( parentPanel .depth);
-
-                playerUIDic.Add(i, p);
+            Transform dirParent = transform.FindChild(dir);
+            Transform uiTran = dirParent.FindChild("PlayerUI");
+            if( uiTran == null ){
+                uiTran = ResManager.CreatePlayerUIObject().transform;
+                uiTran.parent = dirParent;
+                uiTran.localScale = Vector3.one;
+                uiTran.localEulerAngles = new Vector3(0, 0, eulerAngleZ);
             }
 
-            isInit = true;
+            PlayerUI ui = uiTran.GetComponent<PlayerUI>();
+            ui.Init();
+
+            UIPanel parentPanel = dirParent.GetComponent<UIPanel>();
+            ui.SetParentPanelDepth( parentPanel.depth );
+
+            playerUIDict.Add(i, ui);
         }
-        
+
+        gameInfo = transform.FindChild("Info_Panel/GameInfo").GetComponent<GameInfoUI>();
+
+        isInit = true;       
     }
 
 
     private int tsumoHaiStartIndex = 0;
-
-    // sais panel objects.
-    public GameObject saifuriPanel;
-    private UIButton saisButton;
-    private UILabel saiTip;
-
-
 
     // handle ui event.
     public void OnHandleEvent(UIEventID evtID, object[] args) 
@@ -109,8 +88,8 @@ public class MahjongView : UIObject, IUIObserver
         {
             case UIEventID.Init_Game: // game init /
             {
-                Init();
                 Clear();
+                Init();
             }
             break;
 
@@ -123,15 +102,17 @@ public class MahjongView : UIObject, IUIObserver
             case UIEventID.Init_PlayerInfoUI: 
             {
                 List<Player> players = Model.getPlayers();
-                for( int i = 0; i < players.Count; i++ ) {
+                for( int i = 0; i < players.Count; i++ )
+                {
                     Player player = players[i];
-                    PlayerUI ui = playerUIDic[i];
+                    PlayerUI ui = playerUIDict[i];
 
                     ui.SetKaze( player.JiKaze );
                     ui.SetTenbou( player.Tenbou );
                     ui.Reach( false );
 
                     ui.SetOyaKaze( i == Model.getChiichaIndex() );
+                    ui.BindPlayer(player);
                 }
                 Debug.Log( "MahjongView: init player info ui end..." );
             }
@@ -147,20 +128,19 @@ public class MahjongView : UIObject, IUIObserver
 
                 for( int i = 0; i < PlayerLength; i++ ) 
                 {
-                    //int startIndex = MaxLength * i;
-                    Dictionary<int, Hai> haiDic = new Dictionary<int, Hai>();
+                    Dictionary<int, Hai> haiDict = new Dictionary<int, Hai>();
 
                     for( int h = 1; h <= MaxLength; h++ ) 
                     {
                         int endIndex = h + MaxLength * i - 1;
-                        haiDic.Add( endIndex, yamaHais[endIndex] );
+                        haiDict.Add( endIndex, yamaHais[endIndex] );
                     }
 
-                    if( haiDic.Count > 0 ){
+                    if( haiDict.Count > 0 ){
                         int uiIndex = (PlayerLength - i) % PlayerLength; // reverse.
                         int[] indexRange = getStartEndOfYamaUIOfPlayer( uiIndex );
 
-                        playerUIDic[uiIndex].SetYamaHais( haiDic, indexRange[0], indexRange[1] );
+                        playerUIDict[uiIndex].SetYamaHais( haiDict, indexRange[0], indexRange[1] );
                     }
                 }
                 Debug.Log("MahjongView: SetYama_BeforeHaipai end...");
@@ -185,10 +165,12 @@ public class MahjongView : UIObject, IUIObserver
                 {
                     Player player = Model.getPlayers()[i];
 
-                    PlayerUI ui = playerUIDic[i];
+                    PlayerUI ui = playerUIDict[i];
 
                     ui.SetTehai( player.Tehai.getJyunTehai() );
                     ui.SetAllHaisVisiable( true );
+
+                    playerUIDict_Kaze[player.JiKaze] = ui;
                 }
 
                 /// set yama.                
@@ -198,13 +180,13 @@ public class MahjongView : UIObject, IUIObserver
                 // count start tsumo index.
                 tsumoHaiStartIndex = (waremeIndex+1) + 13 * PlayerLength - 1;
 
-                Debug.LogWarning(string.Format("remove yamahai with range({0},{1})", waremeIndex+1, tsumoHaiStartIndex % Yama.YAMA_HAIS_MAX));
+                Debug.Log(string.Format("remove yamahai with range({0},{1})", waremeIndex+1, tsumoHaiStartIndex % Yama.YAMA_HAIS_MAX));
 
                 for( int yamahaiID = waremeIndex + 1; yamahaiID <= tsumoHaiStartIndex; yamahaiID++ ) 
                 {                    
                     int id = yamahaiID % Yama.YAMA_HAIS_MAX;
                     int p = findPlayerForYamahaiIndex(id);
-                    playerUIDic[p].PickUpYamaHai(id);
+                    playerUIDict[p].PickUpYamaHai(id);
                 }
                 
                 /// set init Dora.
@@ -213,29 +195,79 @@ public class MahjongView : UIObject, IUIObserver
                     showIndex += Yama.YAMA_HAIS_MAX;
 
                 int pi = findPlayerForYamahaiIndex(showIndex);
-                playerUIDic[pi].ShowYamaHai(showIndex);
+                playerUIDict[pi].ShowYamaHai(showIndex);
 
-                /// TODO: set Wareme.
+                // TODO: set Wareme.
+                showIndex = waremeIndex-13;
+                if( showIndex < 0 )
+                    showIndex += Yama.YAMA_HAIS_MAX;
+                pi = findPlayerForYamahaiIndex(showIndex);
+                playerUIDict[pi].HighlightHai(showIndex);
 
                 Debug.Log("MahjongView: SetUI_AfterHaipai end...");
             }
             break;
 
+            case UIEventID.PickHai:
+            {
+                Player activePlayer = (Player)args[0];
+                var jyunHais = activePlayer.Tehai.getJyunTehai();
+                Hai newHai = jyunHais[jyunHais.Length-1];
+                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
+                ui.PickHai( newHai, true, true );
+
+                int lastPickIndex = (int)args[1];
+                //int pi = findPlayerForYamahaiIndex(lastPickIndex);
+                //playerUIDict[pi].PickUpYamaHai(lastPickIndex);
+                //playerUIDict[pi].HighlightHai(lastPickIndex);
+                Debug.LogWarning("MahjongView: PickHai end..." + lastPickIndex.ToString());
+
+                SetManInputEnable( !activePlayer.IsAI );
+            }
+            break;
+
+            case UIEventID.SuteHai:
+            {
+                Player activePlayer = (Player)args[0];
+                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
+                ui.SetTehai( activePlayer.Tehai.getJyunTehai() );
+                ui.SetAllHaisVisiable( true );
+
+                Hai sutehai = (Hai)args[1];
+                ui.getHouUI().AddHai( sutehai );
+
+                SetManInputEnable(false);
+            }
+            break;
         }
     }
 
+    void SetManInputEnable(bool isEnable)
+    {
+        if( isEnable == true ) {
+            playerUIDict[0].getTehaiUI().EnableInput();
+        }
+        else{
+            playerUIDict[0].getTehaiUI().DisableInput();
+        }
+    }
+
+    // sais panel objects.
+    public GameObject saifuriPanel;
+    public UIButton saisButton;
+    public UILabel saiTip;
 
     UIEventID lastSaifuriTarget = 0;
+
     void SetSaisButton(UIEventID saiTarget) 
     {
-        if( saisButton == null ){
+        if( saisButton == null )
             saisButton = saifuriPanel.transform.FindChild("SaisButton").GetComponent<UIButton>();
-            saisButton.onClick.Clear();
-            saisButton.onClick.Add(new EventDelegate(OnClickSaisButton));
-        }
-        if( saiTip == null ){
+        
+        saisButton.SetOnClick(OnClickSaisButton);
+
+        if( saiTip == null )
             saiTip = saifuriPanel.transform.FindChild("tip").GetComponent<UILabel>();            
-        }
 
         if( saiTarget == UIEventID.Saifuri ) {
             saiTip.text = "Saifuri for deciding Chiicha";
@@ -257,13 +289,13 @@ public class MahjongView : UIObject, IUIObserver
 
         StartCoroutine(OnSaifuriEnd());
     }
-    IEnumerator OnSaifuriEnd() {      
+    IEnumerator OnSaifuriEnd()
+    {      
         yield return new WaitForSeconds(2);
 
         saifuriPanel.SetActive(false);
 
-
-        UIEventID evtID = UIEventID.None;
+        UIEventID evtID;
         if( lastSaifuriTarget == UIEventID.On_Saifuri_End ) {
             evtID = UIEventID.On_Saifuri_End;
         }
@@ -344,4 +376,17 @@ public class MahjongView : UIObject, IUIObserver
         Debug.LogWarning( string.Format( "~index range of yamahai({0}) is ({1}, {2})", yamahaiIndex, index2[0], index2[1] ) );
     }
 
+}
+
+
+public static class UIHelper
+{
+    public static void SetOnClick(this UIButton btn, EventDelegate.Callback onClick)
+    {
+        if(btn == null || onClick == null) 
+            return;
+
+        btn.onClick.Clear();
+        btn.onClick.Add( new EventDelegate(onClick) );
+    }
 }

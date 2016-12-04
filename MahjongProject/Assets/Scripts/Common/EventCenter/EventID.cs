@@ -2,8 +2,6 @@
 
 public enum EventID 
 {
-    None = 0,
-
     // pick a tsumo hai. 
     PickHai,
     // 捨牌の選択 

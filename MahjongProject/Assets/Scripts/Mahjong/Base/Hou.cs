@@ -33,9 +33,7 @@ public class Hou
 
         for (int i = 0; i < src._suteHais.Count; i++)
         {
-            SuteHai suteHai = new SuteHai();
-            SuteHai.copy(suteHai, src._suteHais[i]);
-            dest._suteHais.Add(suteHai);
+            dest._suteHais.Add( new SuteHai(src._suteHais[i]) );
         }            
     }
 
@@ -52,9 +50,7 @@ public class Hou
         if (_suteHais.Count >= SUTE_HAIS_LENGTH_MAX)
             return false;
 
-        SuteHai suteHai = new SuteHai();
-        SuteHai.copy(suteHai, hai);
-        _suteHais.Add(suteHai);
+        _suteHais.Add( new SuteHai(hai) );
 
         return true;
     }

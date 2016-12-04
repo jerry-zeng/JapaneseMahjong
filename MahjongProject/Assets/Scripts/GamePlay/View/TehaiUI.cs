@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class TehaiUI : UIObject 
 {
-
     public Vector2 AlignLeftLocalPos = new Vector2(-380, 0);
     public int HaiPosOffsetX = 2;
     public int NewHaiPosOffsetX = 10;
@@ -48,7 +47,8 @@ public class TehaiUI : UIObject
         }
     }
 
-    public MahjongPai AddHai( Hai hai, int newIndex = -1, bool isShow = false ) {
+    public MahjongPai AddHai( Hai hai, bool newPicked = false, bool isShow = false )
+    {
         if( !Hai.IsValidHai( hai ) )
             return null;
 
@@ -59,11 +59,13 @@ public class TehaiUI : UIObject
         Vector3 localPos = new Vector3( posX, AlignLeftLocalPos.y, 0 );
 
         MahjongPai pai = PlayerUI.CreateMahjongPai( parent, localPos, hai, isShow );
+        pai.SetOnClick(OnClickMahjong);
+
+        pai.gameObject.name = hai.ID.ToString();
         tehaiList.Add( pai );
 
-        if( newIndex == index ) {
+        if( newPicked ) 
             pai.transform.localPosition += new Vector3( NewHaiPosOffsetX, 0, 0 );
-        }
 
         return pai;
     }
@@ -79,4 +81,24 @@ public class TehaiUI : UIObject
         }
     }
 
+    void OnClickMahjong()
+    {
+        int index = tehaiList.IndexOf( MahjongPai.current );
+
+        EPlayerInputType inputType = EPlayerInputType.SelectSutehai;
+        EKaze kaze = _ownerPlayer.JiKaze;
+        object[] args = new object[]{index};
+        EventManager.Get().SendUIEvent(UIEventID.OnPlayerInput, inputType, kaze, args);
+    }
+
+    public void DisableInput()
+    {
+        for(int i = 0; i < tehaiList.Count; i++)
+            tehaiList[i].DisableInput();
+    }
+    public void EnableInput()
+    {
+        for(int i = 0; i < tehaiList.Count; i++)
+            tehaiList[i].EnableInput();
+    }
 }

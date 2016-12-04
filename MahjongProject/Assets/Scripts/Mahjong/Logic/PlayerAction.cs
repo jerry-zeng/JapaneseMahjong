@@ -3,13 +3,11 @@
 public enum EActionState
 {
     None           = 0,
-    Action_Wait    = 1,
-    Sutehai_Select = 2,
-    Chii_Select    = 3,
-    Kan_Select     = 4,
-    Reach_Select   = 5,
-    Ron_Select     = 6,
-    Tsumo_Select   = 7,
+    Select_Sutehai = 1,
+    Select_Chii    = 2,
+    Select_Kan     = 3,
+    Select_Reach   = 4,
+    Select_Agari   = 5, // ron or tsumo.
 }
 
 public enum EActionType
@@ -24,7 +22,7 @@ public enum EActionType
 
 public enum EKanType
 {
-    DaiminKan,
+    DaiMinKan,
     KaKan,
     AnKan
 }
@@ -76,6 +74,8 @@ public class PlayerAction
         _ponSelectIndex = -1;
         _kanSelectIndex = -1;
         _chiiSelectType = 0;
+
+        _indexList.Clear();
     }
 
 
@@ -220,12 +220,11 @@ public class PlayerAction
         set{ _validDaiMinKan = value; }
     }
 
-
-    private int[] _indexs = new int[0];
-    public int[] HaiIndexs
+    private List<int> _indexList = new List<int>();
+    public List<int> HaiIndexList
     {
-        get{ return _indexs; }
-        set{ _indexs = value; }
+        get{ return _indexList; }
+        set{ _indexList = value; }
     }
 
     #region Menu

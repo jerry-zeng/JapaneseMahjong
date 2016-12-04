@@ -12,14 +12,10 @@ public class MahjongMain : Mahjong
 {
     protected bool testHaipai = false;
 
-    protected EventID retEventID = EventID.None;
+    protected EventID retEventID = EventID.Nagashi;
     protected int score = 0;
     protected int iPlayer = 0;
 
-    public MahjongMain() : base()
-    {
-        current = this;
-    }
 
     protected override void initialize()
     {
@@ -49,29 +45,108 @@ public class MahjongMain : Mahjong
 
         // プレイヤーの配列を初期化する。
         m_playerList = new List<Player>();
-        m_playerList.Add( new Player("A", new Man()) );
-        m_playerList.Add( new Player("B", new AI()) );
-        m_playerList.Add( new Player("C", new AI()) );
-        m_playerList.Add( new Player("D", new AI()) );
+        m_playerList.Add( new Man("A") );
+        m_playerList.Add( new AI("B") );
+        m_playerList.Add( new AI("C") );
+        m_playerList.Add( new AI("D") );
 
-        m_tenpaiFlags = new bool[m_playerList.Count];
+        GameSettings.PlayerCount = m_playerList.Count;
+
         for(int i = 0; i < m_playerList.Count; i++)
         {
             m_playerList[i].Tenbou = GameSettings.TENBOU_INIT;
-            m_tenpaiFlags[i] = false;
         }
 
         // プレイヤーに提供する情報を作成する。
-        m_info = new Info(this);
-
-        // UIに提供する情報を作成する。
-        m_infoUi = new GameInfo(this);
+        GameAgent.Instance.Initialize(this);
     }
 
     public void SetChiicha() {
-        m_oyaIndex = (m_sais[0].Num + m_sais[1].Num - 1) % 4;
+        //m_oyaIndex = (m_sais[0].Num + m_sais[1].Num - 1) % m_playerList.Count;
+        m_oyaIndex = 0;
         m_chiichaIndex = m_oyaIndex;
     }
+
+    // プレイヤーの自風を設定する
+    public void initPlayerKaze()
+    {
+        EKaze kaze = (EKaze)m_oyaIndex;
+
+        for( int i = 0; i < m_playerList.Count; i++)
+        {
+            m_playerList[i].JiKaze = kaze;
+
+            kaze = kaze.Next();
+        }
+    }
+
+    /// <summary>
+    /// 摇色子.
+    /// </summary>
+    public Sai[] Saifuri()
+    {
+        m_sais[0].SaiFuri();
+        m_sais[1].SaiFuri();
+
+        return m_sais;
+    }
+
+    // 山に割れ目を設定する
+    protected void setWareme(Sai[] sais)
+    {
+        int sum = sais[0].Num + sais[1].Num; 
+
+        int waremePlayer = (getChiichaIndex() - sum - 1) % 4;
+        if( waremePlayer < 0 )
+            waremePlayer += 4;
+
+        int startHaisIndex = ( (4- waremePlayer) % 4 ) * 34 + sum * 2;
+
+        m_wareme = startHaisIndex - 1; // 开始拿牌位置-1.
+
+        getYama().setTsumoHaisStartIndex(startHaisIndex);
+    }
+
+    // 配牌する
+    protected virtual void Haipai()
+    {
+        // everyone picks 3x4 hais.
+        for( int i = 0, j = m_oyaIndex; i < m_playerList.Count * 12; j++ ) 
+        {
+            if( j >= m_playerList.Count )
+                j = 0;
+
+            // pick 4 hais once.
+            Hai[] hais = m_yama.PickHaipai();
+            for( int h = 0; h < hais.Length; h++ )
+            {
+                m_playerList[j].Tehai.addJyunTehai( hais[h] );
+
+                i++;
+            }
+        }
+
+        // then everyone picks 1 hai.
+        for( int i = 0, j = m_oyaIndex; i < m_playerList.Count * 1; i++,j++ )
+        {
+            if( j >= m_playerList.Count )
+                j = 0;
+
+            Hai hai = m_yama.PickTsumoHai();
+            m_playerList[j].Tehai.addJyunTehai( hai );
+        }
+
+        // sort hais
+        for( int i = 0; i < m_playerList.Count; i++ )
+        {
+            m_playerList[i].Tehai.Sort();
+        }
+
+
+        if(testHaipai == true)
+            StartTest();
+    }
+
 
 
     /// <summary>
@@ -90,7 +165,7 @@ public class MahjongMain : Mahjong
         m_isLast = false;
 
         // プレイヤーの自風を設定する。
-        setPlayerKaze();
+        initPlayerKaze();
 
         // イベントを発行した風を初期化する。
         m_kazeFrom = m_playerList[m_oyaIndex].JiKaze;
@@ -99,9 +174,8 @@ public class MahjongMain : Mahjong
         m_kazeTo = m_playerList[m_oyaIndex].JiKaze;
 
         // プレイヤー配列を初期化する。
-        for( int i = 0; i < m_playerList.Count; i++ ) {
+        for( int i = 0; i < m_playerList.Count; i++ )
             m_playerList[i].Init();
-        }
 
         m_suteHaiList.Clear();
 
@@ -124,7 +198,8 @@ public class MahjongMain : Mahjong
 
     public void PrepareToStart()
     {
-        
+        int i = m_oyaIndex >= m_playerList.Count ? 0 : m_oyaIndex;
+        activePlayer = m_playerList[i];
     }
 
     public bool IsLastKyoku() {
@@ -133,6 +208,13 @@ public class MahjongMain : Mahjong
     public void GoToNextKyoku() {
         m_kyoku++;
     }
+
+
+    public void OnPlayerInput(EPlayerInputType inputType, EKaze playerKaze, object[] args)
+    {
+        
+    }
+
 
     /// <summary>
     /// 牌发好，游戏开始循环.
@@ -164,6 +246,8 @@ public class MahjongMain : Mahjong
     public void PickNewTsumoHai() {
         // ツモ牌を取得する。
         m_tsumoHai = m_yama.PickTsumoHai();
+
+        activePlayer.PickNewHai(m_tsumoHai);
     }
 
     public bool IsLastHai() {
@@ -236,7 +320,7 @@ public class MahjongMain : Mahjong
 
                     for( int l = 0; l < 3; l++ )
                     {
-                        iPlayer = (iPlayer + 1) % 4;
+                        iPlayer = (iPlayer + 1) % GameSettings.PlayerCount;
                         m_playerList[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                     }
                 }
@@ -246,7 +330,7 @@ public class MahjongMain : Mahjong
 
                     for( int l = 0; l < 3; l++ )
                     {
-                        iPlayer = (iPlayer + 1) % 4;
+                        iPlayer = (iPlayer + 1) % GameSettings.PlayerCount;
                         if( m_oyaIndex == iPlayer ) {
                             m_playerList[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                         }
@@ -303,37 +387,41 @@ public class MahjongMain : Mahjong
 
     public void HandleRyuukyokuTenpai() 
     {
+        bool[] tenpaiFlags = new bool[m_playerList.Count];
+
         int tenpaiCount = 0;
         for( int i = 0; i < m_playerList.Count; i++ )
         {
-            m_tenpaiFlags[i] = m_playerList[i].isTenpai();
-            if( m_tenpaiFlags[i] )
+            tenpaiFlags[i] = m_playerList[i].isTenpai();
+
+            if( tenpaiFlags[i] == true ) 
                 tenpaiCount++;
         }
 
         int increasedScore = 0;
         int reducedScore = 0;
 
-        switch( tenpaiCount ) {
-        case 0:
-            break;
-        case 1:
-            increasedScore = 3000;
-            reducedScore = 1000;
-            break;
-        case 2:
-            increasedScore = 1500;
-            reducedScore = 1500;
-            break;
-        case 3:
-            increasedScore = 1000;
-            reducedScore = 3000;
-            break;
+        switch( tenpaiCount )
+        {
+            case 0:
+                break;
+            case 1:
+                increasedScore = 3000;
+                reducedScore = 1000;
+                break;
+            case 2:
+                increasedScore = 1500;
+                reducedScore = 1500;
+                break;
+            case 3:
+                increasedScore = 1000;
+                reducedScore = 3000;
+                break;
         }
 
-        for( int i = 0; i < m_tenpaiFlags.Length; i++ )
+        for( int i = 0; i < tenpaiFlags.Length; i++ )
         {
-            if( m_tenpaiFlags[i] == true ){
+            if( tenpaiFlags[i] == true ){
                 getPlayer(i).increaseTenbou( increasedScore );
             }
             else {
@@ -344,11 +432,7 @@ public class MahjongMain : Mahjong
         // UIイベント（流局）を発行する。
         PostUIEvent( UIEventID.RyuuKyoku );
 
-        // フラグを落としておく。
-        for( int i = 0; i < m_tenpaiFlags.Length; i++ )
-            m_tenpaiFlags[i] = false;
-
-        // 親を更新する。上がり連荘とする。
+        // 親を更新する,上がり連荘とする
         m_oyaIndex++;
         if( m_oyaIndex >= m_playerList.Count )
             m_oyaIndex = 0;
@@ -389,7 +473,7 @@ public class MahjongMain : Mahjong
                     score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
                     for( int i = 0; i < 3; i++ )
                     {
-                        iPlayer = (iPlayer + 1) % 4;
+                        iPlayer = (iPlayer + 1) % GameSettings.PlayerCount;
                         m_playerList[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                     }
                 }
@@ -397,7 +481,7 @@ public class MahjongMain : Mahjong
                     score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
                     for( int i = 0; i < 3; i++ )
                     {
-                        iPlayer = (iPlayer + 1) % 4;
+                        iPlayer = (iPlayer + 1) % GameSettings.PlayerCount;
                         if( m_oyaIndex == iPlayer ) {
                             m_playerList[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                         }
@@ -507,7 +591,8 @@ public class MahjongMain : Mahjong
         PostUIEvent(UIEventID.PickHai, m_kazeFrom, m_kazeFrom);
 
         // イベント（ツモ）を発行する。
-        EventID result = activePlayer.HandleEvent(EventID.PickHai, m_kazeFrom, m_kazeFrom, null);
+        EventID result = EventID.Nagashi;
+            activePlayer.HandleEvent(EventID.PickHai, m_kazeFrom, m_kazeFrom, null);
 
         m_isTenhou = false;
         m_isTsumo = false;
@@ -559,7 +644,7 @@ public class MahjongMain : Mahjong
                 sutehaiIndex = activePlayer.getSutehaiIndex();
 
                 // 理牌の間をとる。
-                m_infoUi.setSutehaiIndex( sutehaiIndex );
+                setSutehaiIndex( sutehaiIndex );
 
                 PostUIEvent( UIEventID.UI_Wait_Rihai, m_kazeFrom, m_kazeFrom );
 
@@ -667,7 +752,8 @@ public class MahjongMain : Mahjong
                     // アクティブプレイヤーを設定する。
                     activePlayer = getPlayer(nextKaze);
 
-                    ret = activePlayer.HandleEvent(EventID.Ron_Check, kazeFrom, nextKaze, null);
+                    ret = EventID.Nagashi;
+                        activePlayer.HandleEvent(EventID.Ron_Check, kazeFrom, nextKaze, null);
 
                     if( ret == EventID.Ron_Agari ) {
                         // アクティブプレイヤーを設定する。
@@ -696,11 +782,12 @@ public class MahjongMain : Mahjong
 
             // イベントを発行する。
             kazeTo = nextKaze;
-            ret = activePlayer.HandleEvent(eventId, kazeFrom, kazeTo, null);
+            ret = EventID.Nagashi;
+                activePlayer.HandleEvent(eventId, kazeFrom, kazeTo, null);
 
             if (ret != EventID.Nagashi) 
             {
-                for (int k = 0; k < 4; k++) {
+                for (int k = 0; k < m_playerList.Count; k++) {
                     m_playerList[k].IsIppatsu = false;
                 }
             }
@@ -892,37 +979,32 @@ public class MahjongMain : Mahjong
 
 
     #region Other Method
-    protected override void Haipai()
+    protected void StartTest()
     {
-        base.Haipai();
+        if(testHaipai == false)
+            return;
 
-        if( testHaipai == true ) 
-        {
-            int[] haiIds = getTestHaiIds();
-            
-            // remove all the hais of player 0.
-            int iPlayer = 0;
-            while( m_playerList[iPlayer].Tehai.getJyunTehai().Length > 0 ) {
-                m_playerList[iPlayer].Tehai.removeJyunTehai(0);
-            }
+        // remove all the hais of player 0.
+        int iPlayer = 0;
+        while( m_playerList[iPlayer].Tehai.getJyunTehai().Length > 0 )
+            m_playerList[iPlayer].Tehai.removeJyunTehai(0);
 
-            // add the test hais.
-            for( int i = 0; i < haiIds.Length - 1; i++ ) {
-                m_playerList[iPlayer].Tehai.addJyunTehai( new Hai(haiIds[i]) );
-            }
+        // add the test hais.
+        int[] haiIds = getTestHaiIds();
+        for( int i = 0; i < haiIds.Length - 1; i++ )
+            m_playerList[iPlayer].Tehai.addJyunTehai( new Hai(haiIds[i]) );
 
-/*
-            // test Pon.
-            m_players[iPlayer].getTehai().removeJyunTehai(0);
-            m_players[iPlayer].getTehai().setPon(new Hai(0), getRelation(this.m_kazeFrom, this.m_kazeTo));
-            m_players[iPlayer].getTehai().setPon(new Hai(31), getRelation(this.m_kazeFrom, this.m_kazeTo));
-  
-            // test ChiiLeft.
-            m_players[iPlayer].getTehai().removeJyunTehai(0);
-            m_players[iPlayer].getTehai().setChiiLeft(new Hai(0), getRelation(this.m_kazeFrom, this.m_kazeTo));
-            m_players[iPlayer].getKawa().add(new Hai(0));
-*/
-        }
+        /*
+        // test Pon.
+        m_players[iPlayer].getTehai().removeJyunTehai(0);
+        m_players[iPlayer].getTehai().setPon(new Hai(0), getRelation(this.m_kazeFrom, this.m_kazeTo));
+        m_players[iPlayer].getTehai().setPon(new Hai(31), getRelation(this.m_kazeFrom, this.m_kazeTo));
+
+        // test ChiiLeft.
+        m_players[iPlayer].getTehai().removeJyunTehai(0);
+        m_players[iPlayer].getTehai().setChiiLeft(new Hai(0), getRelation(this.m_kazeFrom, this.m_kazeTo));
+        m_players[iPlayer].getKawa().add(new Hai(0));
+        */
     }
 
     protected int[] getTestHaiIds() 

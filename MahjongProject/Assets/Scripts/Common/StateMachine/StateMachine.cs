@@ -27,8 +27,11 @@ public class StateMachine : MonoBehaviour
 
 	protected virtual void Transition (State value)
 	{
-		if (_currentState == value || _inTransition)
+        if (_currentState == value || _inTransition)
+        {
+            if(_inTransition) Debug.LogWarning("~SM is in transition: " + _currentState.GetType().Name);
 			return;
+        }
 
 		_inTransition = true;
 		

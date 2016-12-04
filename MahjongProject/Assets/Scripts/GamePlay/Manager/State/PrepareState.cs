@@ -9,15 +9,23 @@ using System.Collections;
 public class PrepareState : MahjongState 
 {
 
+    protected override void AddListeners()
+    {
+        owner.AddInputListener(OnSaifuriForQinEnd);
+    }
+    protected override void RemoveListeners()
+    {
+        owner.RemoveInputListener(OnSaifuriForQinEnd);
+    }
+
     public override void Enter() {
         base.Enter();
-
-        owner.SetDelegate(OnSaifuriForQinEnd);
 
         EventManager.Get().SendUIEvent(UIEventID.Saifuri);
     }
 
-    void OnSaifuriForQinEnd() {
+    void OnSaifuriForQinEnd(EPlayerInputType type, EKaze kaze, object[] args)
+    {
         logicOwner.SetChiicha();
 
         // set jikazes.

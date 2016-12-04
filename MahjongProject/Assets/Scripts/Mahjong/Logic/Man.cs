@@ -1,59 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 
 
-public class Man : IPlayer 
+public class Man : Player 
 {
-    protected Player _owner;
-    protected PlayerAction _action = new PlayerAction();
-    protected Action<EventID> _onAction;
-
-    // 手牌
-    protected Tehai Tehai
-    {
-        get{ return _owner.Tehai; }
+    public Man(string name) : base(name){
+        
     }
 
-    // 河
-    protected Hou Hou
-    {
-        get{ return _owner.Hou; }
-    }
-
-    // プレイヤーに提供する情報
-    protected Info MahjongInfo
-    {
-        get{ return Mahjong.current.getInfo(); }
-    }
-
-
-    public bool IsAI
+    public override bool IsAI
     {
         get{ return false; }
     }
-        
-    public void AttachToPlayer( Player owner )
-    {
-        this._owner = owner;
-    }
 
-    public PlayerAction getAction()
-    {
-        return _action;
-    }
-
-    public EventID DoAction(EventID result)
-    {
-        if(_onAction != null) _onAction.Invoke(result);
-        return result;
-    }
-
-
-    protected CountFormat FormatWorker
-    {
-        get{ return _owner.FormatWorker; }
-    }
-
-    public void HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction) 
+    public override void HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction) 
     {
         this._onAction = onAction;
 
@@ -96,23 +56,23 @@ public class Man : IPlayer
     protected EventID eventPickHai(EKaze kazeFrom, EKaze kazeTo)
     {
         // 手牌をコピーする。
-        MahjongInfo.copyTehai(Tehai, MahjongInfo.getJikaze());
-        Hai tsumoHai = MahjongInfo.getTsumoHai();
+        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
+        Hai tsumoHai = MahjongAgent.getTsumoHai();
 
-        int[] haiIndexs = new int[14];
-        int indexNum = 0;
-
-        if (!MahjongInfo.isReach() && (MahjongInfo.getTsumoRemain() >= 4)) 
+        // check enable Reach
+        List<int> haiIndexList = new List<int>();
+        if( !MahjongAgent.isReach() && MahjongAgent.getTsumoRemain() >= 4 ) 
         {
-            indexNum = MahjongInfo.getReachIndexs(Tehai, tsumoHai, haiIndexs);
-            if (indexNum > 0) {
+            if( MahjongAgent.tryGetReachIndexs(Tehai, tsumoHai, out haiIndexList) )
+            {
                 _action.IsValidReach = true;
-                _action.HaiIndexs = haiIndexs;
+                _action.HaiIndexList = haiIndexList;
                 _action.MenuList.Add( EventID.Reach );
             }
         }
 
-        int agariScore = MahjongInfo.getAgariScore(Tehai, tsumoHai);
+        // check enable Tsumo
+        int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
         if (agariScore > 0) {
             _action.IsValidTsumo = true;
             _action.IsDisplayingMenu = true;
@@ -122,7 +82,7 @@ public class Man : IPlayer
         // 制限事項。リーチ後のカンをさせない。/
         Hai[] kanHais = new Hai[4];
         int kanCount = 0;
-        if( !MahjongInfo.isReach() ) 
+        if( !MahjongAgent.isReach() ) 
         {
             kanCount = Tehai.validKan(tsumoHai, kanHais);
             if (kanCount > 0) {
@@ -132,9 +92,9 @@ public class Man : IPlayer
         }
         else
         {
-            if( _action.MenuList.Count  == 0) {
+            if( _action.MenuList.Count == 0) {
                 _action.Reset();
-                _action.SutehaiIndex = 13;
+                _action.SutehaiIndex = Tehai.getJyunTehai().Length-1;
 
                 return EventID.SuteHai;
             }
@@ -144,8 +104,8 @@ public class Man : IPlayer
         while (true) 
         {
             // 入力を待つ。
-            _action.State = EActionState.Sutehai_Select;
-            MahjongInfo.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+            _action.State = EActionState.Select_Sutehai;
+            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
             _action.Waiting();
 
             if (_action.IsDisplayingMenu) 
@@ -158,23 +118,23 @@ public class Man : IPlayer
 
                     if( _action.MenuList[menuSelect] == EventID.Reach )
                     {
-                        _action.HaiIndexs = haiIndexs;
+                        _action.HaiIndexList = haiIndexList;
                         _action.ReachSelectIndex = 0;
 
                         while (true) 
                         {
                             // 入力を待つ。
-                            _action.State = EActionState.Reach_Select;
-                            MahjongInfo.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+                            _action.State = EActionState.Select_Reach;
+                            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
                             _action.Waiting();
 
                             sutehaiIndex = _action.ReachSelectIndex;
-                            if( sutehaiIndex >= 0 && sutehaiIndex < indexNum )
+                            if( sutehaiIndex >= 0 && sutehaiIndex < haiIndexList.Count )
                                 break;
                         }
 
                         _action.Reset();
-                        _action.SutehaiIndex = haiIndexs[sutehaiIndex];
+                        _action.SutehaiIndex = haiIndexList[sutehaiIndex];
                     } 
                     else if( _action.MenuList[menuSelect] == EventID.Ankan || 
                             _action.MenuList[menuSelect] == EventID.Kakan) 
@@ -187,8 +147,8 @@ public class Man : IPlayer
                                 // 入力を待つ。
                                 _action.setValidKan(false, kanHais, kanCount);
 
-                                _action.State = EActionState.Kan_Select;
-                                MahjongInfo.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+                                _action.State = EActionState.Select_Kan;
+                                MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
                                 _action.Waiting();
 
                                 int kanSelect = _action.KanSelectIndex;
@@ -212,9 +172,8 @@ public class Man : IPlayer
             else 
             {
                 sutehaiIndex = _action.SutehaiIndex;
-                if (sutehaiIndex >= 0 && sutehaiIndex <= 13) {
+                if( sutehaiIndex >= 0 && sutehaiIndex < Tehai.getJyunTehai().Length )
                     break;
-                }
             }
 
         } // end while(true).
@@ -227,22 +186,19 @@ public class Man : IPlayer
 
     protected EventID eventSelectSuteHai(EKaze kazeFrom, EKaze kazeTo)
     {
-        MahjongInfo.copyTehai(Tehai, MahjongInfo.getJikaze());
+        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
         int jyunTehaiLength = Tehai.getJyunTehai().Length;
 
         int sutehaiIdx = 0;
         while (true) 
         {
             // 入力を待つ。
-            _action.State = EActionState.Sutehai_Select;
+            _action.State = EActionState.Select_Sutehai;
             _action.Waiting();
             sutehaiIdx = _action.SutehaiIndex;
 
-            if (sutehaiIdx != int.MaxValue)
-            {
-                if (sutehaiIdx >= 0 && sutehaiIdx <= jyunTehaiLength)
-                    break;
-            }
+            if (sutehaiIdx >= 0 && sutehaiIdx <= jyunTehaiLength)
+                break;
         }
 
         _action.Reset();
@@ -253,82 +209,66 @@ public class Man : IPlayer
 
     protected EventID eventRonCheck(EKaze kazeFrom, EKaze kazeTo)
     {
-        MahjongInfo.copyTehai(Tehai, MahjongInfo.getJikaze());
-        Hai suteHai = MahjongInfo.getSuteHai();
+        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
 
-        bool furiten = false;
-
-        Hai[] a_hais = new Hai[Hai.ID_MAX+1];
-        int indexNum = MahjongInfo.getMachiIndexs(Tehai, a_hais);
-
-        if (indexNum > 0) 
+        List<Hai> machiHais;
+        if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
         {
-            MahjongInfo.copyHou(Hou, MahjongInfo.getJikaze());
+            MahjongAgent.copyHou(Hou, MahjongAgent.getJikaze());
 
+            // chekc hou
             SuteHai[] suteHais = Hou.getSuteHais();
 
             for (int i = 0; i < suteHais.Length; i++)
             {
                 SuteHai suteHaiTemp = suteHais[i];
-                for (int j = 0; j < indexNum; j++)
+
+                for (int j = 0; j < machiHais.Count; j++)
                 {
-                    if (suteHaiTemp.ID == a_hais[j].ID)
-                    {
-                        furiten = true;
-                        goto End_RON_CHECK;
-                    }
+                    if (suteHaiTemp.ID == machiHais[j].ID)
+                        return DoAction(EventID.Nagashi);
                 }
             }
-            End_RON_CHECK: {
-                // go out of double for().
-            }
 
-            if( furiten == false ) 
+            // check sutehais
+            suteHais = MahjongAgent.getSuteHaiList();
+            int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount();
+
+            for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++)
             {
-                suteHais = MahjongInfo.getSuteHaiList();
-                int playerSuteHaisCount = MahjongInfo.getPlayerSuteHaisCount();
+                SuteHai suteHaiTemp = suteHais[playerSuteHaisCount];
 
-                for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++)
+                for (int j = 0; j < machiHais.Count; j++) 
                 {
-                    SuteHai suteHaiTemp = suteHais[playerSuteHaisCount];
-
-                    for (int j = 0; j < indexNum; j++) 
-                    {
-                        if (suteHaiTemp.ID == a_hais[j].ID) {
-                            furiten = true;
-                            goto End_RON_CHECK_2;
-                        }
-                    }
-                }
-                End_RON_CHECK_2: {
-                    // go out of double for().
+                    if (suteHaiTemp.ID == machiHais[j].ID)
+                        return DoAction(EventID.Nagashi);
                 }
             }
+
         }
 
-        if( furiten == false ) 
+        // didn't fruiten
+        Hai suteHai = MahjongAgent.getSuteHai();
+        int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai);
+
+        if (agariScore > 0) 
         {
-            int agariScore = MahjongInfo.getAgariScore(Tehai, suteHai);
+            _action.IsDisplayingMenu = true;
+            _action.IsValidRon = true;
+            _action.MenuList.Add( EventID.Ron_Agari );
+            _action.State = EActionState.Select_Agari;
 
-            if (agariScore > 0) 
-            {
-                _action.IsDisplayingMenu = true;
-                _action.IsValidRon = true;
-                _action.MenuList.Add( EventID.Ron_Agari );
-                _action.State = EActionState.Ron_Select;
+            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
 
-                MahjongInfo.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+            _action.Waiting();
 
-                _action.Waiting();
-
-                int menuSelect = _action.MenuSelectIndex;
-                if( menuSelect < 1 ) {
-                    _action.Reset();
-                    return DoAction(EventID.Ron_Agari);
-                }
-
+            int menuSelect = _action.MenuSelectIndex;
+            if( menuSelect < 1 ) {
                 _action.Reset();
+                return DoAction(EventID.Ron_Agari);
             }
+
+            _action.Reset();
         }
 
         return DoAction(EventID.Nagashi);
@@ -336,29 +276,27 @@ public class Man : IPlayer
 
     protected EventID eventReach(EKaze kazeFrom, EKaze kazeTo)
     {
-        if( kazeFrom == MahjongInfo.getJikaze() )
+        if( kazeFrom == MahjongAgent.getJikaze() )
             return DoAction(EventID.Nagashi);
 
-        MahjongInfo.copyTehai(Tehai, MahjongInfo.getJikaze());
-        Hai suteHai = MahjongInfo.getSuteHai();
+        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
+
 
         bool furiten = false;
 
-        Hai[] a_hais = new Hai[Hai.ID_MAX+1];
-        int indexNum = MahjongInfo.getMachiIndexs(Tehai, a_hais);
-
-        if (indexNum > 0) 
+        List<Hai> machiHais;
+        if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
         {
-            MahjongInfo.copyHou(Hou, MahjongInfo.getJikaze());
+            MahjongAgent.copyHou(Hou, MahjongAgent.getJikaze());
 
             SuteHai[] suteHais = Hou.getSuteHais();
 
             for (int i = 0; i < suteHais.Length; i++)
             {
                 SuteHai suteHaiTemp = suteHais[i];
-                for (int j = 0; j < indexNum; j++) 
+                for (int j = 0; j < machiHais.Count; j++) 
                 {
-                    if (suteHaiTemp.ID == a_hais[j].ID)
+                    if (suteHaiTemp.ID == machiHais[j].ID)
                     {
                         furiten = true;
                         goto End_REACH_CHECK;
@@ -371,16 +309,16 @@ public class Man : IPlayer
 
             if( furiten == false ) 
             {
-                suteHais = MahjongInfo.getSuteHaiList();
-                int playerSuteHaisCount = MahjongInfo.getPlayerSuteHaisCount();
+                suteHais = MahjongAgent.getSuteHaiList();
 
+                int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount();
                 for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++ )
                 {
                     Hai suteHaiTemp = suteHais[playerSuteHaisCount];
 
-                    for (int j = 0; j < indexNum; j++)
+                    for (int j = 0; j < machiHais.Count; j++)
                     {
-                        if (suteHaiTemp.ID == a_hais[j].ID) {
+                        if (suteHaiTemp.ID == machiHais[j].ID) {
                             furiten = true;
                             goto End_REACH_CHECK_2;
                         }
@@ -390,13 +328,13 @@ public class Man : IPlayer
                     // go out of double for().
                 }
             } // end if (!furiten).
+        }
 
-        } // end if (indexNum > 0).
 
-
+        Hai suteHai = MahjongAgent.getSuteHai();
         if( furiten == false ) 
         {
-            int agariScore = MahjongInfo.getAgariScore(Tehai, suteHai);
+            int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai);
             if (agariScore > 0) {
                 _action.IsValidRon = true;
                 _action.MenuList.Add(EventID.Ron_Agari);
@@ -411,7 +349,7 @@ public class Man : IPlayer
         int chiiIndex = 0;
         int relation = kazeFrom - kazeTo;
 
-        if( !MahjongInfo.isReach() && MahjongInfo.getTsumoRemain() > 0 ) 
+        if( !MahjongAgent.isReach() && MahjongAgent.getTsumoRemain() > 0 ) 
         {
             if (Tehai.validPon(suteHai)) {
                 _action.IsValidPon = true;
@@ -460,7 +398,7 @@ public class Man : IPlayer
         if( _action.MenuList.Count > 0 ) 
         {
             _action.MenuSelectIndex = 5;
-            MahjongInfo.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
             _action.Waiting();
 
             int menuSelect = _action.MenuSelectIndex;
@@ -477,9 +415,9 @@ public class Man : IPlayer
                             _action.Reset();
                             // 入力を待つ。
                             _action.ChiiSelectType = (int)_action.MenuList[chiiIndex];
-                            _action.State = EActionState.Chii_Select;
+                            _action.State = EActionState.Select_Chii;
 
-                            MahjongInfo.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+                            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
 
                             _action.Waiting();
                             EventID chiiEventId = (EventID)_action.ChiiSelectType;

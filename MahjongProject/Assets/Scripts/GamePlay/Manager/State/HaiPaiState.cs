@@ -5,21 +5,31 @@ using System.Collections;
 public class HaiPaiState : MahjongState 
 {
 
+    protected override void AddListeners()
+    {
+        owner.AddInputListener(OnSaifuriForHaipaiEnd);
+    }
+    protected override void RemoveListeners()
+    {
+        owner.RemoveInputListener(OnSaifuriForHaipaiEnd);
+    }
+
+
     public override void Enter() {
         base.Enter();
 
         StartCoroutine(PrepareYamaUI());
     }
 
-    IEnumerator PrepareYamaUI() {
-
+    IEnumerator PrepareYamaUI() 
+    {
         yield return new WaitForSeconds(1);
 
-        owner.SetDelegate(OnSaifuriForHaipaiEnd);
         EventManager.Get().SendUIEvent(UIEventID.Saifuri_For_Haipai);
     }
 
-    void OnSaifuriForHaipaiEnd() {
+    void OnSaifuriForHaipaiEnd(EPlayerInputType type, EKaze kaze, object[] args)
+    {
         // haipai.
         logicOwner.SetWaremeAndHaipai();
 
