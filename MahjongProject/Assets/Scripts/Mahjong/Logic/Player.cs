@@ -170,18 +170,60 @@ public abstract class Player
 
     #endregion
 
-    protected Action<EventID> _onAction;
-    protected EventID DoAction(EventID result)
-    {
-        if(_onAction != null) _onAction.Invoke(result);
-        return result;
-    }
-
     protected GameAgent MahjongAgent
     {
         get{ return GameAgent.Instance; }
     }
 
+    protected Action<EResponse> _onResponse;
+    protected EResponse DoResponse(EResponse response)
+    {
+        _action.Response = response;
+
+        if(_onResponse != null) _onResponse.Invoke(response);
+        return response;
+    }
+
+    // playerAction is also the returned parameter.
+    public virtual void HandleRequest(ERequest request, EKaze fromPlayerKaze, Hai haiToHandle, Action<EResponse> onResponse)
+    {
+        this._onResponse = onResponse;
+
+        switch( request )
+        {
+            case ERequest.Tsumo_OrNot:
+            {
+                Check_TsumoOrNot(fromPlayerKaze, haiToHandle);
+            }
+            break;
+            case ERequest.Ron_OrNot:
+            {
+                Check_RonOrNot(fromPlayerKaze, haiToHandle);
+            }
+            break;
+            case ERequest.PonKan_OrNot:
+            {
+                Check_PonKanOrNot(fromPlayerKaze, haiToHandle);
+            }
+            break;
+            case ERequest.Chii_OrNot:
+            {
+                Check_ChiiOrNot(fromPlayerKaze, haiToHandle);
+            }
+            break;
+            default:
+            {
+                DoResponse( EResponse.Nagashi );
+            }
+            break;
+        }
+    }
+
+    protected abstract EResponse Check_TsumoOrNot(EKaze fromPlayerKaze, Hai haiToHandle);
+    protected abstract EResponse Check_RonOrNot(EKaze fromPlayerKaze, Hai haiToHandle);
+    protected abstract EResponse Check_PonKanOrNot(EKaze fromPlayerKaze, Hai haiToHandle);
+    protected abstract EResponse Check_ChiiOrNot(EKaze fromPlayerKaze, Hai haiToHandle);
+
+
     public abstract bool IsAI { get; }
-    public abstract void HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction);
 }

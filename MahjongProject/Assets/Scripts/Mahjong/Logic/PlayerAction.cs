@@ -50,6 +50,7 @@ public class PlayerAction
 
     public void Reset()
     {
+        _response = EResponse.Nagashi;
         _state = EActionState.None;
         _sutehaiIndex = 13;
 
@@ -91,6 +92,13 @@ public class PlayerAction
     }
 
 
+    private EResponse _response = EResponse.Nagashi;
+    public EResponse Response
+    {
+        get{ return _response; }
+        set{ _response = value; }
+    }
+
     private EActionState _state = EActionState.None;
     public EActionState State
     {
@@ -98,8 +106,11 @@ public class PlayerAction
         set{ _state = value; }
     }
 
+
+    public const int Sutehai_Index_Max = 13;
+
     // 捨牌のインデックス
-    private int _sutehaiIndex = 13;
+    private int _sutehaiIndex = Sutehai_Index_Max;
     /// <summary>
     /// Gets or sets the index of the sutehai (0~13).
     /// </summary>
@@ -228,8 +239,8 @@ public class PlayerAction
     }
 
     #region Menu
-    private List<EventID> _menuList = new List<EventID>();
-    public List<EventID> MenuList
+    private List<EResponse> _menuList = new List<EResponse>();
+    public List<EResponse> MenuList
     {
         get{ return _menuList; }
     }

@@ -14,7 +14,7 @@ public class LoopState_CheckTsumo : MahjongState
     IEnumerator CheckTsumo() {
         yield return new WaitForEndOfFrame();
 
-        bool hasTsumo = logicOwner.HasTsumo();
+        bool hasTsumo = false;
         if( hasTsumo ) {
             owner.ChangeState<KyoKuOverState>();
         }

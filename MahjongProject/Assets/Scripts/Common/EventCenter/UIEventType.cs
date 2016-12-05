@@ -1,5 +1,5 @@
 ﻿
-public enum UIEventID 
+public enum UIEventType 
 {
     #region event id
     // pick a tsumo hai. 

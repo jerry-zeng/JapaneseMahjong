@@ -53,18 +53,14 @@ public class GameAgent
     }
 
     // ツモ牌を取得する
-    public Hai getTsumoHai() {
+    protected Hai getTsumoHai() {
         Hai tsumoHai = _game.getTsumoHai();
         return tsumoHai == null? null : new Hai(tsumoHai);
     }
 
     // 捨牌を取得する
-    public Hai getSuteHai() {
+    protected Hai getSuteHai() {
         return new Hai(_game.getSuTehai());
-    }
-
-    public int getSutehaiIndex() {
-        return _game.getSutehaiIndex();
     }
 
     // あがり点を取得する
@@ -101,8 +97,8 @@ public class GameAgent
         return _game.getReachbou();
     }
 
-    public void PostUiEvent(UIEventID eventId, EKaze kazeFrom, EKaze kazeTo){
-        _game.PostUIEvent(eventId, kazeFrom, kazeTo);
+    public void PostUiEvent(UIEventType eventId, params object[] args){
+        _game.PostUIEvent(eventId, args);
     }
 
     public SuteHai[] getSuteHaiList() {

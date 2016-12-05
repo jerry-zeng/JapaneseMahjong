@@ -13,97 +13,117 @@ public class AI : Player
         get{ return true; }
     }
 
-    public override void HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction) 
+
+    public override void HandleRequest(ERequest request, EKaze fromPlayerKaze, Hai haiToHandle, Action<EResponse> onResponse)
     {
-        this._onAction = onAction;
-
-        switch(evtID) 
-        {
-            case EventID.PickHai:
-            {
-                eventPickHai(kazeFrom, kazeTo);
-            }
-            break;
-
-            case EventID.SuteHai:
-            case EventID.Pon:
-            case EventID.Chii_Center:
-            case EventID.Chii_Left:
-            case EventID.Chii_Right:
-            case EventID.DaiMinKan:            
-            case EventID.Ron_Check:
-            case EventID.Reach:
-            {
-                eventSutehai(kazeFrom, kazeTo);
-            }               
-            break;
-
-            case EventID.Select_SuteHai:
-            {
-                MahjongAgent.copyTehai(Tehai);
-                thinkSutehai(null);
-            }
-            break;
-
-            default:
-            {
-                DoAction(EventID.Nagashi);
-            }
-            break;
-        }
+        base.HandleRequest(request, fromPlayerKaze, haiToHandle, onResponse);
     }
 
-
-    protected EventID eventPickHai(EKaze kazeFrom, EKaze kazeTo)
+    protected override EResponse Check_TsumoOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
     {
         MahjongAgent.copyTehai(Tehai);
-        Hai tsumoHai = MahjongAgent.getTsumoHai();
+        Hai tsumoHai = haiToHandle;
 
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
         int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
         if (agariScore > 0)
-            return DoAction(EventID.Tsumo_Agari);
+            return DoResponse(EResponse.Tsumo_Agari);
 
         // リーチの場合は、ツモ切りする。
         if (MahjongAgent.isReach()) {
-            _action.SutehaiIndex = 13;
-            return DoAction(EventID.SuteHai);
+            _action.SutehaiIndex = PlayerAction.Sutehai_Index_Max;
+            return DoResponse(EResponse.SuteHai);
         }
 
         thinkSutehai(tsumoHai);
 
         // 捨牌を決めたので手牌を更新します。
-        if (_action.SutehaiIndex != 13) {
+        if( _action.SutehaiIndex != PlayerAction.Sutehai_Index_Max ) {
             Tehai.removeJyunTehai(_action.SutehaiIndex);
             Tehai.addJyunTehai(tsumoHai);
         }
 
         // リーチする場合はイベント（リーチ）を返します。
-        if (thinkReach(Tehai))
-            return DoAction(EventID.Reach);
+        if( thinkReach(Tehai) )
+            return DoResponse(EResponse.Reach);
 
-        return DoAction(EventID.SuteHai);
+        return DoResponse(EResponse.SuteHai);
     }
 
-    protected EventID eventSutehai(EKaze kazeFrom, EKaze kazeTo)
+    protected override EResponse Check_RonOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
     {
-        if (kazeFrom == MahjongAgent.getJikaze())
-            return DoAction(EventID.Nagashi);
+        if( fromPlayerKaze == MahjongAgent.getJikaze() )
+            return DoResponse(EResponse.Nagashi);
 
         MahjongAgent.copyTehai(Tehai);
         MahjongAgent.copyHou(Hou, MahjongAgent.getJikaze());
 
         if(isFuriten() == false)
         {
-            Hai m_suteHai = MahjongAgent.getSuteHai();
-            int agariScore = MahjongAgent.getAgariScore(Tehai, m_suteHai);
+            int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle);
 
             if (agariScore > 0)
-                return DoAction(EventID.Ron_Agari);
+                return DoResponse(EResponse.Ron_Agari);
         }
 
-        return DoAction(EventID.Nagashi);
+        return DoResponse(EResponse.Nagashi);
     }
+
+    protected override EResponse Check_PonKanOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
+    {
+        return DoResponse(EResponse.Nagashi);
+    }
+
+    protected override EResponse Check_ChiiOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
+    {
+        return DoResponse(EResponse.Nagashi);
+    }
+
+
+    protected void thinkSutehai(Hai addHai)
+    {
+        _action.SutehaiIndex = PlayerAction.Sutehai_Index_Max;
+        FormatWorker.setCounterFormat(Tehai, null);
+        int maxScore = getCountFormatScore(FormatWorker);
+
+        Hai[] jyunTehai = Tehai.getJyunTehai();
+
+        Hai[] jyunTehaiCopy = new Hai[jyunTehai.Length];
+        Tehai.copyJyunTehai(jyunTehaiCopy, jyunTehai);
+
+        for (int i = 0; i < jyunTehai.Length; i++)
+        {
+            Hai hai = new Hai();
+            Tehai.copyJyunTehaiIndex(hai, i);
+            Tehai.removeJyunTehai(i);
+
+            FormatWorker.setCounterFormat(Tehai, addHai);
+            int score = getCountFormatScore(FormatWorker);
+
+            if( score > maxScore ){
+                maxScore = score;
+                _action.SutehaiIndex = i;
+            }
+
+            Tehai.addJyunTehai(hai);
+        }
+    }
+
+    protected bool thinkReach(Tehai tehai)
+    {
+        if (MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount) 
+        {
+            for(int i = 0; i < haiTable.Length; i++) 
+            {
+                FormatWorker.setCounterFormat(tehai, haiTable[i]);
+
+                if(FormatWorker.calculateCombisCount( null ) > 0)
+                    return true;
+            }
+        }
+        return false;
+    }
+
 
     // 振听.
     protected bool isFuriten()
@@ -172,52 +192,6 @@ public class AI : Player
         new Hai(Hai.ID_CHUN) 
     };
     #endregion
-
-    protected EventID thinkSutehai(Hai addHai)
-    {
-        _action.SutehaiIndex = 13;
-        FormatWorker.setCounterFormat(Tehai, null);
-        int maxScore = getCountFormatScore(FormatWorker);
-
-        Hai[] jyunTehaiCopy = new Hai[Tehai.JYUN_TEHAI_LENGTH_MAX];
-        Tehai.copyJyunTehai(jyunTehaiCopy, Tehai.getJyunTehai());
-
-        int jyunTehaiLength = Tehai.getJyunTehai().Length;
-
-        for (int i = 0; i < jyunTehaiLength; i++)
-        {
-            Hai hai = new Hai();
-            Tehai.copyJyunTehaiIndex(hai, i);
-            Tehai.removeJyunTehai(i);
-
-            FormatWorker.setCounterFormat(Tehai, addHai);
-            int score = getCountFormatScore(FormatWorker);
-
-            if( score > maxScore ){
-                maxScore = score;
-                _action.SutehaiIndex = i;
-            }
-
-            Tehai.addJyunTehai(hai);
-        }
-
-        return EventID.Nagashi;
-    }
-
-    protected bool thinkReach(Tehai tehai)
-    {
-        if (MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount) 
-        {
-            for(int i = 0; i < haiTable.Length; i++) 
-            {
-                FormatWorker.setCounterFormat(tehai, haiTable[i]);
-
-                if(FormatWorker.calculateCombisCount( null ) > 0)
-                    return true;
-            }
-        }
-        return false;
-    }
 
     protected int getCountFormatScore(CountFormat countFormat)
     {

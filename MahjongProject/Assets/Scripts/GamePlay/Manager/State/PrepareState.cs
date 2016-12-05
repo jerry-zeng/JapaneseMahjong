@@ -21,7 +21,7 @@ public class PrepareState : MahjongState
     public override void Enter() {
         base.Enter();
 
-        EventManager.Get().SendUIEvent(UIEventID.Saifuri);
+        EventManager.Get().SendEvent(UIEventType.Saifuri);
     }
 
     void OnSaifuriForQinEnd(EPlayerInputType type, EKaze kaze, object[] args)
@@ -31,8 +31,8 @@ public class PrepareState : MahjongState
         // set jikazes.
         logicOwner.PrepareKyokuYama();
 
-        EventManager.Get().SendUIEvent(UIEventID.Init_PlayerInfoUI);
-        EventManager.Get().SendUIEvent(UIEventID.SetYama_BeforeHaipai);
+        EventManager.Get().SendEvent(UIEventType.Init_PlayerInfoUI);
+        EventManager.Get().SendEvent(UIEventType.SetYama_BeforeHaipai);
 
         owner.ChangeState<HaiPaiState>();
     }

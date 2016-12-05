@@ -13,51 +13,16 @@ public class Man : Player
         get{ return false; }
     }
 
-    public override void HandleEvent(EventID evtID, EKaze kazeFrom, EKaze kazeTo, Action<EventID> onAction) 
+    public override void HandleRequest(ERequest request, EKaze fromPlayerKaze, Hai haiToHandle, Action<EResponse> onResponse)
     {
-        this._onAction = onAction;
-
-        switch (evtID) 
-        {
-            case EventID.PickHai:
-            {
-                eventPickHai(kazeFrom, kazeTo);
-            }
-            break;
-
-            case EventID.Select_SuteHai:
-            {
-                eventSelectSuteHai(kazeFrom, kazeTo);
-            }
-            break;
-
-            case EventID.Ron_Check:
-            {
-                eventRonCheck(kazeFrom, kazeTo);
-            }
-            break;
-
-            case EventID.SuteHai:
-            case EventID.Reach:
-            {
-                eventReach(kazeFrom, kazeTo);
-            }
-            break;
-
-            default:
-            {
-                DoAction(EventID.Nagashi);
-            }
-            break;
-        }
+        base.HandleRequest(request, fromPlayerKaze, haiToHandle, onResponse);
     }
 
-
-    protected EventID eventPickHai(EKaze kazeFrom, EKaze kazeTo)
+    protected override EResponse Check_TsumoOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
     {
         // 手牌をコピーする。
         MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
-        Hai tsumoHai = MahjongAgent.getTsumoHai();
+        Hai tsumoHai = haiToHandle;
 
         // check enable Reach
         List<int> haiIndexList = new List<int>();
@@ -67,7 +32,7 @@ public class Man : Player
             {
                 _action.IsValidReach = true;
                 _action.HaiIndexList = haiIndexList;
-                _action.MenuList.Add( EventID.Reach );
+                _action.MenuList.Add( EResponse.Reach );
             }
         }
 
@@ -76,7 +41,7 @@ public class Man : Player
         if (agariScore > 0) {
             _action.IsValidTsumo = true;
             _action.IsDisplayingMenu = true;
-            _action.MenuList.Add( EventID.Tsumo_Agari );
+            _action.MenuList.Add( EResponse.Tsumo_Agari );
         }
 
         // 制限事項。リーチ後のカンをさせない。/
@@ -87,7 +52,7 @@ public class Man : Player
             kanCount = Tehai.validKan(tsumoHai, kanHais);
             if (kanCount > 0) {
                 _action.setValidKan(true, kanHais, kanCount);
-                _action.MenuList.Add( EventID.Ankan );
+                _action.MenuList.Add( EResponse.Ankan );
             }
         }
         else
@@ -96,7 +61,7 @@ public class Man : Player
                 _action.Reset();
                 _action.SutehaiIndex = Tehai.getJyunTehai().Length-1;
 
-                return EventID.SuteHai;
+                return DoResponse(EResponse.SuteHai);
             }
         }
 
@@ -105,7 +70,8 @@ public class Man : Player
         {
             // 入力を待つ。
             _action.State = EActionState.Select_Sutehai;
-            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+            MahjongAgent.PostUiEvent(UIEventType.UI_Input_Player_Action);
+
             _action.Waiting();
 
             if (_action.IsDisplayingMenu) 
@@ -116,7 +82,7 @@ public class Man : Player
                 {
                     _action.Reset();
 
-                    if( _action.MenuList[menuSelect] == EventID.Reach )
+                    if( _action.MenuList[menuSelect] == EResponse.Reach )
                     {
                         _action.HaiIndexList = haiIndexList;
                         _action.ReachSelectIndex = 0;
@@ -125,7 +91,7 @@ public class Man : Player
                         {
                             // 入力を待つ。
                             _action.State = EActionState.Select_Reach;
-                            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+                            MahjongAgent.PostUiEvent(UIEventType.UI_Input_Player_Action);
                             _action.Waiting();
 
                             sutehaiIndex = _action.ReachSelectIndex;
@@ -136,8 +102,8 @@ public class Man : Player
                         _action.Reset();
                         _action.SutehaiIndex = haiIndexList[sutehaiIndex];
                     } 
-                    else if( _action.MenuList[menuSelect] == EventID.Ankan || 
-                            _action.MenuList[menuSelect] == EventID.Kakan) 
+                    else if( _action.MenuList[menuSelect] == EResponse.Ankan || 
+                            _action.MenuList[menuSelect] == EResponse.Kakan) 
                     {
                         if (kanCount > 1) 
                         {
@@ -148,23 +114,41 @@ public class Man : Player
                                 _action.setValidKan(false, kanHais, kanCount);
 
                                 _action.State = EActionState.Select_Kan;
-                                MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+                                MahjongAgent.PostUiEvent(UIEventType.UI_Input_Player_Action);
                                 _action.Waiting();
 
                                 int kanSelect = _action.KanSelectIndex;
                                 _action.Reset();
                                 _action.SutehaiIndex = kanSelect;
 
-                                return _action.MenuList[menuSelect];
+                                return DoResponse( _action.MenuList[menuSelect] );
                             }
                         } 
                         else 
                         {
-                            _action.SutehaiIndex = 0;
+                            MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
+                            int jyunTehaiLength = Tehai.getJyunTehai().Length;
+
+                            int sutehaiIdx = 0;
+                            while (true) 
+                            {
+                                // 入力を待つ。
+                                _action.State = EActionState.Select_Sutehai;
+                                _action.Waiting();
+                                sutehaiIdx = _action.SutehaiIndex;
+
+                                if (sutehaiIdx >= 0 && sutehaiIdx <= jyunTehaiLength)
+                                    break;
+                            }
+
+                            _action.Reset();
+                            _action.SutehaiIndex = sutehaiIdx;
+
+                            return DoResponse(EResponse.SuteHai);
                         }
                     }
 
-                    return _action.MenuList[menuSelect];
+                    return DoResponse( _action.MenuList[menuSelect] );
                 }
 
                 _action.Reset();
@@ -181,106 +165,12 @@ public class Man : Player
         _action.Reset();
         _action.SutehaiIndex = sutehaiIndex;
 
-        return DoAction(EventID.SuteHai);
+        return DoResponse(EResponse.SuteHai);
     }
 
-    protected EventID eventSelectSuteHai(EKaze kazeFrom, EKaze kazeTo)
+    protected override EResponse Check_RonOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
     {
         MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
-        int jyunTehaiLength = Tehai.getJyunTehai().Length;
-
-        int sutehaiIdx = 0;
-        while (true) 
-        {
-            // 入力を待つ。
-            _action.State = EActionState.Select_Sutehai;
-            _action.Waiting();
-            sutehaiIdx = _action.SutehaiIndex;
-
-            if (sutehaiIdx >= 0 && sutehaiIdx <= jyunTehaiLength)
-                break;
-        }
-
-        _action.Reset();
-        _action.SutehaiIndex = sutehaiIdx;
-
-        return DoAction(EventID.SuteHai);
-    }
-
-    protected EventID eventRonCheck(EKaze kazeFrom, EKaze kazeTo)
-    {
-        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
-
-        List<Hai> machiHais;
-        if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
-        {
-            MahjongAgent.copyHou(Hou, MahjongAgent.getJikaze());
-
-            // chekc hou
-            SuteHai[] suteHais = Hou.getSuteHais();
-
-            for (int i = 0; i < suteHais.Length; i++)
-            {
-                SuteHai suteHaiTemp = suteHais[i];
-
-                for (int j = 0; j < machiHais.Count; j++)
-                {
-                    if (suteHaiTemp.ID == machiHais[j].ID)
-                        return DoAction(EventID.Nagashi);
-                }
-            }
-
-            // check sutehais
-            suteHais = MahjongAgent.getSuteHaiList();
-            int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount();
-
-            for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++)
-            {
-                SuteHai suteHaiTemp = suteHais[playerSuteHaisCount];
-
-                for (int j = 0; j < machiHais.Count; j++) 
-                {
-                    if (suteHaiTemp.ID == machiHais[j].ID)
-                        return DoAction(EventID.Nagashi);
-                }
-            }
-
-        }
-
-        // didn't fruiten
-        Hai suteHai = MahjongAgent.getSuteHai();
-        int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai);
-
-        if (agariScore > 0) 
-        {
-            _action.IsDisplayingMenu = true;
-            _action.IsValidRon = true;
-            _action.MenuList.Add( EventID.Ron_Agari );
-            _action.State = EActionState.Select_Agari;
-
-            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
-
-            _action.Waiting();
-
-            int menuSelect = _action.MenuSelectIndex;
-            if( menuSelect < 1 ) {
-                _action.Reset();
-                return DoAction(EventID.Ron_Agari);
-            }
-
-            _action.Reset();
-        }
-
-        return DoAction(EventID.Nagashi);
-    }
-
-    protected EventID eventReach(EKaze kazeFrom, EKaze kazeTo)
-    {
-        if( kazeFrom == MahjongAgent.getJikaze() )
-            return DoAction(EventID.Nagashi);
-
-        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
-
 
         bool furiten = false;
 
@@ -330,16 +220,78 @@ public class Man : Player
             } // end if (!furiten).
         }
 
-
-        Hai suteHai = MahjongAgent.getSuteHai();
+        // didn't fruiten
         if( furiten == false ) 
         {
-            int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai);
-            if (agariScore > 0) {
+            int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle);
+            if (agariScore > 0) 
+            {
+                _action.IsDisplayingMenu = true;
                 _action.IsValidRon = true;
-                _action.MenuList.Add(EventID.Ron_Agari);
+                _action.MenuList.Add( EResponse.Ron_Agari );
+                _action.State = EActionState.Select_Agari;
+
+                while(true)
+                {
+                    MahjongAgent.PostUiEvent(UIEventType.UI_Input_Player_Action);
+                    _action.Waiting();
+
+                    int menuSelect = _action.MenuSelectIndex;
+                    if( menuSelect < 1 ) {
+                        _action.Reset();
+                        return DoResponse(EResponse.Ron_Agari);
+                    }
+                }
             }
         }
+
+        return DoResponse(EResponse.Nagashi);
+    }
+
+    protected override EResponse Check_PonKanOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
+    {
+        // 手牌をコピーする。
+        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
+        Hai sutehai = haiToHandle;
+
+        if( !MahjongAgent.isReach() ) 
+        {
+            if ( Tehai.validDaiMinKan(sutehai) ) {
+                _action.IsValidDaiMinKan = true;
+                _action.MenuList.Add( EResponse.DaiMinKan );
+            }
+
+            if( Tehai.validPon(sutehai) ){
+                _action.IsValidPon = true;
+                _action.MenuList.Add( EResponse.Pon );
+            }
+
+            if( _action.MenuList.Count > 0 )
+            {
+                _action.IsDisplayingMenu = true;
+                while(true)
+                {
+                    MahjongAgent.PostUiEvent(UIEventType.UI_Input_Player_Action);
+                    _action.Waiting();
+
+                    int menuSelect = _action.MenuSelectIndex;
+                    if( menuSelect >= 0 && menuSelect < _action.MenuList.Count ) {
+                        _action.Reset();
+                        return DoResponse( _action.MenuList[menuSelect] );
+                    }
+                }
+            }
+
+        }
+
+        return DoResponse(EResponse.Nagashi);
+    }
+
+    protected override EResponse Check_ChiiOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
+    {
+        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
+
+        Hai suteHai = haiToHandle;
 
         Hai[] sarashiHaiLeft = new Hai[2];
         Hai[] sarashiHaiCenter = new Hai[2];
@@ -347,13 +299,13 @@ public class Man : Player
 
         int chiiCount = 0;
         int chiiIndex = 0;
-        int relation = kazeFrom - kazeTo;
+        int relation = fromPlayerKaze - JiKaze;
 
         if( !MahjongAgent.isReach() && MahjongAgent.getTsumoRemain() > 0 ) 
         {
             if (Tehai.validPon(suteHai)) {
                 _action.IsValidPon = true;
-                _action.MenuList.Add(EventID.Pon);
+                _action.MenuList.Add(EResponse.Pon);
             }
 
             if( relation == -1 || relation == 3 ) 
@@ -363,7 +315,7 @@ public class Man : Player
                     _action.setValidChiiRight(true, sarashiHaiRight);
                     if( chiiCount == 0 ){
                         chiiIndex = _action.MenuList.Count;
-                        _action.MenuList.Add(EventID.Chii_Right);
+                        _action.MenuList.Add(EResponse.Chii_Right);
                     }
                     chiiCount++;
                 }
@@ -373,7 +325,7 @@ public class Man : Player
                     _action.setValidChiiCenter(true, sarashiHaiCenter);
                     if( chiiCount == 0 ){
                         chiiIndex = _action.MenuList.Count;
-                        _action.MenuList.Add(EventID.Chii_Center);
+                        _action.MenuList.Add(EResponse.Chii_Center);
                     }
                     chiiCount++;
                 }
@@ -383,7 +335,7 @@ public class Man : Player
                     _action.setValidChiiLeft(true, sarashiHaiLeft);
                     if( chiiCount == 0 ){
                         chiiIndex = _action.MenuList.Count;
-                        _action.MenuList.Add(EventID.Chii_Left);
+                        _action.MenuList.Add(EResponse.Chii_Left);
                     }
                     chiiCount++;
                 }
@@ -391,22 +343,22 @@ public class Man : Player
 
             if (Tehai.validDaiMinKan(suteHai)) {
                 _action.IsValidDaiMinKan = true;
-                _action.MenuList.Add(EventID.DaiMinKan);
+                _action.MenuList.Add(EResponse.DaiMinKan);
             }
         }
 
         if( _action.MenuList.Count > 0 ) 
         {
             _action.MenuSelectIndex = 5;
-            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+            MahjongAgent.PostUiEvent(UIEventType.UI_Input_Player_Action);
             _action.Waiting();
 
             int menuSelect = _action.MenuSelectIndex;
             if (menuSelect < _action.MenuList.Count) 
             {
-                if( _action.MenuList[menuSelect] == EventID.Chii_Left || 
-                   _action.MenuList[menuSelect] == EventID.Chii_Center || 
-                   _action.MenuList[menuSelect] == EventID.Chii_Right ) 
+                if(_action.MenuList[menuSelect] == EResponse.Chii_Left || 
+                   _action.MenuList[menuSelect] == EResponse.Chii_Center || 
+                   _action.MenuList[menuSelect] == EResponse.Chii_Right ) 
                 {
                     if (chiiCount > 1) 
                     {
@@ -417,26 +369,26 @@ public class Man : Player
                             _action.ChiiSelectType = (int)_action.MenuList[chiiIndex];
                             _action.State = EActionState.Select_Chii;
 
-                            MahjongAgent.PostUiEvent(UIEventID.UI_Input_Player_Action, kazeFrom, kazeTo);
+                            MahjongAgent.PostUiEvent(UIEventType.UI_Input_Player_Action);
 
                             _action.Waiting();
-                            EventID chiiEventId = (EventID)_action.ChiiSelectType;
+                            EResponse chiiEventId = (EResponse)_action.ChiiSelectType;
                             _action.Reset();
 
-                            return DoAction(chiiEventId);
+                            return DoResponse(chiiEventId);
                         }
                     }
                 }
 
                 _action.Reset();
 
-                return DoAction( _action.MenuList[menuSelect] );
+                return DoResponse( _action.MenuList[menuSelect] );
             }
 
             _action.Reset();
         }
 
-        return DoAction(EventID.SuteHai);
+        return DoResponse(EResponse.Nagashi);
     }
 
 }

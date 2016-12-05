@@ -25,7 +25,7 @@ public class HaiPaiState : MahjongState
     {
         yield return new WaitForSeconds(1);
 
-        EventManager.Get().SendUIEvent(UIEventID.Saifuri_For_Haipai);
+        EventManager.Get().SendEvent(UIEventType.Saifuri_For_Haipai);
     }
 
     void OnSaifuriForHaipaiEnd(EPlayerInputType type, EKaze kaze, object[] args)
@@ -33,7 +33,7 @@ public class HaiPaiState : MahjongState
         // haipai.
         logicOwner.SetWaremeAndHaipai();
 
-        EventManager.Get().SendUIEvent(UIEventID.SetUI_AfterHaipai);
+        EventManager.Get().SendEvent(UIEventType.SetUI_AfterHaipai);
         
         owner.ChangeState<LoopState_Start>();
     }

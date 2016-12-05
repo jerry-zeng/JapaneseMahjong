@@ -45,15 +45,11 @@ public abstract class Mahjong
 
     // 捨牌
     protected List<SuteHai> m_suteHaiList;
-    private int m_sutehaiIndex = 13;
+    protected int m_sutehaiIndex = 13;
 
 
     // イベントを発行した風
     protected EKaze m_kazeFrom;
-
-    // イベントの対象となった風
-    protected EKaze m_kazeTo;
-
     // current player
     protected Player m_activePlayer;
 
@@ -320,6 +316,6 @@ public abstract class Mahjong
 
     // abstract methods.
     protected abstract void initialize();
-    public abstract void PostUIEvent(UIEventID eventId, EKaze kazeFrom = EKaze.Ton, EKaze kazeTo = EKaze.Ton);
+    public abstract void PostUIEvent(UIEventType eventType, params object[] args);
 }
 

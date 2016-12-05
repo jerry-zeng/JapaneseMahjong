@@ -88,7 +88,7 @@ public class TehaiUI : UIObject
         EPlayerInputType inputType = EPlayerInputType.SelectSutehai;
         EKaze kaze = _ownerPlayer.JiKaze;
         object[] args = new object[]{index};
-        EventManager.Get().SendUIEvent(UIEventID.OnPlayerInput, inputType, kaze, args);
+        EventManager.Get().SendEvent(UIEventType.OnPlayerInput, inputType, kaze, args);
     }
 
     public void DisableInput()

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 
 
-public class GameManager : StateMachine, IUIObserver
+public class GameManager : StateMachine, IObserver
 {
     private static GameManager _instance;
     public static GameManager Instance
@@ -37,7 +37,6 @@ public class GameManager : StateMachine, IUIObserver
         mahjong = new MahjongMain();
 
         _onPlayerInput = new List<Action<EPlayerInputType, EKaze, object[]>>();
-        AddInputListener(MahjongMain.OnPlayerInput);
     }
 
     void Start() {
@@ -67,18 +66,18 @@ public class GameManager : StateMachine, IUIObserver
     }
 
 
-    public void OnHandleEvent(UIEventID evtID, object[] args) 
+    public void OnHandleEvent(UIEventType evtID, object[] args) 
     {
         switch(evtID)
         {
-            case UIEventID.On_Saifuri_End:
-            case UIEventID.On_Saifuri_For_Haipai_End:
+            case UIEventType.On_Saifuri_End:
+            case UIEventType.On_Saifuri_For_Haipai_End:
             {
                 InvokeDelegates(EPlayerInputType.Saifuri, MahjongMain.getManKaze(), null);
             }
             break;
 
-            case UIEventID.OnPlayerInput:
+            case UIEventType.OnPlayerInput:
             {
                 EPlayerInputType type = (EPlayerInputType)args[0];
                 EKaze kaze = (EKaze)args[1];
