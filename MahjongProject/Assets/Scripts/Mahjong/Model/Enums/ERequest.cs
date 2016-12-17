@@ -5,8 +5,7 @@
 /// </summary>
 public enum ERequest
 {
-    Tsumo_OrNot  = 0,
-    Ron_OrNot    = 1,
-    PonKan_OrNot = 2,
-    Chii_OrNot   = 3,
+    Handle_TsumoHai = 0,
+    Handle_KaKanHai = 1,
+    Handle_SuteHai = 2,
 }

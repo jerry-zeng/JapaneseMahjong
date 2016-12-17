@@ -19,7 +19,6 @@ public enum EResponse
     DaiMinKan,
     // ポン 
     Pon,
-
     // チー(左) 
     Chii_Left,
     // チー(中央) 

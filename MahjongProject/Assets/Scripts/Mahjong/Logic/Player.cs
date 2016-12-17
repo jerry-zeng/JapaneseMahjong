@@ -96,7 +96,6 @@ public abstract class Player
         get{ return _countFormat; }
     }
 
-
     #region Logic
 
     public virtual void Init() 
@@ -143,31 +142,6 @@ public abstract class Player
 
         return false;
     }
-
-
-    public void HaiPai(Hai[] hais)
-    {
-        for( int i = 0; i < hais.Length; i++ )
-        {
-            Tehai.addJyunTehai( hais[i] );
-        }
-    }
-
-    public void PickNewHai(Hai newHai)
-    {
-        Tehai.addJyunTehai( newHai );
-    }
-
-    public void SortTehai()
-    {
-        Tehai.Sort();
-    }
-
-    public void SuteHai()
-    {
-        
-    }
-
     #endregion
 
     protected GameAgent MahjongAgent
@@ -175,40 +149,37 @@ public abstract class Player
         get{ return GameAgent.Instance; }
     }
 
-    protected Action<EResponse> _onResponse;
+    protected Action<EKaze, EResponse> _onResponse;
     protected EResponse DoResponse(EResponse response)
     {
         _action.Response = response;
 
-        if(_onResponse != null) _onResponse.Invoke(response);
+        if(_onResponse != null) 
+            _onResponse.Invoke(JiKaze, response);
+
         return response;
     }
 
     // playerAction is also the returned parameter.
-    public virtual void HandleRequest(ERequest request, EKaze fromPlayerKaze, Hai haiToHandle, Action<EResponse> onResponse)
+    public virtual void HandleRequest(ERequest request, EKaze fromPlayerKaze, Hai haiToHandle, Action<EKaze, EResponse> onResponse)
     {
         this._onResponse = onResponse;
 
         switch( request )
         {
-            case ERequest.Tsumo_OrNot:
+            case ERequest.Handle_TsumoHai:
             {
-                Check_TsumoOrNot(fromPlayerKaze, haiToHandle);
+                OnHandle_TsumoHai(fromPlayerKaze, haiToHandle);
             }
             break;
-            case ERequest.Ron_OrNot:
+            case ERequest.Handle_KaKanHai:
             {
-                Check_RonOrNot(fromPlayerKaze, haiToHandle);
+                OnHandle_KakanHai(fromPlayerKaze, haiToHandle);
             }
             break;
-            case ERequest.PonKan_OrNot:
+            case ERequest.Handle_SuteHai:
             {
-                Check_PonKanOrNot(fromPlayerKaze, haiToHandle);
-            }
-            break;
-            case ERequest.Chii_OrNot:
-            {
-                Check_ChiiOrNot(fromPlayerKaze, haiToHandle);
+                OnHandle_SuteHai(fromPlayerKaze, haiToHandle);
             }
             break;
             default:
@@ -219,11 +190,9 @@ public abstract class Player
         }
     }
 
-    protected abstract EResponse Check_TsumoOrNot(EKaze fromPlayerKaze, Hai haiToHandle);
-    protected abstract EResponse Check_RonOrNot(EKaze fromPlayerKaze, Hai haiToHandle);
-    protected abstract EResponse Check_PonKanOrNot(EKaze fromPlayerKaze, Hai haiToHandle);
-    protected abstract EResponse Check_ChiiOrNot(EKaze fromPlayerKaze, Hai haiToHandle);
-
+    protected abstract EResponse OnHandle_TsumoHai(EKaze fromPlayerKaze, Hai haiToHandle);
+    protected abstract EResponse OnHandle_KakanHai(EKaze fromPlayerKaze, Hai haiToHandle);
+    protected abstract EResponse OnHandle_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle);
 
     public abstract bool IsAI { get; }
 }

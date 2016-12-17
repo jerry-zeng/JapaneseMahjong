@@ -10,6 +10,31 @@ using System.Collections.Generic;
 
 public class MahjongMain : Mahjong 
 {
+    #region table
+    public readonly static Hai[] HaiTable = new Hai[] 
+    {
+        new Hai(Hai.ID_WAN_1), new Hai(Hai.ID_WAN_2),
+        new Hai(Hai.ID_WAN_3), new Hai(Hai.ID_WAN_4),
+        new Hai(Hai.ID_WAN_5), new Hai(Hai.ID_WAN_6),
+        new Hai(Hai.ID_WAN_7), new Hai(Hai.ID_WAN_8),
+        new Hai(Hai.ID_WAN_9),
+        new Hai(Hai.ID_PIN_1), new Hai(Hai.ID_PIN_2),
+        new Hai(Hai.ID_PIN_3), new Hai(Hai.ID_PIN_4),
+        new Hai(Hai.ID_PIN_5), new Hai(Hai.ID_PIN_6),
+        new Hai(Hai.ID_PIN_7), new Hai(Hai.ID_PIN_8),
+        new Hai(Hai.ID_PIN_9),
+        new Hai(Hai.ID_SOU_1), new Hai(Hai.ID_SOU_2),
+        new Hai(Hai.ID_SOU_3), new Hai(Hai.ID_SOU_4),
+        new Hai(Hai.ID_SOU_5), new Hai(Hai.ID_SOU_6),
+        new Hai(Hai.ID_SOU_7), new Hai(Hai.ID_SOU_8),
+        new Hai(Hai.ID_SOU_9),
+        new Hai(Hai.ID_TON),  new Hai(Hai.ID_NAN),
+        new Hai(Hai.ID_SYA),  new Hai(Hai.ID_PE),
+        new Hai(Hai.ID_HAKU), new Hai(Hai.ID_HATSU),
+        new Hai(Hai.ID_CHUN) 
+    };
+    #endregion
+
 
     // Step: 1
     protected override void initialize()
@@ -234,90 +259,84 @@ public class MahjongMain : Mahjong
 
 
     #region Request & Response
+    protected ERequest m_request = ERequest.Handle_TsumoHai;
 
-    protected ERequest m_request = ERequest.Ron_OrNot;
 
-    protected void ResetAskPurpose()
+    public void OnPlayerResponse(EKaze playerKaze, EResponse response)
     {
-        m_request = ERequest.Ron_OrNot;
-    }
+        if( !CheckResponseValid(m_request, response) )
+            throw new InvalidResponseException( string.Format("Invalid response '{0}' to request '{1}'", response.ToString(), m_request.ToString()) );
 
-
-    public void SendRequest(ERequest request, EKaze fromKaze, Hai haiToHandle)
-    {
-        m_activePlayer.HandleRequest( request, fromKaze, haiToHandle, OnActivePlayerResponse );
-    }
-
-    public void OnActivePlayerResponse(EResponse response)
-    {
         switch( m_request )
         {
-            case ERequest.Tsumo_OrNot:
+            case ERequest.Handle_TsumoHai:
             {
-                if( response != EResponse.Tsumo_Agari || 
-                    response != EResponse.Ankan ||
-                    response != EResponse.Kakan ||
-                    response != EResponse.Reach || 
-                    response != EResponse.SuteHai )
-                {
-                    throw new InvalidResponseException("Invalid response to ERequest.Tsumo_OrNot");
-                }
-                else
-                {
-                    OnResponse_TsumoOrNot();
-                }
+                OnResponse_Handle_TsumoHai();
             }
             break;
-            case ERequest.Ron_OrNot:
+            case ERequest.Handle_KaKanHai:
             {
-                if( response != EResponse.Ron_Agari || 
-                    response != EResponse.Nagashi )
-                {
-                    throw new InvalidResponseException("Invalid response to ERequest.Ron_OrNot");
-                }
-                else
-                {
-                    OnResponse_RonOrNot();
-                }
+                // add to response list, if all other players do response, handle response.
+                OnResponse_Handle_KaKanHai();
             }
             break;
-            case ERequest.PonKan_OrNot:
+            case ERequest.Handle_SuteHai:
             {
-                if( response != EResponse.Pon || 
-                    response != EResponse.DaiMinKan ||
-                    response != EResponse.Nagashi )
-                {
-                    throw new InvalidResponseException("Invalid response to ERequest.PonKan_OrNot");
-                }
-                else
-                {
-                    OnResponse_PonKanOrNot();
-                }
+                // add to response list, if all other players do response, handle response.
+                OnResponse_Handle_SuteHai();
             }
             break;
-            case ERequest.Chii_OrNot:
-            {
-                if( response != EResponse.Chii_Left ||
-                    response != EResponse.Chii_Center ||
-                    response != EResponse.Chii_Right ||
-                    response != EResponse.Nagashi )
-                {
-                    throw new InvalidResponseException("Invalid response to ERequest.Chii_OrNot");
-                }
-                else
-                {
-                    OnResponse_ChiiOrNot();
-                }
-            }
-            break;
-
             default:
             {
                 throw new InvalidResponseException("Unhandled request: " + m_request.ToString());
             }
         }
     }
+
+    public bool CheckResponseValid(ERequest request, EResponse response)
+    {
+        switch( request )
+        {
+            case ERequest.Handle_TsumoHai:
+            {
+                if( response != EResponse.Tsumo_Agari || 
+                   response != EResponse.Ankan ||
+                   response != EResponse.Kakan ||
+                   response != EResponse.Reach || 
+                   response != EResponse.SuteHai )
+                {
+                    return false;
+                }
+            }
+            break;
+            case ERequest.Handle_KaKanHai:
+            {
+                if(response != EResponse.Ron_Agari || 
+                   response != EResponse.Nagashi )
+                {
+                    return false;
+                }
+            }
+            break;
+            case ERequest.Handle_SuteHai:
+            {
+                if(response != EResponse.Ron_Agari ||                     
+                   response != EResponse.DaiMinKan ||
+                   response != EResponse.Pon || 
+                   response != EResponse.Chii_Left ||
+                   response != EResponse.Chii_Center ||
+                   response != EResponse.Chii_Right ||
+                   response != EResponse.Nagashi )
+                {
+                    return false;
+                }
+            }
+            break;
+        }
+        return true;
+    }
     #endregion
+
 
     #region Pick Hais
 
@@ -365,7 +384,7 @@ public class MahjongMain : Mahjong
 
             // update UI...
 
-            Ask_TsumoOrNot();
+            Ask_Handle_TsumoHai();
         }
     }
 
@@ -378,30 +397,28 @@ public class MahjongMain : Mahjong
         // 2. yama remove a rinshan hai
         // 3. yama open a new omote dora hai.
 
-        bool has4Kan = false;
         bool allKanCountOver4 = (m_tsumoHai == null);
 
-        if( has4Kan == true ){
-            HandleTsumo();
-        }
-        else if( allKanCountOver4 == true ){
+        if( allKanCountOver4 == true ){
             HandleInvalidKyoku();
         }
         else{
-            Ask_TsumoOrNot();
+            Ask_Handle_TsumoHai();
         }
     }
 
     #endregion
 
-    #region Tsumo Or Not
 
-    public void Ask_TsumoOrNot()
+    #region Ask Handle Tsumo Hai
+
+    public void Ask_Handle_TsumoHai()
     {
-        SendRequest(ERequest.Tsumo_OrNot, m_kazeFrom, m_tsumoHai);
+        m_request = ERequest.Handle_TsumoHai;
+        m_activePlayer.HandleRequest(m_request, m_kazeFrom, m_tsumoHai, OnPlayerResponse);
     }
 
-    public void OnResponse_TsumoOrNot()
+    public void OnResponse_Handle_TsumoHai()
     {
         PlayerAction action = getPlayerAction();
         EResponse response = action.Response;
@@ -417,7 +434,7 @@ public class MahjongMain : Mahjong
                 Debug.LogError("The active player Can't tsumo!!!");
             }
         }
-        else if(response == EResponse.Ankan || response == EResponse.Kakan)
+        else if(response == EResponse.Ankan)
         {
             // set kan.
             m_isChiihou = false;
@@ -425,6 +442,19 @@ public class MahjongMain : Mahjong
             PickRinshanHai();
             m_isRinshan = true;
 
+        }
+        else if( response == EResponse.Kakan )
+        {
+            m_isChiihou = false;
+
+            // ask cyan kan(抢槓)
+            m_suteHai = null; //TODO: set kakan
+            CacheActivePlayer();
+            Ask_Handle_KaKanHai();
+
+            // if not, then
+            PickRinshanHai();
+            m_isRinshan = true;
         }
         else if( response == EResponse.Reach )
         {
@@ -440,9 +470,8 @@ public class MahjongMain : Mahjong
             m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
             m_activePlayer.IsReach = true;
 
-            if( m_isChiihou ) {
+            if( m_isChiihou )
                 m_activePlayer.IsDoubleReach = true;
-            }
 
             m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
 
@@ -456,8 +485,7 @@ public class MahjongMain : Mahjong
             // cache.
             CacheActivePlayer();
 
-            ResetAskPurpose();
-            Ask_HandleSuteHai();
+            Ask_Handle_SuteHai();
         }
         else if(response == EResponse.SuteHai)
         {
@@ -491,86 +519,36 @@ public class MahjongMain : Mahjong
             // cache.
             CacheActivePlayer();
 
-            ResetAskPurpose();
-            Ask_HandleSuteHai();
+            Ask_Handle_SuteHai();
         }
     }
 
     #endregion
 
-    #region Request response to Non-Tsumo
 
-    /// <summary>
-    /// Asks other players to handle the sute hai.
-    /// 
-    /// As only one player can do ron/pon/kan/chii at one time, this check flow is allowed. 
-    /// 由于不存在2个或以上的人同时 荣胡、碰、槓、吃，所以用这种方法可行,
-    /// 如果支持多人同时荣胡，该方法需要修改!
-    /// </summary>
+    #region Ask Handle KaKan Hai
 
-    public void Ask_HandleSuteHai()
+    public void Ask_Handle_KaKanHai()
     {
+        m_request = ERequest.Handle_KaKanHai;
+
         EKaze nextKaze = m_activePlayer.JiKaze.Next();
-        if( nextKaze == m_kazeFrom )
-        {
-            m_request++;
-            nextKaze = m_activePlayer.JiKaze.Next();
-        }
 
         // ask other 3 players.
-        for(int i = 0; i < m_playerList.Count-1; i++)
+        for(int i = 0; i < m_playerList.Count; i++)
         {
             m_activePlayer = getPlayer( nextKaze );
 
-            if( m_request == ERequest.Ron_OrNot )
-            {
-                bool enableRon = false;
-                if( enableRon == true ){
-                    Ask_RonOrNot();
-                    return;
-                }
-            }
-            else if( m_request == ERequest.PonKan_OrNot )
-            {
-                bool enablePonOrKan = false;
-                if( enablePonOrKan == true ){
-                    Ask_PonKanOrNot();
-                    return;
-                }
-            }
-            else if( m_request == ERequest.Chii_OrNot )
-            {
-                int relation = getRelation(m_kazeFrom, m_activePlayer.JiKaze);
-                if( relation == (int)ERelation.KaMiCha )
-                {
-                    bool enableChii = false;
-                    if( enableChii == true ){
-                        Ask_ChiiOrNot();
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                GoToNextLoop();
-                return;
-            }
+            if( nextKaze == m_kazeFrom )
+                continue;
+
+            m_activePlayer.HandleRequest(m_request, m_kazeFrom, m_suteHai, OnPlayerResponse);
+
+            nextKaze = m_activePlayer.JiKaze.Next();
         }
-    
-        GoToNextLoop();
     }
 
-    #endregion
-
-    #region Ron Or Not
-
-    public void Ask_RonOrNot()
-    {
-        // wait for response.
-        SendRequest(ERequest.Ron_OrNot, m_kazeFrom, m_suteHai);
-    }
-
-    public void OnResponse_RonOrNot()
+    public void OnResponse_Handle_KaKanHai()
     {
         PlayerAction action = getPlayerAction();
         EResponse response = action.Response;
@@ -581,109 +559,46 @@ public class MahjongMain : Mahjong
         }
         else
         {
-            Ask_HandleSuteHai();
+            Ask_Handle_SuteHai();
         }
     }
 
     #endregion
 
-    #region Pon Kan Or Not
 
-    public void Ask_PonKanOrNot()
+    #region Ask Handle Sute Hai
+
+    /// <summary>
+    /// Asks other players to handle the sute hai.
+    /// </summary>
+
+    public void Ask_Handle_SuteHai()
     {
-        SendRequest(ERequest.PonKan_OrNot, m_kazeFrom, m_suteHai);
+        m_request = ERequest.Handle_SuteHai;
+
+        EKaze nextKaze = m_activePlayer.JiKaze.Next();
+
+        // ask other 3 players.
+        for(int i = 0; i < m_playerList.Count; i++)
+        {
+            m_activePlayer = getPlayer( nextKaze );
+
+            if( nextKaze == m_kazeFrom )
+                continue;
+
+            m_activePlayer.HandleRequest(ERequest.Handle_SuteHai, m_kazeFrom, m_suteHai, OnPlayerResponse);
+
+            nextKaze = m_activePlayer.JiKaze.Next();
+        }
     }
 
-    public void OnResponse_PonKanOrNot()
+    public void OnResponse_Handle_SuteHai()
     {
-        PlayerAction action = getPlayerAction();
-        EResponse response = action.Response;
-
-        if( response == EResponse.DaiMinKan )
-        {
-            // set kan.
-            m_isChiihou = false;
-            getPlayer( m_kazeFrom ).Hou.setNaki( true );
-
-            PickRinshanHai();
-        }
-        else if(response == EResponse.Pon)
-        {
-            // set pon.
-            // 1. active player sute a hai.
-            // 2. active player's hou add a hai.
-
-            //Hai suteHai = m_suteHai;
-
-            m_isChiihou = false;
-            getPlayer( m_kazeFrom ).Hou.setNaki( true );
-
-            CacheActivePlayer();
-            ResetAskPurpose();
-            Ask_HandleSuteHai();
-        }
-        else
-        {
-            Ask_HandleSuteHai();
-        }
+        
     }
 
     #endregion
 
-    #region Chii Or Not
-
-    public void Ask_ChiiOrNot()
-    {
-        SendRequest(ERequest.Chii_OrNot, m_kazeFrom, m_suteHai);
-    }
-
-    public void OnResponse_ChiiOrNot()
-    {
-        PlayerAction action = getPlayerAction();
-        EResponse response = action.Response;
-
-        if( response == EResponse.Chii_Left )
-        {
-            // set chii.
-            // 1. active player sute a hai.
-            // 2. active player's hou add a hai.
-
-            //Hai suteHai = m_suteHai;
-
-            CacheActivePlayer();
-            ResetAskPurpose();
-            Ask_HandleSuteHai();
-        }
-        else if( response == EResponse.Chii_Center )
-        {
-            // set chii.
-            // 1. active player sute a hai.
-            // 2. active player's hou add a hai.
-
-            //Hai suteHai = m_suteHai;
-
-            CacheActivePlayer();
-            ResetAskPurpose();
-            Ask_HandleSuteHai();
-        }
-        else if( response == EResponse.Chii_Right )
-        {
-            // set chii.
-            // 1. active player sute a hai.
-            // 2. active player's hou add a hai.
-
-            //Hai suteHai = m_suteHai;
-
-            CacheActivePlayer();
-            ResetAskPurpose();
-            Ask_HandleSuteHai();
-        }
-        else{
-            GoToNextLoop();
-        }
-    }
-
-    #endregion
 
     #region Handle Game Result
 
@@ -699,13 +614,10 @@ public class MahjongMain : Mahjong
 
             bool agari = true;
 
-            Hou hou = m_playerList[j].Hou;
-            SuteHai[] suteHais = hou.getSuteHais();
-            int suteHaisLength = suteHais.Length;
-
-            // check 1,9,字./
-            for( int k = 0; k < suteHaisLength; k++ )
+            SuteHai[] suteHais = m_playerList[j].Hou.getSuteHais();
+            for( int k = 0; k < suteHais.Length; k++ )
             {
+                // check 1,9,字./
                 if( suteHais[k].IsNaki || !suteHais[k].IsYaochuu )
                 {
                     agari = false;
@@ -853,13 +765,15 @@ public class MahjongMain : Mahjong
             break;
         }
 
-        for( int i = 0; i < tenpaiFlags.Length; i++ )
-        {
-            if( tenpaiFlags[i] == true ){
-                getPlayer(i).increaseTenbou( increasedScore );
-            }
-            else {
-                getPlayer(i).reduceTenbou( reducedScore );
+        if(tenpaiCount > 0){
+            for( int i = 0; i < tenpaiFlags.Length; i++ )
+            {
+                if( tenpaiFlags[i] == true ){
+                    getPlayer(i).increaseTenbou( increasedScore );
+                }
+                else {
+                    getPlayer(i).reduceTenbou( reducedScore );
+                }
             }
         }
 

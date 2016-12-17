@@ -54,9 +54,9 @@ public abstract class Mahjong
     protected Player m_activePlayer;
 
     // 摸入牌
-    protected Hai m_tsumoHai = new Hai();
+    protected Hai m_tsumoHai;
     // 打出牌
-    protected Hai m_suteHai = new Hai();
+    protected Hai m_suteHai;
 
     protected HaiCombi[] m_combis = new HaiCombi[0];
     protected AgariInfo m_agariInfo = new AgariInfo();

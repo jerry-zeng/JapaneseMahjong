@@ -14,23 +14,18 @@ public class AI : Player
     }
 
 
-    public override void HandleRequest(ERequest request, EKaze fromPlayerKaze, Hai haiToHandle, Action<EResponse> onResponse)
-    {
-        base.HandleRequest(request, fromPlayerKaze, haiToHandle, onResponse);
-    }
-
-    protected override EResponse Check_TsumoOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
+    protected override EResponse OnHandle_TsumoHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
         MahjongAgent.copyTehai(Tehai);
         Hai tsumoHai = haiToHandle;
 
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
         int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
-        if (agariScore > 0)
+        if(agariScore > 0)
             return DoResponse(EResponse.Tsumo_Agari);
 
         // リーチの場合は、ツモ切りする。
-        if (MahjongAgent.isReach()) {
+        if(MahjongAgent.isReach()) {
             _action.SutehaiIndex = PlayerAction.Sutehai_Index_Max;
             return DoResponse(EResponse.SuteHai);
         }
@@ -50,7 +45,7 @@ public class AI : Player
         return DoResponse(EResponse.SuteHai);
     }
 
-    protected override EResponse Check_RonOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
+    protected override EResponse OnHandle_KakanHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
         if( fromPlayerKaze == MahjongAgent.getJikaze() )
             return DoResponse(EResponse.Nagashi);
@@ -62,22 +57,18 @@ public class AI : Player
         {
             int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle);
 
-            if (agariScore > 0)
+            if(agariScore > 0)
                 return DoResponse(EResponse.Ron_Agari);
         }
 
         return DoResponse(EResponse.Nagashi);
     }
 
-    protected override EResponse Check_PonKanOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
+    protected override EResponse OnHandle_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
         return DoResponse(EResponse.Nagashi);
     }
 
-    protected override EResponse Check_ChiiOrNot(EKaze fromPlayerKaze, Hai haiToHandle)
-    {
-        return DoResponse(EResponse.Nagashi);
-    }
 
 
     protected void thinkSutehai(Hai addHai)
@@ -113,9 +104,9 @@ public class AI : Player
     {
         if (MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount) 
         {
-            for(int i = 0; i < haiTable.Length; i++) 
+            for(int i = 0; i < MahjongMain.HaiTable.Length; i++) 
             {
-                FormatWorker.setCounterFormat(tehai, haiTable[i]);
+                FormatWorker.setCounterFormat(tehai, MahjongMain.HaiTable[i]);
 
                 if(FormatWorker.calculateCombisCount( null ) > 0)
                     return true;
@@ -140,7 +131,7 @@ public class AI : Player
 
                 for (int j = 0; j < machiHais.Count; j++)
                 {
-                    if (suteHaiTemp.ID == machiHais[j].ID)
+                    if(suteHaiTemp.ID == machiHais[j].ID)
                         return true;
                 }
             }
@@ -155,11 +146,10 @@ public class AI : Player
 
                 for (int j = 0; j < machiHais.Count; j++)
                 {
-                    if (suteHaiTemp.ID == machiHais[j].ID)
+                    if(suteHaiTemp.ID == machiHais[j].ID)
                         return true;
                 }
             }
-
         }
 
         return false;
@@ -168,31 +158,6 @@ public class AI : Player
 
     protected readonly static int HYOUKA_SHUU = 1;
 
-    #region table
-    protected readonly static Hai[] haiTable = new Hai[] 
-    {
-        new Hai(Hai.ID_WAN_1), new Hai(Hai.ID_WAN_2),
-        new Hai(Hai.ID_WAN_3), new Hai(Hai.ID_WAN_4),
-        new Hai(Hai.ID_WAN_5), new Hai(Hai.ID_WAN_6),
-        new Hai(Hai.ID_WAN_7), new Hai(Hai.ID_WAN_8),
-        new Hai(Hai.ID_WAN_9),
-        new Hai(Hai.ID_PIN_1), new Hai(Hai.ID_PIN_2),
-        new Hai(Hai.ID_PIN_3), new Hai(Hai.ID_PIN_4),
-        new Hai(Hai.ID_PIN_5), new Hai(Hai.ID_PIN_6),
-        new Hai(Hai.ID_PIN_7), new Hai(Hai.ID_PIN_8),
-        new Hai(Hai.ID_PIN_9),
-        new Hai(Hai.ID_SOU_1), new Hai(Hai.ID_SOU_2),
-        new Hai(Hai.ID_SOU_3), new Hai(Hai.ID_SOU_4),
-        new Hai(Hai.ID_SOU_5), new Hai(Hai.ID_SOU_6),
-        new Hai(Hai.ID_SOU_7), new Hai(Hai.ID_SOU_8),
-        new Hai(Hai.ID_SOU_9),
-        new Hai(Hai.ID_TON),  new Hai(Hai.ID_NAN),
-        new Hai(Hai.ID_SYA),  new Hai(Hai.ID_PE),
-        new Hai(Hai.ID_HAKU), new Hai(Hai.ID_HATSU),
-        new Hai(Hai.ID_CHUN) 
-    };
-    #endregion
-
     protected int getCountFormatScore(CountFormat countFormat)
     {
         int score = 0;
@@ -200,16 +165,16 @@ public class AI : Player
 
         for (int i = 0; i < countArr.Length; i++) 
         {
-            if ((countArr[i].numKind & Hai.KIND_SHUU) != 0)
+            if((countArr[i].numKind & Hai.KIND_SHUU) != 0)
                 score += countArr[i].count * HYOUKA_SHUU;
 
-            if (countArr[i].count == 2)
+            if(countArr[i].count == 2)
                 score += 4;
 
-            if (countArr[i].count >= 3)
+            if(countArr[i].count >= 3)
                 score += 8;
 
-            if ((countArr[i].numKind & Hai.KIND_SHUU) > 0)
+            if((countArr[i].numKind & Hai.KIND_SHUU) > 0)
             {
                 if ((countArr[i].numKind + 1) == countArr[i + 1].numKind) {
                     score += 4;
@@ -223,4 +188,5 @@ public class AI : Player
 
         return score;
     }
+
 }
