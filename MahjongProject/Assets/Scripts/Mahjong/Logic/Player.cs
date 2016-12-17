@@ -160,7 +160,7 @@ public abstract class Player
         return response;
     }
 
-    // playerAction is also the returned parameter.
+
     public virtual void HandleRequest(ERequest request, EKaze fromPlayerKaze, Hai haiToHandle, Action<EKaze, EResponse> onResponse)
     {
         this._onResponse = onResponse;

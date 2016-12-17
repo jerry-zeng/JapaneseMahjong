@@ -240,10 +240,6 @@ public class MahjongMain : Mahjong
         PostUIEvent(UIEventType.End_Game);
     }
 
-    public void CacheActivePlayer()
-    {
-        m_kazeFrom = m_activePlayer.JiKaze;
-    }
     public void SetNextPlayer()
     {
         // イベントを発行した風を更新する。
@@ -260,12 +256,37 @@ public class MahjongMain : Mahjong
 
     #region Request & Response
     protected ERequest m_request = ERequest.Handle_TsumoHai;
+    protected Dictionary<EKaze, EResponse> m_playerRespDict = new Dictionary<EKaze, EResponse>();
 
 
-    public void OnPlayerResponse(EKaze playerKaze, EResponse response)
+    public void SetRequest( ERequest req )
     {
-        if( !CheckResponseValid(m_request, response) )
-            throw new InvalidResponseException( string.Format("Invalid response '{0}' to request '{1}'", response.ToString(), m_request.ToString()) );
+        m_request = req;
+        ClearResponseCache();
+
+        CacheActivePlayer();
+    }
+
+    public void SendRequestToActivePlayer(Hai haiToHandle)
+    {
+        m_activePlayer.HandleRequest(m_request, m_kazeFrom, haiToHandle, OnPlayerResponse);
+    }
+
+    protected void CacheActivePlayer()
+    {
+        m_kazeFrom = m_activePlayer.JiKaze;
+    }
+
+    protected void ClearResponseCache()
+    {
+        m_playerRespDict.Clear();
+    }
+
+    public void OnPlayerResponse(EKaze responserKaze, EResponse response)
+    {
+        if( !CheckResponseValid(m_request, response, responserKaze) )
+            throw new InvalidResponseException( string.Format("Invalid response '{0}' to request '{1}' from kaze {2} to kaze {3}", 
+                                                              response, m_request, m_kazeFrom, responserKaze) );
 
         switch( m_request )
         {
@@ -277,13 +298,25 @@ public class MahjongMain : Mahjong
             case ERequest.Handle_KaKanHai:
             {
                 // add to response list, if all other players do response, handle response.
-                OnResponse_Handle_KaKanHai();
+                m_playerRespDict.Add(responserKaze, response);
+
+                if( m_playerRespDict.Count >= GameSettings.PlayerCount-1 ){
+                    OnResponse_Handle_KaKanHai();
+
+                    ClearResponseCache();
+                }
             }
             break;
             case ERequest.Handle_SuteHai:
             {
                 // add to response list, if all other players do response, handle response.
-                OnResponse_Handle_SuteHai();
+                m_playerRespDict.Add(responserKaze, response);
+
+                if( m_playerRespDict.Count >= GameSettings.PlayerCount-1 ){
+                    OnResponse_Handle_SuteHai();
+
+                    ClearResponseCache();
+                }
             }
             break;
             default:
@@ -293,7 +326,7 @@ public class MahjongMain : Mahjong
         }
     }
 
-    public bool CheckResponseValid(ERequest request, EResponse response)
+    public bool CheckResponseValid(ERequest request, EResponse response, EKaze responserKaze)
     {
         switch( request )
         {
@@ -330,6 +363,13 @@ public class MahjongMain : Mahjong
                 {
                     return false;
                 }
+                else if(response == EResponse.Chii_Left ||
+                        response == EResponse.Chii_Center ||
+                        response == EResponse.Chii_Right )
+                {
+                    if( getRelation(m_kazeFrom, responserKaze) != (int)ERelation.KaMiCha )
+                        return false;
+                }
             }
             break;
         }
@@ -339,7 +379,6 @@ public class MahjongMain : Mahjong
 
 
     #region Pick Hais
-
     // Step: 7
     public void PickNewTsumoHai()
     {
@@ -353,7 +392,6 @@ public class MahjongMain : Mahjong
         else if( tsumoNokori < 66 ) {
             m_isChiihou = false;
         }
-
 
         if( IsRyuukyoku() )
         {
@@ -406,16 +444,14 @@ public class MahjongMain : Mahjong
             Ask_Handle_TsumoHai();
         }
     }
-
     #endregion
 
 
     #region Ask Handle Tsumo Hai
-
     public void Ask_Handle_TsumoHai()
     {
-        m_request = ERequest.Handle_TsumoHai;
-        m_activePlayer.HandleRequest(m_request, m_kazeFrom, m_tsumoHai, OnPlayerResponse);
+        SetRequest(ERequest.Handle_TsumoHai);
+        SendRequestToActivePlayer(m_tsumoHai);
     }
 
     public void OnResponse_Handle_TsumoHai()
@@ -423,114 +459,98 @@ public class MahjongMain : Mahjong
         PlayerAction action = getPlayerAction();
         EResponse response = action.Response;
 
-        if( response == EResponse.Tsumo_Agari )
+        switch( response )
         {
-            bool enableTsumoCheck = false;
-            if( enableTsumoCheck == true )
+            case EResponse.Tsumo_Agari:
             {
-                HandleTsumo();
+                bool enableTsumoCheck = false;
+                if( enableTsumoCheck == true )
+                {
+                    HandleTsumo();
+                }
+                else{
+                    Debug.LogError("The active player Can't tsumo!!!");
+                }
             }
-            else{
-                Debug.LogError("The active player Can't tsumo!!!");
+            break;
+
+            case EResponse.Ankan:
+            {
+                // set kan.
+                m_isChiihou = false;
+
+                PickRinshanHai();
+                m_isRinshan = true;
             }
-        }
-        else if(response == EResponse.Ankan)
-        {
-            // set kan.
-            m_isChiihou = false;
+            break;
 
-            PickRinshanHai();
-            m_isRinshan = true;
+            case EResponse.Kakan:
+            {
+                m_isChiihou = false;
 
-        }
-        else if( response == EResponse.Kakan )
-        {
-            m_isChiihou = false;
+                // ask cyan kan(抢槓)
+                m_kakanHai = null; //TODO: set kakan
 
-            // ask cyan kan(抢槓)
-            m_suteHai = null; //TODO: set kakan
-            CacheActivePlayer();
-            Ask_Handle_KaKanHai();
-
-            // if not, then
-            PickRinshanHai();
-            m_isRinshan = true;
-        }
-        else if( response == EResponse.Reach )
-        {
-            // 0. active player set reach.
-            // 1. active player sute a hai.
-            // 2. active player's hou add a hai.
-
-            //Hai suteHai = m_suteHai;
-
-            // update UI...
-
-            // 捨牌のインデックスを取得する。
-            m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
-            m_activePlayer.IsReach = true;
-
-            if( m_isChiihou )
-                m_activePlayer.IsDoubleReach = true;
-
-            m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
-
-            m_activePlayer.reduceTenbou( 1000 );
-            m_activePlayer.IsReach = true;
-            m_reachbou++;
-
-            m_activePlayer.IsIppatsu = true;
-
-
-            // cache.
-            CacheActivePlayer();
-
-            Ask_Handle_SuteHai();
-        }
-        else if(response == EResponse.SuteHai)
-        {
-            // 1. active player sute a hai.
-            // 2. active player's hou add a hai.
-
-            //Hai suteHai = m_suteHai;
-
-            // update UI...
-
-            // 捨牌のインデックスを取得する。
-            m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
-
-            if( m_sutehaiIndex >= m_activePlayer.Tehai.getJyunTehai().Length ) {// ツモ切り
-                Hai.copy( m_suteHai, m_tsumoHai );
-                m_activePlayer.Hou.addHai( m_suteHai );
+                Ask_Handle_KaKanHai();
             }
-            else {// 手出し
-                m_activePlayer.Tehai.copyJyunTehaiIndex( m_suteHai, m_sutehaiIndex );
-                m_activePlayer.Tehai.removeJyunTehai( m_sutehaiIndex );
-                m_activePlayer.Tehai.addJyunTehai( m_tsumoHai );
-                m_activePlayer.Hou.addHai( m_suteHai );
-                m_activePlayer.Hou.setTedashi( true );
-            }
+            break;
 
-            m_suteHaiList.Add( new SuteHai( m_suteHai ) );
+            case EResponse.Reach:
+            {
+                m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
+                m_activePlayer.IsReach = true;
 
-            if( !m_activePlayer.IsReach )
+                if( m_isChiihou )
+                    m_activePlayer.IsDoubleReach = true;
+
                 m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
 
-            // cache.
-            CacheActivePlayer();
+                m_activePlayer.reduceTenbou( 1000 );
+                m_activePlayer.IsReach = true;
+                m_reachbou++;
 
-            Ask_Handle_SuteHai();
+                m_activePlayer.IsIppatsu = true;
+
+                // cache.
+                Ask_Handle_SuteHai();
+            }
+            break;
+
+            case EResponse.SuteHai:
+            {
+                // 捨牌のインデックスを取得する。
+                m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
+
+                if( m_sutehaiIndex >= m_activePlayer.Tehai.getJyunTehai().Length ) {// ツモ切り
+                    Hai.copy( m_suteHai, m_tsumoHai );
+                    m_activePlayer.Hou.addHai( m_suteHai );
+                }
+                else {// 手出し
+                    m_activePlayer.Tehai.copyJyunTehaiIndex( m_suteHai, m_sutehaiIndex );
+                    m_activePlayer.Tehai.removeJyunTehai( m_sutehaiIndex );
+                    m_activePlayer.Tehai.addJyunTehai( m_tsumoHai );
+                    m_activePlayer.Hou.addHai( m_suteHai );
+                    m_activePlayer.Hou.setTedashi( true );
+                }
+
+                m_suteHaiList.Add( new SuteHai( m_suteHai ) );
+
+                if( !m_activePlayer.IsReach )
+                    m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
+
+                // cache.
+                Ask_Handle_SuteHai();
+            }
+            break;
         }
     }
-
     #endregion
 
 
     #region Ask Handle KaKan Hai
-
     public void Ask_Handle_KaKanHai()
     {
-        m_request = ERequest.Handle_KaKanHai;
+        SetRequest(ERequest.Handle_KaKanHai);
 
         EKaze nextKaze = m_activePlayer.JiKaze.Next();
 
@@ -542,7 +562,7 @@ public class MahjongMain : Mahjong
             if( nextKaze == m_kazeFrom )
                 continue;
 
-            m_activePlayer.HandleRequest(m_request, m_kazeFrom, m_suteHai, OnPlayerResponse);
+            SendRequestToActivePlayer(m_kakanHai);
 
             nextKaze = m_activePlayer.JiKaze.Next();
         }
@@ -550,31 +570,41 @@ public class MahjongMain : Mahjong
 
     public void OnResponse_Handle_KaKanHai()
     {
-        PlayerAction action = getPlayerAction();
-        EResponse response = action.Response;
-
-        if( response == EResponse.Ron_Agari )
+        if( CheckMultiRon() == true )
         {
-            HandleRon();
+            HandleMultiRon();
         }
         else
         {
-            Ask_Handle_SuteHai();
+            // if nobody cyan kan, then pick up rinshan hai
+            m_isRinshan = true;
+            PickRinshanHai();
+            m_isRinshan = false;
         }
     }
-
     #endregion
 
+    public bool CheckMultiRon()
+    {
+        int ronPlayerCount = 0;
+
+        foreach( var info in m_playerRespDict )
+        {
+            if(info.Value == EResponse.Ron_Agari)
+                ronPlayerCount++;
+        }
+
+        return ronPlayerCount > 0;
+    }
 
     #region Ask Handle Sute Hai
-
     /// <summary>
     /// Asks other players to handle the sute hai.
     /// </summary>
 
     public void Ask_Handle_SuteHai()
     {
-        m_request = ERequest.Handle_SuteHai;
+        SetRequest(ERequest.Handle_SuteHai);
 
         EKaze nextKaze = m_activePlayer.JiKaze.Next();
 
@@ -586,7 +616,7 @@ public class MahjongMain : Mahjong
             if( nextKaze == m_kazeFrom )
                 continue;
 
-            m_activePlayer.HandleRequest(ERequest.Handle_SuteHai, m_kazeFrom, m_suteHai, OnPlayerResponse);
+            SendRequestToActivePlayer(m_suteHai);
 
             nextKaze = m_activePlayer.JiKaze.Next();
         }
@@ -594,16 +624,102 @@ public class MahjongMain : Mahjong
 
     public void OnResponse_Handle_SuteHai()
     {
-        
-    }
+        if( CheckMultiRon() == true )
+        {
+            HandleMultiRon();
+        }
+        else
+        {
+            // As DaiMinKan and Pon is availabe to one player at the same time, and their priority is bigger than Chii,
+            // perform DaiMinKan and Pon firstly.
+            List<EKaze> validKaze = new List<EKaze>();
 
+            foreach( var info in m_playerRespDict )
+            {
+                if( info.Value == EResponse.Pon || info.Value == EResponse.DaiMinKan )
+                    validKaze.Add( info.Key );
+            }
+
+            if( validKaze.Count > 0 )
+            {
+                if( validKaze.Count == 1 )
+                {
+                    EKaze kaze = validKaze[0];
+                    EResponse resp = m_playerRespDict[kaze];
+
+                    switch( resp )
+                    {
+                        case EResponse.Pon:
+                        {
+                            
+                        }
+                        break;
+                        case EResponse.DaiMinKan:
+                        {
+                            
+                        }
+                        break;
+                    }
+                }
+                else{
+                    throw new InvalidResponseException("More than one player perform Pon or DaiMinKan!?");
+                }
+            }
+            else // no one Pon or DaiMinKan, perform Chii
+            {
+                foreach( var info in m_playerRespDict )
+                {
+                    if( info.Value == EResponse.Chii_Left || 
+                       info.Value == EResponse.Chii_Center || 
+                       info.Value == EResponse.Chii_Right )
+                    {
+                        validKaze.Add( info.Key );
+                    }                        
+                }
+
+                if( validKaze.Count > 0 )
+                {
+                    if( validKaze.Count == 1 )
+                    {
+                        EKaze kaze = validKaze[0];
+                        EResponse resp = m_playerRespDict[kaze];
+
+                        switch( resp )
+                        {
+                            case EResponse.Chii_Left:
+                            {
+
+                            }
+                            break;
+                            case EResponse.Chii_Center:
+                            {
+
+                            }
+                            break;
+                            case EResponse.Chii_Right:
+                            {
+
+                            }
+                            break;
+                        }
+                    }
+                    else{
+                        throw new InvalidResponseException("More than one player perform Chii!?");
+                    }
+                }
+                else // Nagashi
+                {
+                    
+                }
+            }
+        }
+    }
     #endregion
 
 
     #region Handle Game Result
 
     #region RyuuKyoku
-
     public bool HasRyuukyokuMan() 
     { 
         // 流し満貫の確認をする。
@@ -786,9 +902,7 @@ public class MahjongMain : Mahjong
         // 本場を増やす。
         m_honba++;
     }
-
     #endregion
-
 
     // some one has tsumo.
     protected void HandleTsumo()
@@ -852,6 +966,15 @@ public class MahjongMain : Mahjong
         }
     }
 
+    protected void HandleMultiRon()
+    {
+        foreach( var info in m_playerRespDict )
+        {
+            if( info.Value == EResponse.Ron_Agari )
+                HandleRon();
+        }
+    }
+
     // some one has ron.
     protected void HandleRon()
     {
@@ -902,7 +1025,6 @@ public class MahjongMain : Mahjong
     {
 
     }
-
     #endregion
 
 
@@ -914,7 +1036,6 @@ public class MahjongMain : Mahjong
 
 
     #region Other Method
-
     protected bool testHaipai = false;
 
     protected void StartTest()
@@ -984,7 +1105,6 @@ public class MahjongMain : Mahjong
 
         return haiIds;
     }
-
     #endregion
 
 }
