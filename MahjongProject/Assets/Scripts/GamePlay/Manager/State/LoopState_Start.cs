@@ -8,7 +8,10 @@ public class LoopState_Start : MahjongState
     public override void Enter() {
         base.Enter();
 
-        StartCoroutine( StartPickHai() );
+        logicOwner.PrepareToStart();
+        owner.ChangeState<LoopState_PickHai>();
+
+        //StartCoroutine( StartPickHai() );
     }
 
     IEnumerator StartPickHai()

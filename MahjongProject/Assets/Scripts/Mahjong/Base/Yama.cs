@@ -1,7 +1,7 @@
 ﻿
 /// <summary>
 /// 山を管理する, 所有堆起来的牌叫山牌
-/// 最后的7幢牌，共14张，叫牌山
+/// 最后的7幢牌，共14张，叫王牌
 /// </summary>
 
 public class Yama 
@@ -31,7 +31,9 @@ public class Yama
 
     // ツモ牌のインデックス(index)
     private int _tsumoHaisIndex = 0;
-    private int _last_tsumoHaisIndex = -1;
+
+    // used to calculate last tsumo hai index.
+    private int _tsumoHaiStartIndex;
 
     // リンシャン牌の位置
     private int _rinshanHaisIndex = 0;
@@ -80,9 +82,14 @@ public class Yama
         return RINSHAN_HAIS_MAX - _rinshanHaisIndex;
     }
 
+    public int getTsumoHaiIndex()
+    {
+        return _tsumoHaisIndex;
+    }
+
     public int getLastTsumoHaiIndex()
     {
-        return _last_tsumoHaisIndex;
+        return (_tsumoHaisIndex-1 + this._tsumoHaiStartIndex) % YAMA_HAIS_MAX;
     }
 
     // 洗牌する
@@ -108,8 +115,6 @@ public class Yama
     /// </summary>
     public Hai[] PickHaipai()
     {
-        _last_tsumoHaisIndex = _tsumoHaisIndex;
-
         Hai[] hais = new Hai[4];
         for( int i = 0; i < hais.Length; i++ ) 
         {
@@ -128,8 +133,6 @@ public class Yama
         if( getTsumoNokori() <= 0)
             return null;
 
-        _last_tsumoHaisIndex = _tsumoHaisIndex;
-
         Hai tsumoHai = new Hai(_tsumoHais[_tsumoHaisIndex]);
         _tsumoHaisIndex++;
 
@@ -141,8 +144,6 @@ public class Yama
     {
         if( getRinshanNokori() <= 0 )
             return null;
-
-        _last_tsumoHaisIndex = _tsumoHaisIndex;
 
         Hai rinshanHai = new Hai(_rinshanHais[_rinshanHaisIndex]);
         _rinshanHaisIndex++;
@@ -203,6 +204,8 @@ public class Yama
     {
         if (tsumoHaiStartIndex >= YAMA_HAIS_MAX)
             return false;
+
+        this._tsumoHaiStartIndex = tsumoHaiStartIndex;
 
         int yamaHaisIndex = tsumoHaiStartIndex;
 

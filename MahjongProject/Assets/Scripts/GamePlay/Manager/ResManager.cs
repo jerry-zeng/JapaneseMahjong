@@ -57,7 +57,7 @@ public class ResManager
         if( obj == null )
             return false;
 
-        obj.SetOnClick(null);
+        obj.ClearOnClick();
         obj.transform.parent = null;
         GameObject.Destroy(obj.gameObject);
 

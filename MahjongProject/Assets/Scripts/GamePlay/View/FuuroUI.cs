@@ -5,13 +5,9 @@ using System.Collections.Generic;
 
 public class FuuroUI : UIObject 
 {
-
     //public Vector2 AlignRightLocalPos = new Vector2(0, 0);
     private int FuuroOffsetX = 6;
-
-    // max length = 16.
-    private List<MahjongPai> fuuroHais = new List<MahjongPai>( Tehai.FUURO_MAX * Tehai.MENTSU_LENGTH_4 );
-
+    private List<MahjongPai> fuuroHais = new List<MahjongPai>();
     private float curMaxPosX = 0;
 
 
@@ -58,7 +54,7 @@ public class FuuroUI : UIObject
 
                         shouldSetLand = (j == newPickIndex);
 
-                        float posX = curMaxPosX - PlayerUI.GetMahjongRange(shouldSetLand) * 0.5f;
+                        float posX = curMaxPosX - GetMahjongRange(shouldSetLand) * 0.5f;
                         Vector3 localPos = new Vector3(posX, 0, 0);
 
                         MahjongPai pai = PlayerUI.CreateMahjongPai(transform, localPos, hais[j], true);
@@ -71,7 +67,7 @@ public class FuuroUI : UIObject
                         fuuroHais.Add(pai);
 
                         // update curMaxPosX.
-                        curMaxPosX -= PlayerUI.GetMahjongRange(shouldSetLand);
+                        curMaxPosX -= GetMahjongRange(shouldSetLand);
                     }
                 }
                 break;
@@ -85,7 +81,7 @@ public class FuuroUI : UIObject
 
                         shouldSetLand = false;
 
-                        float posX = curMaxPosX - PlayerUI.GetMahjongRange(shouldSetLand) * 0.5f;
+                        float posX = curMaxPosX - GetMahjongRange(shouldSetLand) * 0.5f;
                         Vector3 localPos = new Vector3(posX, 0, 0);
 
                         bool isShow = (j != 0 && j != hais.Length - 1); // 2 sides hide.
@@ -95,7 +91,7 @@ public class FuuroUI : UIObject
                         fuuroHais.Add(pai);
 
                         // update curMaxPosX.
-                        curMaxPosX -= PlayerUI.GetMahjongRange(shouldSetLand);
+                        curMaxPosX -= GetMahjongRange(shouldSetLand);
                     }
                 }
                 break;
@@ -104,7 +100,13 @@ public class FuuroUI : UIObject
 
     }
 
-    public override void Clear() {
+    static float GetMahjongRange(bool shouldSetLand)
+    {
+        return shouldSetLand ? MahjongPai.Height : MahjongPai.Width;
+    }
+
+    public override void Clear()
+    {
         base.Clear();
 
         // clear all pai.
@@ -116,7 +118,5 @@ public class FuuroUI : UIObject
 
         curMaxPosX = 0;
     }
-
-
 
 }

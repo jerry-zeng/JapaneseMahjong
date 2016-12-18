@@ -15,145 +15,191 @@ public abstract class Mahjong
     #region Fields.
     // 山
     protected Yama m_yama;
+    public Yama Yama
+    {
+        get{ return m_yama; }
+        protected set{ m_yama = value; }
+    }
 
     // 本場
     protected int m_honba;
+    public int HonBa
+    {
+        get{ return m_honba; }
+        protected set{ m_honba = value; }
+    }
 
     // 局
     protected int m_kyoku;
+    public int Kyoku
+    {
+        get{ return m_kyoku; }
+        protected set{ m_kyoku = value; }
+    }
 
     // リーチ棒の数
     protected int m_reachbou;
+    public int ReachBou
+    {
+        get{ return m_reachbou; }
+        protected set{ m_reachbou = value; }
+    }
 
     // 連荘
     protected bool m_renchan;
+    public bool isRenChan
+    {
+        get{ return m_renchan; }
+        protected set{ m_renchan = value; }
+    }
 
     // プレイヤーの配列
     protected List<Player> m_playerList;
+    public List<Player> PlayerList
+    {
+        get{ return m_playerList; }
+        protected set{ m_playerList = value; }
+    }
 
     // サイコロの配列
     protected Sai[] m_sais;
+    public Sai[] Sais
+    {
+        get{ return m_sais; }
+        protected set{ m_sais = value; }
+    }
 
     // 割れ目
     protected int m_wareme;
+    public int Wareme
+    {
+        get{ return m_wareme; }
+        protected set{ m_wareme = value; }
+    }
 
     // 親のプレイヤーインデックス
     protected int m_oyaIndex;
+    public int OyaIndex
+    {
+        get{ return m_oyaIndex; }
+        protected set{ m_oyaIndex = value; }
+    }
 
     // 起家のプレイヤーインデックス
     protected int m_chiichaIndex;
+    public int ChiiChaIndex
+    {
+        get{ return m_chiichaIndex; }
+        protected set{ m_chiichaIndex = value; }
+    }
 
     // 捨牌
     protected List<SuteHai> m_suteHaiList;
+    public List<SuteHai> AllSuteHaiList
+    {
+        get{ return m_suteHaiList; }
+        protected set{ m_suteHaiList = value; }
+    }
+
     protected int m_sutehaiIndex = 13;
+    public int SuteHaiIndex
+    {
+        get{ return m_sutehaiIndex; }
+        set{ m_sutehaiIndex = value; }
+    }
 
 
     // イベントを発行した風
     protected EKaze m_kazeFrom;
+    public EKaze FromKaze
+    {
+        get{ return m_kazeFrom; }
+        set{ m_kazeFrom = value; }
+    }
+
     // current player
     protected Player m_activePlayer;
+    public Player ActivePlayer
+    {
+        get{ return m_activePlayer; }
+        protected set{ m_activePlayer = value; }
+    }
 
     // 摸入牌
-    protected Hai m_tsumoHai;
+    protected Hai m_tsumoHai = new Hai();
+    public Hai TsumoHai
+    {
+        get{ return m_tsumoHai; }
+        set{ m_tsumoHai = value; }
+    }
+
     // 打出牌
-    protected Hai m_suteHai;
+    protected Hai m_suteHai = new Hai();
+    public Hai SuteHai
+    {
+        get{ return m_suteHai; }
+        set{ m_suteHai = value; }
+    }
+
     // kakan hai
-    protected Hai m_kakanHai;
+    protected Hai m_kakanHai = new Hai();
+    public Hai KakanHai
+    {
+        get{ return m_kakanHai; }
+        set{ m_kakanHai = value; }
+    }
 
     protected HaiCombi[] m_combis = new HaiCombi[0];
+    public HaiCombi[] Combis
+    {
+        get{ return m_combis; }
+        protected set{ m_combis = value; }
+    }
+
     protected AgariInfo m_agariInfo = new AgariInfo();
+    public AgariInfo AgariInfo
+    {
+        get{ return m_agariInfo; }
+        protected set{ m_agariInfo = value; }
+    }
 
     protected bool m_isTenhou = false;  //天胡
+    public bool isTenHou
+    {
+        get{ return m_isTenhou; }
+        set{ m_isTenhou = value; }
+    }
+
     protected bool m_isChiihou = false; //地胡
+    public bool isChiiHou
+    {
+        get{ return m_isChiihou; }
+        set{ m_isChiihou = value; }
+    }
+
     protected bool m_isTsumo = false;
+    public bool isTsumo
+    {
+        get{ return m_isTsumo; }
+        set{ m_isTsumo = value; }
+    }
+
     protected bool m_isRinshan = false;
+    public bool isRinshan
+    {
+        get{ return m_isRinshan; }
+        set{ m_isRinshan = value; }
+    }
+
     protected bool m_isLast = false;
+    public bool isLast
+    {
+        get{ return m_isLast; }
+        set{ m_isLast = value; }
+    }
 
     #endregion Fields.
 
-    // ------------------------get&set-properties start-------------------------
-    #region get&set-properties.
-
-    public Yama getYama()
-    {
-        return m_yama;
-    }
-
-    public int getWareme()
-    {
-        return m_wareme;
-    }
-
-    public int getkyoku()
-    {
-        return m_kyoku;
-    }
-
-    public int getHonba()
-    {
-        return m_honba;
-    }
-
-    public Hai getTsumoHai()
-    {
-        return m_tsumoHai;
-    }
-
-    public Hai getSuTehai()
-    {
-        return m_suteHai;
-    }
-
-    public int getReachbou() {
-        return m_reachbou;
-    }
-    protected void setReachbou(int reachbou) {
-        m_reachbou = reachbou;
-    }
-
-    // 起家のプレイヤーインデックスを取得する
-    public int getChiichaIndex()
-    {
-        return m_chiichaIndex;
-    }
-
-    public Sai[] getSais()
-    {
-        return m_sais;
-    }
-
-    public AgariInfo getAgariInfo()
-    {
-        return m_agariInfo;
-    }
-
-    public List<Player> getPlayers()
-    {
-        return m_playerList;
-    }
-
-    public Player getActivePlayer()
-    {
-        return m_activePlayer;
-    }
-
-    public PlayerAction getPlayerAction()
-    {
-        return getActivePlayer().getAction();
-    }
-
-    public SuteHai[] getSuteHaiList()
-    {
-        return m_suteHaiList.ToArray();
-    }
-
-    protected void setSutehaiIndex(int mSutehaiIndex) {
-        m_sutehaiIndex = mSutehaiIndex;
-    }
-    public int getSutehaiIndex() {
-        return m_sutehaiIndex;
-    }
-    #endregion
 
     // -----------------------virtual methods start---------------------------
     #region virtual methods.
@@ -178,27 +224,32 @@ public abstract class Mahjong
         return m_playerList.FindIndex( (p) => p.JiKaze == kaze );
     }
 
+    public PlayerAction getPlayerAction()
+    {
+        return m_activePlayer.Action;
+    }
+
     // 表ドラ、槓ドラの配列を取得する
     public Hai[] getOmotoDoras()
     {
-        return getYama().getOmoteDoraHais();
+        return Yama.getOmoteDoraHais();
     }
 
     // 里ドラ、槓ドラの配列を取得する
     public Hai[] getUraDoras()
     {
-        return getYama().getUraDoraHais();
+        return Yama.getUraDoraHais();
     }
 
     public Hai[] getAllDoras()
     {
-        return getYama().getAllDoraHais();
+        return Yama.getAllDoraHais();
     }
 
     // ツモの残り数を取得する
-    public int getTsumoRemain()
+    public int getTsumoRemainCount()
     {
-        return getYama().getTsumoNokori();
+        return Yama.getTsumoNokori();
     }
 
     public EKaze getManKaze()

@@ -16,6 +16,12 @@ public class AI : Player
 
     protected override EResponse OnHandle_TsumoHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
+        if(inTest){
+            _action.Reset();
+            _action.SutehaiIndex = Tehai.getJyunTehaiCount()-1;
+            return DoResponse(EResponse.SuteHai);
+        }
+
         MahjongAgent.copyTehai(Tehai);
         Hai tsumoHai = haiToHandle;
 
@@ -47,8 +53,9 @@ public class AI : Player
 
     protected override EResponse OnHandle_KakanHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
-        if( fromPlayerKaze == MahjongAgent.getJikaze() )
+        if(inTest){
             return DoResponse(EResponse.Nagashi);
+        }
 
         MahjongAgent.copyTehai(Tehai);
         MahjongAgent.copyHou(Hou, MahjongAgent.getJikaze());

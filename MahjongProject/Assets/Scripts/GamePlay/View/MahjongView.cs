@@ -3,11 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 
 
+/*
+ * Mahjong Table:
+ *     P2
+ * P3      P1
+ *     P0
+ * 
+ * Yama Hai array is like:
+ *    ->
+ *  |    |
+ *    <- 
+ * 
+ * index = 0 is in P0'right, index = Yama.YAMA_HAIS_MAX-1 is in P3'bottom
+ */
+
 public class MahjongView : UIObject, IObserver 
 {
     private Dictionary<int, PlayerUI> playerUIDict = new Dictionary<int, PlayerUI>();
     private Dictionary<EKaze, PlayerUI> playerUIDict_Kaze = new Dictionary<EKaze, PlayerUI>();
     private GameInfoUI gameInfo;
+
+    public PlayerInputPanel playerInputPanel;
 
 
     private MahjongMain Model
@@ -71,6 +87,7 @@ public class MahjongView : UIObject, IObserver
             ui.SetParentPanelDepth( parentPanel.depth );
 
             playerUIDict.Add(i, ui);
+            //Debug.LogWarningFormat("PlayerUI: {0} {1}", i, dir);
         }
 
         gameInfo = transform.FindChild("Info_Panel/GameInfo").GetComponent<GameInfoUI>();
@@ -78,8 +95,6 @@ public class MahjongView : UIObject, IObserver
         isInit = true;       
     }
 
-
-    private int tsumoHaiStartIndex = 0;
 
     // handle ui event.
     public void OnHandleEvent(UIEventType evtID, object[] args) 
@@ -95,13 +110,13 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.Saifuri: 
             {
-                SetSaisButton( evtID );
+                SetSaisPanel( UIEventType.Saifuri );
             }
             break;
 
             case UIEventType.Init_PlayerInfoUI: 
             {
-                List<Player> players = Model.getPlayers();
+                List<Player> players = Model.PlayerList;
                 for( int i = 0; i < players.Count; i++ )
                 {
                     Player player = players[i];
@@ -111,8 +126,11 @@ public class MahjongView : UIObject, IObserver
                     ui.SetTenbou( player.Tenbou );
                     ui.Reach( false );
 
-                    ui.SetOyaKaze( i == Model.getChiichaIndex() );
+                    ui.SetOyaKaze( i == Model.ChiiChaIndex );
                     ui.BindPlayer(player);
+
+                    if(player.JiKaze == Model.getManKaze())
+                        playerInputPanel.BindPlayer( player );
                 }
                 Debug.Log( "MahjongView: init player info ui end..." );
             }
@@ -121,49 +139,46 @@ public class MahjongView : UIObject, IObserver
             case UIEventType.SetYama_BeforeHaipai: 
             {
                 // Yama.
-                const int MaxLength = YamaUI.MaxYamaPairInPlayer * 2;
+                Hai[] yamaHais = Model.Yama.getYamaHais();
 
-                Hai[] yamaHais = Model.getYama().getYamaHais();
-                int PlayerLength = Model.getPlayers().Count;
-
-                for( int i = 0; i < PlayerLength; i++ ) 
+                for( int i = 0; i < 4; i++ ) 
                 {
                     Dictionary<int, Hai> haiDict = new Dictionary<int, Hai>();
 
-                    for( int h = 1; h <= MaxLength; h++ ) 
+                    int[] indexRange = getStartEndOfYamaUIOfPlayer( i );
+                    for( int h = indexRange[0]; h <= indexRange[1]; h++ ) 
                     {
-                        int endIndex = h + MaxLength * i - 1;
-                        haiDict.Add( endIndex, yamaHais[endIndex] );
+                        haiDict.Add( h, yamaHais[h] );
                     }
 
-                    if( haiDict.Count > 0 ){
-                        int uiIndex = (PlayerLength - i) % PlayerLength; // reverse.
-                        int[] indexRange = getStartEndOfYamaUIOfPlayer( uiIndex );
-
-                        playerUIDict[uiIndex].SetYamaHais( haiDict, indexRange[0], indexRange[1] );
-                    }
+                    playerUIDict[i].SetYamaHais( haiDict, indexRange[0], indexRange[1] );
                 }
                 Debug.Log("MahjongView: SetYama_BeforeHaipai end...");
+
+                //TestYama();
             }
             break;
 
             case UIEventType.Saifuri_For_Haipai: 
             {
-                SetSaisButton( evtID );
+                SetSaisPanel( UIEventType.Saifuri_For_Haipai );
             }
             break;
 
             case UIEventType.SetUI_AfterHaipai: // 配牌 /
             {
                 /// set game info.
-                gameInfo.SetKyoku( Model.getBaKaze(), Model.getkyoku() );
-                gameInfo.SetReachCount( Model.getReachbou() );
-                gameInfo.SetHonba(Model.getHonba());
+                gameInfo.SetKyoku( Model.getBaKaze(), Model.Kyoku );
+                gameInfo.SetReachCount( Model.ReachBou );
+                gameInfo.SetHonba(Model.HonBa);
 
+                int totalPickHaiCount = 0;
+
+                int PlayerCount = Model.PlayerList.Count;
                 /// set tehais.
-                for( int i = 0; i < Model.getPlayers().Count; i++ ) 
+                for( int i = 0; i < PlayerCount; i++ ) 
                 {
-                    Player player = Model.getPlayers()[i];
+                    Player player = Model.PlayerList[i];
 
                     PlayerUI ui = playerUIDict[i];
 
@@ -171,22 +186,22 @@ public class MahjongView : UIObject, IObserver
                     ui.SetAllHaisVisiable( true );
 
                     playerUIDict_Kaze[player.JiKaze] = ui;
+
+                    totalPickHaiCount += player.Tehai.getJyunTehai().Length;
                 }
 
-                /// set yama.                
-                int PlayerLength = Model.getPlayers().Count;
-                int waremeIndex = Model.getWareme();
+                /// set yama.
+                int waremeIndex = Model.Wareme;
+                int tsumoHaiStartIndex = waremeIndex + totalPickHaiCount;
 
-                // count start tsumo index.
-                tsumoHaiStartIndex = (waremeIndex+1) + 13 * PlayerLength - 1;
+                Debug.Log(string.Format("remove yamahai in range[{0},{1}]", waremeIndex+1, tsumoHaiStartIndex % Yama.YAMA_HAIS_MAX));
 
-                Debug.Log(string.Format("remove yamahai with range({0},{1})", waremeIndex+1, tsumoHaiStartIndex % Yama.YAMA_HAIS_MAX));
-
-                for( int yamahaiID = waremeIndex + 1; yamahaiID <= tsumoHaiStartIndex; yamahaiID++ ) 
-                {                    
-                    int id = yamahaiID % Yama.YAMA_HAIS_MAX;
-                    int p = findPlayerForYamahaiIndex(id);
-                    playerUIDict[p].PickUpYamaHai(id);
+                for( int i = waremeIndex+1; i <= tsumoHaiStartIndex; i++ ) 
+                {
+                    int index = i % Yama.YAMA_HAIS_MAX;
+                    int p = findPlayerForYamahaiIndex(index);
+                    MahjongPai pai = playerUIDict[p].PickUpYamaHai(index);
+                    ResManager.collectMahjongObject(pai);
                 }
                 
                 /// set init Dora.
@@ -197,46 +212,74 @@ public class MahjongView : UIObject, IObserver
                 int pi = findPlayerForYamahaiIndex(showIndex);
                 playerUIDict[pi].ShowYamaHai(showIndex);
 
-                // TODO: set Wareme.
+                // set Wareme.
                 showIndex = waremeIndex-13;
                 if( showIndex < 0 )
                     showIndex += Yama.YAMA_HAIS_MAX;
                 pi = findPlayerForYamahaiIndex(showIndex);
-                playerUIDict[pi].HighlightHai(showIndex);
+                playerUIDict[pi].SetWareme(showIndex);
 
                 Debug.Log("MahjongView: SetUI_AfterHaipai end...");
             }
             break;
 
-            case UIEventType.PickHai:
+            case UIEventType.PickTsumoHai:
             {
                 Player activePlayer = (Player)args[0];
-                var jyunHais = activePlayer.Tehai.getJyunTehai();
-                Hai newHai = jyunHais[jyunHais.Length-1];
-                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
-                ui.PickHai( newHai, true, true );
-
                 int lastPickIndex = (int)args[1];
-                //int pi = findPlayerForYamahaiIndex(lastPickIndex);
-                //playerUIDict[pi].PickUpYamaHai(lastPickIndex);
-                //playerUIDict[pi].HighlightHai(lastPickIndex);
-                Debug.LogWarning("MahjongView: PickHai end..." + lastPickIndex.ToString());
+                Hai newHai = (Hai)args[2];
+
+                int yamaPlayerIndex = findPlayerForYamahaiIndex(lastPickIndex);
+                //Debug.LogFormat("-------- pick yama hai index {0} in player ui {1}------", lastPickIndex, yamaPlayerIndex);
+                MahjongPai pai = playerUIDict[yamaPlayerIndex].PickUpYamaHai(lastPickIndex);
+                ResManager.collectMahjongObject(pai);
+
+                PlayerUI playerUI = playerUIDict_Kaze[activePlayer.JiKaze];
+                playerUI.PickHai( newHai, true, true );
 
                 SetManInputEnable( !activePlayer.IsAI );
+            }
+            break;
+
+            case UIEventType.DisplayMenuList:
+            {
+                playerInputPanel.Show();
+            }
+            break;
+            case UIEventType.HideMenuList:
+            {
+                playerInputPanel.Hide();
             }
             break;
 
             case UIEventType.SuteHai:
             {
                 Player activePlayer = (Player)args[0];
-                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
-                ui.SetTehai( activePlayer.Tehai.getJyunTehai() );
-                ui.SetAllHaisVisiable( true );
+                int sutehaiIndex = (int)args[1];
+                //Hai suteHai = (Hai)args[2];
 
-                Hai sutehai = (Hai)args[1];
-                ui.getHouUI().AddHai( sutehai );
+                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
+                ui.SuteHai(sutehaiIndex);
+                ui.SetTedashi();
+
+                int result = Random.Range(0,10);
+                if( result < 2 ){
+                    ui.SetNaki();
+                }
+                else if(result < 4){
+                    ui.Reach();
+                }
+                else{
+                    
+                }
 
                 SetManInputEnable(false);
+            }
+            break;
+
+            case UIEventType.Pon:
+            {
+                
             }
             break;
         }
@@ -244,48 +287,31 @@ public class MahjongView : UIObject, IObserver
 
     void SetManInputEnable(bool isEnable)
     {
-        if( isEnable == true ) {
-            playerUIDict[0].getTehaiUI().EnableInput();
-        }
-        else{
-            playerUIDict[0].getTehaiUI().DisableInput();
-        }
+        playerUIDict_Kaze[Model.getManKaze()].EnableInput(isEnable);
     }
 
+
     // sais panel objects.
-    public GameObject saifuriPanel;
-    public UIButton saisButton;
-    public UILabel saiTip;
+    public SaifuriPanel saifuriPanel;
+    UIEventType lastSaifuriTarget;
 
-    UIEventType lastSaifuriTarget = 0;
-
-    void SetSaisButton(UIEventType saiTarget) 
+    void SetSaisPanel(UIEventType saiTarget) 
     {
-        if( saisButton == null )
-            saisButton = saifuriPanel.transform.FindChild("SaisButton").GetComponent<UIButton>();
-        
-        saisButton.SetOnClick(OnClickSaisButton);
-
-        if( saiTip == null )
-            saiTip = saifuriPanel.transform.FindChild("tip").GetComponent<UILabel>();            
-
-        if( saiTarget == UIEventType.Saifuri ) {
-            saiTip.text = "Saifuri for deciding Chiicha";
-        }
-        else {
-            saiTip.text = "Saifuri for deciding Wareme";
-        }
-
         lastSaifuriTarget = saiTarget;
 
-        saisButton.isEnabled = true;
-        saifuriPanel.SetActive(true);
+        string tip = "";
+        if( saiTarget == UIEventType.Saifuri ) {
+            tip = "Saifuri for deciding Chiicha";
+        }
+        else {
+            tip = "Saifuri for deciding Wareme";
+        }
+
+        saifuriPanel.Show( tip, OnClickSaisButton );
     }
     void OnClickSaisButton() {
         Sai[] sais = Model.Saifuri();
-        saiTip.text = sais[0].Num + ", " + sais[1].Num;
-
-        saisButton.isEnabled = false;
+        saifuriPanel.SetResult( sais[0].Num + ", " + sais[1].Num );
 
         StartCoroutine(OnSaifuriEnd());
     }
@@ -293,31 +319,35 @@ public class MahjongView : UIObject, IObserver
     {      
         yield return new WaitForSeconds(2);
 
-        saifuriPanel.SetActive(false);
+        saifuriPanel.Hide();
 
-        UIEventType evtID;
-        if( lastSaifuriTarget == UIEventType.On_Saifuri_End ) {
-            evtID = UIEventType.On_Saifuri_End;
+        if( lastSaifuriTarget == UIEventType.Saifuri ) {
+            lastSaifuriTarget = UIEventType.On_Saifuri_End;
         }
         else {
-            evtID = UIEventType.On_Saifuri_For_Haipai_End;
+            lastSaifuriTarget = UIEventType.On_Saifuri_For_Haipai_End;
         }
+        //lastSaifuriTarget = lastSaifuriTarget+1;
 
-        EventManager.Get().SendEvent(evtID);
+        Debug.Log("Response event type: " + lastSaifuriTarget.ToString());
+
+        EventManager.Get().SendEvent( lastSaifuriTarget );
     }
 
 
     /// <summary>
     /// 获取对应玩家的Yama范围.
+    ///          P2(68~101)
+    /// P3(34~68)          P1(102~135)
+    ///          P0(0~33)
     /// </summary>
-    /// <param name="playerIndex"></param>
-    /// <returns></returns>
-    int[] getStartEndOfYamaUIOfPlayer(int playerIndex) {
+    int[] getStartEndOfYamaUIOfPlayer(int playerIndex)
+    {
         if( playerIndex < 0 || playerIndex > 3 )
             return null;
 
         int MaxLength = 34;
-        int MaxPlayer = Model.getPlayers().Count;
+        int MaxPlayer = 4;
 
         int[] index = new int[2];
         index[0] = MaxLength * ((MaxPlayer - playerIndex) % MaxPlayer);
@@ -331,12 +361,13 @@ public class MahjongView : UIObject, IObserver
     /// </summary>
     /// <param name="yamahaiIndex"></param>
     /// <returns></returns>
-    int[] getStartEndOfYamahaiIndex( int yamahaiIndex ) {
-        int MaxPlayer = Model.getPlayers().Count;
-
-        for( int i = 0; i < MaxPlayer; i++ ) {
+    int[] getStartEndOfYamahaiIndex( int yamahaiIndex ) 
+    {
+        for( int i = 0; i < 4; i++ ) 
+        {
             int[] index = getStartEndOfYamaUIOfPlayer( i );
-            if( yamahaiIndex >= index[0] && yamahaiIndex <= index[1] ) {
+            if( yamahaiIndex >= index[0] && yamahaiIndex <= index[1] )
+            {
                 return index;
             }
         }
@@ -348,10 +379,9 @@ public class MahjongView : UIObject, IObserver
     /// </summary>
     /// <param name="yamahaiIndex"></param>
     /// <returns></returns>
-    int findPlayerForYamahaiIndex(int yamahaiIndex) {
-        int MaxPlayer = Model.getPlayers().Count;
-
-        for( int i = 0; i < MaxPlayer; i++ ) 
+    int findPlayerForYamahaiIndex(int yamahaiIndex)
+    {
+        for( int i = 0; i < 4; i++ ) 
         {
             int[] index = getStartEndOfYamaUIOfPlayer(i);
             if( yamahaiIndex >= index[0] && yamahaiIndex <= index[1] ){
@@ -361,13 +391,13 @@ public class MahjongView : UIObject, IObserver
         return -1;
     }
 
-    void Test() {
+    void TestYama() {
         for( int i = 0; i < 4; i++ ) {
             int[] index = getStartEndOfYamaUIOfPlayer( i );
             Debug.LogWarning( string.Format( "~~yamahai index range of player {0} is ({1}, {2})", i, index[0], index[1] ) );
         }
 
-        int yamahaiIndex = 77;
+        int yamahaiIndex = Random.Range(0, Yama.YAMA_HAIS_MAX);
         Debug.LogWarning( "-------------------------------------------" );
         Debug.LogWarning( string.Format( "~player index of yamahai({0}) is {1}", yamahaiIndex, findPlayerForYamahaiIndex( yamahaiIndex ) ) );
 
@@ -383,7 +413,7 @@ public static class UIHelper
 {
     public static void SetOnClick(this UIButton btn, EventDelegate.Callback onClick)
     {
-        if(btn == null || onClick == null) 
+        if(btn == null) 
             return;
 
         btn.onClick.Clear();

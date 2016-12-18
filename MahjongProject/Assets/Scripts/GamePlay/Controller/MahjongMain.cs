@@ -148,7 +148,7 @@ public class MahjongMain : Mahjong
     {
         int sum = sais[0].Num + sais[1].Num; 
 
-        int waremePlayer = (getChiichaIndex() - sum - 1) % 4;
+        int waremePlayer = (ChiiChaIndex - sum - 1) % 4;
         if( waremePlayer < 0 )
             waremePlayer += 4;
 
@@ -156,7 +156,7 @@ public class MahjongMain : Mahjong
 
         m_wareme = startHaisIndex - 1; // 开始拿牌位置-1.
 
-        getYama().setTsumoHaisStartIndex(startHaisIndex);
+        Yama.setTsumoHaisStartIndex(startHaisIndex);
     }
 
     // 配牌する
@@ -246,18 +246,20 @@ public class MahjongMain : Mahjong
         m_kazeFrom = m_kazeFrom.Next();
         m_activePlayer = getPlayer( m_kazeFrom );
     }
-    public void GoToNextLoop()
-    {
-        SetNextPlayer();
-
-        PickNewTsumoHai();
-    }
 
 
     #region Request & Response
     protected ERequest m_request = ERequest.Handle_TsumoHai;
     protected Dictionary<EKaze, EResponse> m_playerRespDict = new Dictionary<EKaze, EResponse>();
 
+    public ERequest CurrentRequest
+    {
+        get{ return m_request; }
+    }
+    public Dictionary<EKaze, EResponse> PlayerResponseMap
+    {
+        get{ return m_playerRespDict; }
+    }
 
     public void SetRequest( ERequest req )
     {
@@ -332,10 +334,10 @@ public class MahjongMain : Mahjong
         {
             case ERequest.Handle_TsumoHai:
             {
-                if( response != EResponse.Tsumo_Agari || 
-                   response != EResponse.Ankan ||
-                   response != EResponse.Kakan ||
-                   response != EResponse.Reach || 
+                if( response != EResponse.Tsumo_Agari &&
+                   response != EResponse.Ankan &&
+                   response != EResponse.Kakan &&
+                   response != EResponse.Reach && 
                    response != EResponse.SuteHai )
                 {
                     return false;
@@ -344,7 +346,7 @@ public class MahjongMain : Mahjong
             break;
             case ERequest.Handle_KaKanHai:
             {
-                if(response != EResponse.Ron_Agari || 
+                if(response != EResponse.Ron_Agari &&
                    response != EResponse.Nagashi )
                 {
                     return false;
@@ -353,12 +355,12 @@ public class MahjongMain : Mahjong
             break;
             case ERequest.Handle_SuteHai:
             {
-                if(response != EResponse.Ron_Agari ||                     
-                   response != EResponse.DaiMinKan ||
-                   response != EResponse.Pon || 
-                   response != EResponse.Chii_Left ||
-                   response != EResponse.Chii_Center ||
-                   response != EResponse.Chii_Right ||
+                if(response != EResponse.Ron_Agari &&                    
+                   response != EResponse.DaiMinKan &&
+                   response != EResponse.Pon &&
+                   response != EResponse.Chii_Left &&
+                   response != EResponse.Chii_Center &&
+                   response != EResponse.Chii_Right &&
                    response != EResponse.Nagashi )
                 {
                     return false;
@@ -393,6 +395,10 @@ public class MahjongMain : Mahjong
             m_isChiihou = false;
         }
 
+        //Handle_TsumoHai_Internel();
+    }
+    protected void Handle_TsumoHai_Internel()
+    {
         if( IsRyuukyoku() )
         {
             if( HasRyuukyokuMan() ){
@@ -431,6 +437,10 @@ public class MahjongMain : Mahjong
     {
         m_tsumoHai = m_yama.PickRinshanTsumoHai();
 
+        //Handle_RinshanHai_Internel();
+    }
+    protected void Handle_RinshanHai_Internel()
+    {
         // 1. active player add a new hai.
         // 2. yama remove a rinshan hai
         // 3. yama open a new omote dora hai.
@@ -454,7 +464,16 @@ public class MahjongMain : Mahjong
         SendRequestToActivePlayer(m_tsumoHai);
     }
 
+    public System.Action onResponse_TsumoHai_Handler;
+
     public void OnResponse_Handle_TsumoHai()
+    {
+        if(onResponse_TsumoHai_Handler != null)
+            onResponse_TsumoHai_Handler.Invoke();
+        else
+            Handle_TsumoHai_Response_Internel();
+    }
+    protected void Handle_TsumoHai_Response_Internel()
     {
         PlayerAction action = getPlayerAction();
         EResponse response = action.Response;
@@ -491,7 +510,7 @@ public class MahjongMain : Mahjong
                 // ask cyan kan(抢槓)
                 m_kakanHai = null; //TODO: set kakan
 
-                Ask_Handle_KaKanHai();
+                //Ask_Handle_KaKanHai();
             }
             break;
 
@@ -512,7 +531,7 @@ public class MahjongMain : Mahjong
                 m_activePlayer.IsIppatsu = true;
 
                 // cache.
-                Ask_Handle_SuteHai();
+                //Ask_Handle_SuteHai();
             }
             break;
 
@@ -521,14 +540,15 @@ public class MahjongMain : Mahjong
                 // 捨牌のインデックスを取得する。
                 m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
 
-                if( m_sutehaiIndex >= m_activePlayer.Tehai.getJyunTehai().Length ) {// ツモ切り
+                if( m_sutehaiIndex >= m_activePlayer.Tehai.getJyunTehaiCount() ) {// ツモ切り
                     Hai.copy( m_suteHai, m_tsumoHai );
                     m_activePlayer.Hou.addHai( m_suteHai );
                 }
                 else {// 手出し
                     m_activePlayer.Tehai.copyJyunTehaiIndex( m_suteHai, m_sutehaiIndex );
                     m_activePlayer.Tehai.removeJyunTehai( m_sutehaiIndex );
-                    m_activePlayer.Tehai.addJyunTehai( m_tsumoHai );
+                    m_activePlayer.Tehai.Sort();
+
                     m_activePlayer.Hou.addHai( m_suteHai );
                     m_activePlayer.Hou.setTedashi( true );
                 }
@@ -539,7 +559,7 @@ public class MahjongMain : Mahjong
                     m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
 
                 // cache.
-                Ask_Handle_SuteHai();
+                //Ask_Handle_SuteHai();
             }
             break;
         }
@@ -568,7 +588,16 @@ public class MahjongMain : Mahjong
         }
     }
 
+    public System.Action onResponse_KakanHai_Handler;
+
     public void OnResponse_Handle_KaKanHai()
+    {
+        if(onResponse_KakanHai_Handler != null)
+            onResponse_KakanHai_Handler.Invoke();
+        else
+            Handle_KaKanHai_Response_Intenel();
+    }
+    protected void Handle_KaKanHai_Response_Intenel()
     {
         if( CheckMultiRon() == true )
         {
@@ -598,9 +627,7 @@ public class MahjongMain : Mahjong
     }
 
     #region Ask Handle Sute Hai
-    /// <summary>
-    /// Asks other players to handle the sute hai.
-    /// </summary>
+    public System.Action onResponse_SuteHai_Handler;
 
     public void Ask_Handle_SuteHai()
     {
@@ -623,6 +650,13 @@ public class MahjongMain : Mahjong
     }
 
     public void OnResponse_Handle_SuteHai()
+    {
+        if(onResponse_SuteHai_Handler != null)
+            onResponse_SuteHai_Handler.Invoke();
+        else
+            Handle_Response_SuteHai_Internel();
+    }
+    protected void Handle_Response_SuteHai_Internel()
     {
         if( CheckMultiRon() == true )
         {
@@ -651,12 +685,12 @@ public class MahjongMain : Mahjong
                     {
                         case EResponse.Pon:
                         {
-                            
+
                         }
                         break;
                         case EResponse.DaiMinKan:
                         {
-                            
+
                         }
                         break;
                     }
@@ -709,7 +743,9 @@ public class MahjongMain : Mahjong
                 }
                 else // Nagashi
                 {
-                    
+                    SetNextPlayer();
+
+                    PickNewTsumoHai();
                 }
             }
         }
@@ -905,7 +941,7 @@ public class MahjongMain : Mahjong
     #endregion
 
     // some one has tsumo.
-    protected void HandleTsumo()
+    public void HandleTsumo()
     {
         AgariParam param = new AgariParam(this);
         int score = 0;
@@ -966,7 +1002,7 @@ public class MahjongMain : Mahjong
         }
     }
 
-    protected void HandleMultiRon()
+    public void HandleMultiRon()
     {
         foreach( var info in m_playerRespDict )
         {
@@ -976,7 +1012,7 @@ public class MahjongMain : Mahjong
     }
 
     // some one has ron.
-    protected void HandleRon()
+    public void HandleRon()
     {
         AgariParam param = new AgariParam(this);
         int score = 0;
@@ -1021,7 +1057,7 @@ public class MahjongMain : Mahjong
     }
 
     // kan count over 4 but no one agari.
-    protected void HandleInvalidKyoku()
+    public void HandleInvalidKyoku()
     {
 
     }

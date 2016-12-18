@@ -23,8 +23,8 @@ using System.Collections.Generic;
 
 public class YamaUI : UIObject 
 {
-
-    public const int MaxYamaPairInPlayer = 17;
+    public const int MaxYamaHaiCountInPlayer = 34; //17*2
+    public readonly static Vector3 WaremeOffset = new Vector3(-6f,0f,0f);
 
     public Vector2 AlignRightLocalPos = new Vector2(520, 0);
     public int TopY = 0;
@@ -37,15 +37,13 @@ public class YamaUI : UIObject
     private int yama_start = -1;
     private int yama_end = -1;
 
-    public int Yama_Start {
-        get {
-            return yama_start;
-        }
+    public int Yama_Start 
+    {
+        get { return yama_start; }
     }
-    public int Yama_End {
-        get {
-            return yama_end;
-        }
+    public int Yama_End
+    {
+        get { return yama_end; }
     }
 
     private Transform top;
@@ -89,7 +87,8 @@ public class YamaUI : UIObject
         this.yama_end = end;
     }
 
-    public void SetYamaHais(Dictionary<int, Hai> yamaHais, int start, int end) {
+    public void SetYamaHais(Dictionary<int, Hai> yamaHais, int start, int end)
+    {
         if( yamaHais == null )
             return;
 
@@ -99,18 +98,15 @@ public class YamaUI : UIObject
 
         foreach(var kv in yamaHais)
         {
-            int index = kv.Key;
-            Hai hai = kv.Value;
+            AddHai(kv.Value, kv.Key );
 
-            AddHai(hai, index);
+            if(kv.Key < start || kv.Key > end)
+                Debug.LogErrorFormat("Hai's index {0} in yama is out of range [{1}, {2}]", kv.Key,start,end);
         }
     }
 
-    MahjongPai AddHai( Hai hai, int index ) {
-        if( !Hai.IsValidHai(hai) ) {
-            return null;
-        }
-
+    protected void AddHai( Hai hai, int index )
+    {
         int line = Mathf.Max( 0, (index - this.yama_start) % MaxLines );
         int indexInLine = Mathf.Max( 0, (index - this.yama_start) / MaxLines );
 
@@ -129,16 +125,25 @@ public class YamaUI : UIObject
         MahjongPai pai = PlayerUI.CreateMahjongPai( parent, localPos, hai, false );
         mahjongYama.Add( index, pai );
 
-        return pai;
+        //if(index == 0 || index == 2 || index == Yama.YAMA_HAIS_MAX-2) pai.Show();
     }
 
 
-    public void PickUp( int index ) {
+    public MahjongPai PickUp( int index )
+    {
         if( mahjongYama.ContainsKey( index ) ) {
-            ResManager.collectMahjongObject( mahjongYama[index] );
+            MahjongPai pai = mahjongYama[index];
+            mahjongYama.Remove(index);
+            return pai;
         }
         else {
-            Debug.LogError("No such mahjong with index == " + index);
+            string indexList = "";
+            foreach(var maj in mahjongYama)
+            {
+                indexList += maj.Key.ToString() + ",";
+            }
+            Debug.LogWarningFormat("No such mahjong in index {0}, range is [{1}] ", index, indexList.Substring(0, indexList.Length-1));
+            return null;
         }
     }
 
@@ -153,9 +158,18 @@ public class YamaUI : UIObject
         }
     }
 
-    public void SetWareme(int index) { 
-        if( mahjongYama.ContainsKey(index) ) {
-            mahjongYama[index].SetHighlight(true);
+    public void SetWareme(int index)
+    { 
+        //if( mahjongYama.ContainsKey(index) )
+        //    mahjongYama[index].SetHighlight(true);
+
+        Debug.Log("##Player " + _ownerPlayer.JiKaze + " set wareme " + index.ToString());
+
+        foreach(var maj in mahjongYama)
+        {
+            if(maj.Key >= index){
+                maj.Value.transform.localPosition += new Vector3(-8f,0f,0f);
+            }
         }
     }
 

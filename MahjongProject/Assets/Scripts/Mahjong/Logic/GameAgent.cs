@@ -27,7 +27,7 @@ public class GameAgent
 
 
     public Sai[] getSais() {
-        return _game.getSais();
+        return _game.Sais;
     }
 
     // 表ドラ、槓ドラの配列を取得する
@@ -54,13 +54,13 @@ public class GameAgent
 
     // ツモ牌を取得する
     protected Hai getTsumoHai() {
-        Hai tsumoHai = _game.getTsumoHai();
+        Hai tsumoHai = _game.TsumoHai;
         return tsumoHai == null? null : new Hai(tsumoHai);
     }
 
     // 捨牌を取得する
     protected Hai getSuteHai() {
-        return new Hai(_game.getSuTehai());
+        return new Hai(_game.SuteHai);
     }
 
     // あがり点を取得する
@@ -79,22 +79,22 @@ public class GameAgent
 
     // ツモの残り数を取得する
     public int getTsumoRemain() {
-        return _game.getTsumoRemain();
+        return _game.getTsumoRemainCount();
     }
 
     // 局を取得する
     public int getkyoku() {
-        return _game.getkyoku();
+        return _game.Kyoku;
     }
 
     // 本場を取得する
     public int getHonba() {
-        return _game.getHonba();
+        return _game.HonBa;
     }
 
     // リーチ棒の数を取得する
     public int getReachbou() {
-        return _game.getReachbou();
+        return _game.ReachBou;
     }
 
     public void PostUiEvent(UIEventType eventId, params object[] args){
@@ -102,7 +102,7 @@ public class GameAgent
     }
 
     public SuteHai[] getSuteHaiList() {
-        return _game.getSuteHaiList();
+        return _game.AllSuteHaiList.ToArray();
     }
 
     public int getPlayerSuteHaisCount() {
@@ -127,11 +127,11 @@ public class GameAgent
 
     // 起(親)家のプレイヤーインデックスを取得する
     public int getChiichaIndex() {
-        return _game.getChiichaIndex();
+        return _game.ChiiChaIndex;
     }
 
     public AgariInfo getAgariInfo() {
-        return _game.getAgariInfo();
+        return _game.AgariInfo;
     }
 
     #region Logic

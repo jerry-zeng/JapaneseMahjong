@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 public class StateMachine : MonoBehaviour 
 {
 	public virtual State CurrentState
@@ -29,7 +30,7 @@ public class StateMachine : MonoBehaviour
 	{
         if (_currentState == value || _inTransition)
         {
-            if(_inTransition) Debug.LogWarning("~SM is in transition: " + _currentState.GetType().Name);
+            if(_inTransition) Debug.LogWarning("~StateMachine is in transition: " + _currentState.GetType().Name);
 			return;
         }
 
@@ -40,9 +41,9 @@ public class StateMachine : MonoBehaviour
 		
 		_currentState = value;
 		
+        _inTransition = false;
+
 		if (_currentState != null)
 			_currentState.Enter();
-		
-		_inTransition = false;
 	}
 }

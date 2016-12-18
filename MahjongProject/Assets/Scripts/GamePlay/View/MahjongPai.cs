@@ -14,33 +14,41 @@ public class MahjongPaiComparer : IComparer<MahjongPai>
 [RequireComponent(typeof(BoxCollider))]
 public class MahjongPai : UIButtonColor 
 {
-    private Hai _data;
+    protected Hai _data;
     public int ID
     {
         get { return _data == null? -1 : _data.ID; }
     }
 
-    private static int _width = 58;
-    public static int Width 
+    public bool isRed
     {
-        get { return _width; }
+        get; private set;
+    }
+    public bool isTedashi
+    {
+        get; private set;
+    }
+    public bool isNaki
+    {
+        get; private set;
+    }
+    public bool isReach
+    {
+        get; private set;
     }
 
-    private static int _height = 84;
-    public static int Height 
-    {
-        get { return _height; }
-    }
+    public readonly static float Width  = 58f;
+    public readonly static float Height = 84f;
 
-    public const int LandHaiPosOffsetY = -15; // 当麻将横着放时，往下移15像素. /
+    public const int LandHaiPosOffsetY = -10; // 当麻将横着放时，往下移15像素. /
 
 
-    private Transform front;
-    private Transform back;
-    private UISprite majSprite;
-    private BoxCollider boxCollider;
+    protected Transform front;
+    protected Transform back;
+    protected UISprite majSprite;
+    protected BoxCollider boxCollider;
 
-    EFrontBack curFrontBack = EFrontBack.Front;
+    protected EFrontBack curFrontBack = EFrontBack.Front;
     public bool IsShownOut 
     {
         get { return curFrontBack == EFrontBack.Front; }
@@ -87,7 +95,10 @@ public class MahjongPai : UIButtonColor
         SetRedDora(_data.IsRed);
     }
 
-    public void SetRedDora(bool isRed) {
+    public void SetRedDora(bool isRed)
+    {
+        this.isRed = isRed;
+
         if( isRed ) {
             majSprite.color = Color.red;
         }
@@ -96,7 +107,41 @@ public class MahjongPai : UIButtonColor
         }
     }
 
-    public void SetHighlight(bool isLight){
+    public void SetTedashi(bool state)
+    {
+        this.isTedashi = state;
+
+
+    }
+
+    public void SetNaki(bool state)
+    {
+        this.isNaki = state;
+
+        UISprite fg = front.FindChild("background").GetComponent<UISprite>();
+        if(isNaki){
+            fg.color = new Color(0.7f, 0.7f, 0.7f);
+        }
+        else{
+            fg.color = defaultColor;
+        }
+    }
+
+    public void SetReach(bool state)
+    {
+        this.isReach = state;
+
+        if(isReach == true){
+            SetOrientation(EOrientation.Landscape_Left);
+            transform.localPosition += new Vector3((Height-Width)*0.5f, MahjongPai.LandHaiPosOffsetY, 0);
+        }
+        else{
+            SetOrientation(EOrientation.Portrait);
+        }
+    }
+
+    public void SetHighlight(bool isLight)
+    {
         UISprite bg = back.FindChild("background").GetComponent<UISprite>();
         if( isLight ) {
             bg.color = Color.magenta;
@@ -113,7 +158,7 @@ public class MahjongPai : UIButtonColor
         SetFrontBack(EFrontBack.Back);
     }
 
-    private void SetFrontBack(EFrontBack fb) {
+    protected void SetFrontBack(EFrontBack fb) {
         front.gameObject.SetActive( fb == EFrontBack.Front );
         back.gameObject.SetActive( fb == EFrontBack.Back);
 
@@ -153,5 +198,9 @@ public class MahjongPai : UIButtonColor
     public void SetOnClick(System.Action onClick)
     {
         _onClick = onClick;
+    }
+    public void ClearOnClick()
+    {
+        _onClick = null;
     }
 }

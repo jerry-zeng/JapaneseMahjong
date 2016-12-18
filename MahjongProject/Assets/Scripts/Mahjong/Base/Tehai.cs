@@ -113,6 +113,11 @@ public class Tehai : IComparer<Hai>
         return _jyunTehais.ToArray();
     }
 
+    public int getJyunTehaiCount()
+    {
+        return _jyunTehais.Count;
+    }
+
     // 純手牌に牌を追加する
     // _jyunTehais won't sort automatically on new hais added.
     public bool addJyunTehai(Hai hai)

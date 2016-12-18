@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 /// <summary>
 /// Player.
@@ -18,10 +19,11 @@ public abstract class Player
     {
         get{ return _name; }
     }
-    public PlayerAction getAction()
+    public PlayerAction Action
     {
-        return _action;
+        get{ return _action; }
     }
+
     public int getSutehaiIndex()
     {
         return _action.SutehaiIndex;
@@ -149,20 +151,49 @@ public abstract class Player
         get{ return GameAgent.Instance; }
     }
 
+    protected float ResponseDelayTime = 0.5f;
+
+    protected ERequest _request;
     protected Action<EKaze, EResponse> _onResponse;
+
+    public ERequest CurrentRequest
+    {
+        get{ return _request; }
+    }
+
     protected EResponse DoResponse(EResponse response)
     {
         _action.Response = response;
 
-        if(_onResponse != null) 
-            _onResponse.Invoke(JiKaze, response);
+        if( ResponseDelayTime > 0f )
+            GameManager.Instance.StartCoroutine( DoResponseDelay(ResponseDelayTime) );
+        else
+            DoResponseDirectly();
 
         return response;
+    }
+
+    protected IEnumerator DoResponseDelay(float waitTime)
+    {
+        yield return new UnityEngine.WaitForSeconds(waitTime);
+        DoResponseDirectly();
+    }
+    protected void DoResponseDirectly()
+    {
+        if(_onResponse != null) 
+            _onResponse.Invoke(JiKaze, _action.Response);
+    }
+
+    public void OnPlayerInputFinished()
+    {
+        UnityEngine.Debug.Log("~~~OnPlayerInputFinished(): " + _action.Response.ToString());
+        DoResponseDirectly();
     }
 
 
     public virtual void HandleRequest(ERequest request, EKaze fromPlayerKaze, Hai haiToHandle, Action<EKaze, EResponse> onResponse)
     {
+        this._request = request;
         this._onResponse = onResponse;
 
         switch( request )
@@ -195,4 +226,6 @@ public abstract class Player
     protected abstract EResponse OnHandle_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle);
 
     public abstract bool IsAI { get; }
+
+    protected bool inTest = true;
 }

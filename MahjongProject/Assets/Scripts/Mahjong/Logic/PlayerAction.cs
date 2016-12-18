@@ -12,8 +12,8 @@ public enum EActionState
 
 public enum EActionType
 {
-    Chii   = 0,
-    Pon    = 1,
+    Pon    = 0,
+    Chii   = 1,
     Kan    = 2,
     Reach  = 3,
     Agari  = 4,
@@ -239,8 +239,8 @@ public class PlayerAction
     }
 
     #region Menu
-    private List<EResponse> _menuList = new List<EResponse>();
-    public List<EResponse> MenuList
+    private List<EActionType> _menuList = new List<EActionType>();
+    public List<EActionType> MenuList
     {
         get{ return _menuList; }
     }

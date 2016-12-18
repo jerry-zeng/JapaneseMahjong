@@ -2,13 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-/**
- * 河.
- */
 
 public class HouUI : UIObject 
 {
-
     public Vector2 AlignLeftLocalPos = new Vector2(-150, 0);
     public int HaiPosOffsetX = 2;
 
@@ -20,7 +16,10 @@ public class HouUI : UIObject
     public const int MaxCoutPerLine = 6;
 
     private List<Transform> lineParents;
-    private List<MahjongPai> allHais = new List<MahjongPai>(Hou.SUTE_HAIS_LENGTH_MAX);
+    private List<MahjongPai> _allHais = new List<MahjongPai>(Hou.SUTE_HAIS_LENGTH_MAX);
+
+    private int _curLine = 0;
+    private float _curLineRightAligPosX = 0f;
 
 
     // Use this for initialization
@@ -42,16 +41,18 @@ public class HouUI : UIObject
 
             isInit = true;
         }
+
+        _curLineRightAligPosX = AlignLeftLocalPos.x;
     }
 
     public override void Clear() {
         base.Clear();
 
         // clear all hai.
-        for( int i = 0; i < allHais.Count; i++ ) {
-            ResManager.collectMahjongObject(allHais[i]);
+        for( int i = 0; i < _allHais.Count; i++ ) {
+            ResManager.collectMahjongObject(_allHais[i]);
         }
-        allHais.Clear();
+        _allHais.Clear();
     }
 
     public override void SetParentPanelDepth( int depth ) {
@@ -62,63 +63,73 @@ public class HouUI : UIObject
         }
     }
 
-    public void AddHai(Hai hai) 
+    public void AddHai(MahjongPai pai) 
     {
-        if( !Hai.IsValidHai(hai) ){
-            Debug.Log("Invalid hai for id == " + hai.ID);
-            return;
-        }
+        int inLine = _allHais.Count / MaxCoutPerLine;  //inLine=0,1,2. >2 has a small chance.
+        int indexInLine = _allHais.Count % MaxCoutPerLine;
 
-        int inLine = allHais.Count / MaxCoutPerLine;  //inLine=0,1,2. >2 has a small chance.
-        int indexInLine = allHais.Count % MaxCoutPerLine;
-
-        // set parent.
         int EndingLine = Max_Lines - 1;
-        if( inLine > EndingLine ){
-            indexInLine += (inLine - EndingLine) * 6;
 
-            inLine = EndingLine;
+        if( inLine != _curLine )
+        {
+            if( inLine <= EndingLine ){
+                _curLine = inLine;
+                _curLineRightAligPosX = AlignLeftLocalPos.x;
+            }
+            else if(inLine > EndingLine){
+                _curLine = EndingLine;
+
+                indexInLine += MaxCoutPerLine;
+                _curLineRightAligPosX += MahjongPai.Width + HaiPosOffsetX;
+            }
+        }
+        else{
+            if(indexInLine > 0)
+                _curLineRightAligPosX += MahjongPai.Width + HaiPosOffsetX;
         }
 
-        Transform parent = lineParents[inLine];
+        pai.transform.parent = lineParents[_curLine];
+        pai.transform.localPosition = new Vector3(_curLineRightAligPosX, 0, 0);
 
-        // set position.
-        // TODO: didn't consider the reach hai position change.
-        float posX = AlignLeftLocalPos.x + MahjongPai.Width * indexInLine + HaiPosOffsetX * indexInLine;
-        Vector3 localPos = new Vector3(posX, 0, 0);
-
-        MahjongPai pai = PlayerUI.CreateMahjongPai(parent, localPos, hai);
-
-        allHais.Add(pai);
+        _allHais.Add(pai);
     }
 
-    public bool SetReach(bool a_reach) {
-        if( allHais.Count <= 0 ) {
+    public bool setTedashi(bool isTedashi)
+    {
+        if( _allHais.Count <= 0 )
             return false;
-        }
-
-        // set last hai reach.
-        MahjongPai lastHai = allHais[allHais.Count - 1];
-        if(a_reach == true){
-            lastHai.SetOrientation(EOrientation.Landscape_Left);
-            lastHai.transform.localPosition += new Vector3(0, MahjongPai.LandHaiPosOffsetY, 0);
-        }          
-        else
-            lastHai.SetOrientation(EOrientation.Portrait);
-
-        return true;
-    }
-
-    protected bool setTedashi(bool a_tedashi) {
-        if( allHais.Count <= 0 ) {
-            return false;
-        }
 
         // set last hai tedashi.
-        MahjongPai lastHai = allHais[allHais.Count - 1];
-        Debug.Log(lastHai.ID + " tedashi");
-        //lastHai.SetOrientation(EOrientation.Landscape_Left);
+        MahjongPai lastHai = _allHais[_allHais.Count - 1];
+        lastHai.SetTedashi(isTedashi);
 
         return true;
     }
+
+    public bool SetReach(bool isReach)
+    {
+        if( _allHais.Count <= 0 )
+            return false;
+
+        // set last hai reach.
+        MahjongPai lastHai = _allHais[_allHais.Count - 1];
+        lastHai.SetReach(isReach);
+
+        _curLineRightAligPosX += (MahjongPai.Height - MahjongPai.Width);
+
+        return true;
+    }
+
+    public bool setNaki(bool isNaki)
+    {
+        if( _allHais.Count <= 0 )
+            return false;
+
+        // set last hai naki.
+        MahjongPai lastHai = _allHais[_allHais.Count - 1];
+        lastHai.SetNaki(isNaki);
+
+        return true;
+    }
+
 }

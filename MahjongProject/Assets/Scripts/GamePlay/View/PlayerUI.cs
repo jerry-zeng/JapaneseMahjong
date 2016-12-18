@@ -13,6 +13,28 @@ public class PlayerUI : UIObject
 
     private int panelDepth = 0;
 
+    /*
+    public PlayerInfoUI Info
+    {
+        get{ return playerInfo; }
+    }
+    public YamaUI Yama
+    {
+        get{ return yama; }
+    }
+    public TehaiUI Tehai
+    {
+        get{ return tehai; }
+    }
+    public HouUI Hou
+    {
+        get{ return hou; }
+    }
+    public FuuroUI Fuuro
+    {
+        get{ return fuuro; }
+    }
+    */
 
     void Start () {
         Init();
@@ -75,50 +97,52 @@ public class PlayerUI : UIObject
         }
     }
 
-    public TehaiUI getTehaiUI() {
-        return tehai;
-    }
-    public YamaUI getYamaUI() {
-        return yama;
-    }
-    public HouUI getHouUI() {
-        return hou;
-    }
-    public FuuroUI getFuuroUI() {
-        return fuuro;
-    }
-    public PlayerInfoUI getPlayerInfoUI() {
-        return playerInfo;
-    }
-
 
     // 手牌.
     public void SetTehai(Hai[] hais) {
         tehai.SetTehai(hais);
     }
     public void PickHai( Hai hai, bool newPicked = false, bool isShow = false ) {
-        tehai.AddHai(hai, newPicked, isShow);
+        tehai.AddPai(hai, newPicked, isShow);
+    }
+    public void PickPai( MahjongPai hai, bool newPicked = false, bool isShow = false ) {
+        tehai.AddPai(hai, newPicked, isShow);
+    }
+    public void SuteHai( int index ){
+        MahjongPai pai = tehai.SuteHai(index);
+        AddSuteHai( pai );
     }
     public void SetAllHaisVisiable( bool visiable ) {
         tehai.SetAllHaisVisiable(visiable);
     }
-
-    // 河. 打牌.
-    public void SuteHai(Hai hai) {
-        hou.AddHai(hai);
+    public void EnableInput(bool isEnable){
+        if(isEnable)
+            tehai.EnableInput();
+        else
+            tehai.DisableInput();
     }
 
+    // 河. 打牌.
+    protected void AddSuteHai(MahjongPai hai) {
+        hou.AddHai(hai);
+    }
+    public void SetTedashi(bool isTedashi = true){
+        hou.setTedashi(isTedashi);
+    }
     public void Reach(bool reach = true) {
         hou.SetReach(reach);
         playerInfo.SetReach(reach);
+    }
+    public void SetNaki(bool isNaki = true){
+        hou.setNaki(isNaki);
     }
 
     // 牌山.
     public void SetYamaHais(Dictionary<int, Hai> yamaHais, int start, int end) {
         yama.SetYamaHais(yamaHais, start, end);
     }
-    public void PickUpYamaHai(int index) {
-        yama.PickUp(index);
+    public MahjongPai PickUpYamaHai(int index) {
+        return yama.PickUp(index);
     }
     public void ShowYamaHai(int index) {
         yama.ShowHai(index);
@@ -132,7 +156,7 @@ public class PlayerUI : UIObject
     public void HideAllYamaHais() {
         yama.HideAllYamaHais();
     }
-    public void HighlightHai(int index) { 
+    public void SetWareme(int index) { 
         yama.SetWareme(index);
     }
 
@@ -187,17 +211,4 @@ public class PlayerUI : UIObject
         return pai;
     }
 
-    public static float GetMahjongRange(bool shouldSetLand)
-    {
-        float ret = 0;
-
-        if( shouldSetLand ) { // set landscape left.
-            ret = MahjongPai.Height;
-        }
-        else {  // set portrias.
-            ret = MahjongPai.Width;
-        }
-
-        return ret;
-    }
 }

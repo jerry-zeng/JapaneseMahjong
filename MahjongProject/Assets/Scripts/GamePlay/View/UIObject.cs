@@ -5,6 +5,10 @@ using System.Collections;
 public class UIObject : MonoBehaviour 
 {
     protected Player _ownerPlayer;
+    public Player OwnerPlayer
+    {
+        get{ return _ownerPlayer; }
+    }
 
     public virtual void BindPlayer(Player p)
     {

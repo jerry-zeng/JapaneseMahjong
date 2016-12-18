@@ -11,15 +11,33 @@ public class LoopState_PickHai : MahjongState
         logicOwner.PickNewTsumoHai();
 
         if( logicOwner.IsRyuukyoku() ) {
-            //owner.ChangeState<LoopState_CheckRyuuKyoKu>();
+            owner.ChangeState<LoopState_HandleRyuuKyoKu>();
+            //StartCoroutine( HandleRyuuKyoku() );
         }
         else {
-            int lastPickIndex = logicOwner.getYama().getLastTsumoHaiIndex();
-            EventManager.Get().SendEvent(UIEventType.PickHai, logicOwner.getActivePlayer(), lastPickIndex);
+            Hai tsumoHai = logicOwner.TsumoHai;
+            logicOwner.ActivePlayer.Tehai.addJyunTehai( tsumoHai );
 
-            Debug.LogWarningFormat( "Player in kaze {0} picked a new tsumo hai", logicOwner.getActivePlayer().JiKaze.ToString() );
+            int lastPickIndex = logicOwner.Yama.getLastTsumoHaiIndex();
+            EventManager.Get().SendEvent(UIEventType.PickTsumoHai, logicOwner.ActivePlayer, lastPickIndex, tsumoHai );
 
-            //owner.ChangeState<LoopState_CheckTsumo>();
+            owner.ChangeState<LoopState_AskHandleTsumoHai>();
+            //StartCoroutine( AskHandleTsumoHai() );
         }
     }
+
+    IEnumerator HandleRyuuKyoku()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        owner.ChangeState<LoopState_HandleRyuuKyoKu>();
+    }
+
+    IEnumerator AskHandleTsumoHai()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        owner.ChangeState<LoopState_AskHandleTsumoHai>();
+    }
+
 }

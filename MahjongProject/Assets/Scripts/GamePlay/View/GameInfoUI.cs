@@ -4,7 +4,6 @@ using System.Collections;
 
 public class GameInfoUI : UIObject 
 {
-
     private UILabel kyokuLab;
     private UILabel reachCountLab;
     private UISprite reachBan;
@@ -34,7 +33,7 @@ public class GameInfoUI : UIObject
     }
 
     public void SetKyoku( EKaze kaze, int kyoku ) {
-        kyokuLab.text = kaze.ToString() + " " + kyoku.ToString();
+        kyokuLab.text = kaze.ToString() + " " + kyoku.ToString() + "局";
     }
 
     public void SetReachCount(int count) {

@@ -34,8 +34,14 @@ public class HaiPaiState : MahjongState
         logicOwner.SetWaremeAndHaipai();
 
         EventManager.Get().SendEvent(UIEventType.SetUI_AfterHaipai);
-        
-        owner.ChangeState<LoopState_Start>();
+
+        StartCoroutine(StartLoop());
     }
 
+    IEnumerator StartLoop()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        owner.ChangeState<LoopState_Start>();
+    }
 }

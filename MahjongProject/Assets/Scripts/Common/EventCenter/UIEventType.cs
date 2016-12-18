@@ -3,7 +3,7 @@ public enum UIEventType
 {
     #region event id
     // pick a tsumo hai. 
-    PickHai,
+    PickTsumoHai,
     // 捨牌の選択 
     Select_SuteHai,
     // 捨牌 
@@ -34,6 +34,9 @@ public enum UIEventType
     Nagashi,
     #endregion
 
+    DisplayMenuList,
+    HideMenuList,
+
     OnPlayerInput,
 
     // ゲームの開始 
@@ -44,12 +47,13 @@ public enum UIEventType
     Start_Kyoku,
 
     Init_Game,
+
     // Saifuri
     Saifuri,
+    On_Saifuri_End,
+
     // 配牌
     HaiPai,
-
-    On_Saifuri_End,
 
     Init_PlayerInfoUI,
 
