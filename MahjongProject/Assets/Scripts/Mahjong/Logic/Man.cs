@@ -41,7 +41,7 @@ public class Man : Player
 
         // check enable Tsumo
         int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
-        if (agariScore > 0) {
+        if( agariScore > 0 ){
             _action.IsValidTsumo = true;
             _action.MenuList.Add( EActionType.Agari );
         }
@@ -85,45 +85,11 @@ public class Man : Player
             //return DoResponse(EResponse.Nagashi);
         }
 
-        bool furiten = false;
-
-        List<Hai> machiHais;
-        if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
-        {
-            SuteHai[] suteHais = Hou.getSuteHais();
-
-            for (int i = 0; i < suteHais.Length; i++)
-            {
-                SuteHai suteHaiTemp = suteHais[i];
-
-                if( machiHais.Exists( h => h.ID == suteHaiTemp.ID ) ){
-                    furiten = true;
-                    break;
-                }
-            }
-
-            if( furiten == false ) 
-            {
-                suteHais = MahjongAgent.getSuteHaiList();
-
-                int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount(JiKaze);
-                for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++ )
-                {
-                    Hai suteHaiTemp = suteHais[playerSuteHaisCount];
-
-                    if( machiHais.Exists( h => h.ID == suteHaiTemp.ID ) ){
-                        furiten = true;
-                        break;
-                    }
-                }
-            } // end if(furiten == false).
-        }
-
         // didn't fruiten
-        if( furiten == false ) 
+        if( isFuriten() == false ) 
         {
             int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle);
-            if (agariScore > 0) 
+            if( agariScore > 0 ) 
             {
                 _action.IsValidRon = true;
                 _action.MenuList.Add( EActionType.Agari );
@@ -143,24 +109,29 @@ public class Man : Player
         if(inTest){
             //_action.MenuList.Add(EActionType.Nagashi);
             //return DisplayMenuList();
-            //return DoResponse(EResponse.Nagashi);
         }
 
         Hai suteHai = haiToHandle;
 
-        // also check ron.
-        if( MahjongAgent.isReach() || MahjongAgent.getTsumoRemain() <= 0 )
+        // check Ron
+        int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai);
+        if( agariScore > 0 ) // Ron
         {
-            int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai);
-            if (agariScore > 0) // Ron
-            {
-                _action.IsValidRon = true;
-                _action.MenuList.Add( EActionType.Agari );
-                _action.MenuList.Add( EActionType.Nagashi );
+            _action.IsValidRon = true;
+            _action.MenuList.Add( EActionType.Agari );
 
+            if( MahjongAgent.isReach() ){
+                //_action.MenuList.Add( EActionType.Nagashi );
                 return DisplayMenuList();
             }
-            return DoResponse(EResponse.Nagashi);
+            else{
+                _action.MenuList.Add( EActionType.Nagashi );
+            }
+        }
+        else
+        {
+            if( MahjongAgent.getTsumoRemain() <= 0 )
+                return DoResponse(EResponse.Nagashi);
         }
 
         // check menu Kan
@@ -180,7 +151,7 @@ public class Man : Player
         if( relation == (int)ERelation.KaMiCha ) 
         {
             List<Hai> sarashiHaiRight = new List<Hai>();
-            if (Tehai.validChiiRight(suteHai, sarashiHaiRight))
+            if( Tehai.validChiiRight(suteHai, sarashiHaiRight) )
             {
                 _action.setValidChiiRight(true, sarashiHaiRight);
 
@@ -189,7 +160,7 @@ public class Man : Player
             }
 
             List<Hai> sarashiHaiCenter = new List<Hai>();
-            if (Tehai.validChiiCenter(suteHai, sarashiHaiCenter))
+            if( Tehai.validChiiCenter(suteHai, sarashiHaiCenter) )
             {
                 _action.setValidChiiCenter(true, sarashiHaiCenter);
 
@@ -198,7 +169,7 @@ public class Man : Player
             }
 
             List<Hai> sarashiHaiLeft = new List<Hai>();
-            if (Tehai.validChiiLeft(suteHai, sarashiHaiLeft))
+            if( Tehai.validChiiLeft(suteHai, sarashiHaiLeft) )
             {
                 _action.setValidChiiLeft(true, sarashiHaiLeft);
 
@@ -231,4 +202,5 @@ public class Man : Player
 
         return EResponse.Nagashi;
     }
+
 }

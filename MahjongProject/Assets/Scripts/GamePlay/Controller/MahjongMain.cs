@@ -450,6 +450,7 @@ public class MahjongMain : Mahjong
     public void PickRinshanHai()
     {
         m_tsumoHai = m_yama.PickRinshanTsumoHai();
+        isRinshan = true;
 
         //Handle_RinshanHai_Internel();
     }
@@ -730,7 +731,7 @@ public class MahjongMain : Mahjong
     // for ERequest.Handle_TsumoHai
     public void Handle_TsumoAgari()
     {
-        
+        HandleTsumo();
     }
 
     public void Handle_AnKan()
@@ -1061,34 +1062,39 @@ public class MahjongMain : Mahjong
     {
         AgariParam param = new AgariParam(this);
         int score = 0;
-        int iPlayer = 0;
+        int playerIndex = 0;
 
         param.setOmoteDoraHais( getOmotoDoras() );
         if( m_activePlayer.IsReach )                    
             param.setUraDoraHais( getUraDoras() );
 
         AgariScoreManager.GetAgariScore( m_activePlayer.Tehai, m_tsumoHai, param, ref m_combis, ref m_agariInfo );
+        UnityEngine.Debug.Log( AgariInfo.ToString() );
 
-        iPlayer = getPlayerIndex( m_kazeFrom );
-        if( m_oyaIndex == iPlayer ) {
+        playerIndex = getPlayerIndex( m_kazeFrom );
+
+        if( m_oyaIndex == playerIndex ) 
+        {
             score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
-            for( int i = 0; i < 3; i++ )
+
+            for( int i = 0; i < GameSettings.PlayerCount-1; i++ )
             {
-                iPlayer = (iPlayer + 1) % GameSettings.PlayerCount;
-                m_playerList[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
+                playerIndex = (playerIndex + 1) % GameSettings.PlayerCount;
+                m_playerList[playerIndex].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
             }
         }
-        else 
+        else
         {
             score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
-            for( int i = 0; i < 3; i++ )
+
+            for( int i = 0; i < GameSettings.PlayerCount-1; i++ )
             {
-                iPlayer = (iPlayer + 1) % GameSettings.PlayerCount;
-                if( m_oyaIndex == iPlayer ) {
-                    m_playerList[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
+                playerIndex = (playerIndex + 1) % GameSettings.PlayerCount;
+                if( m_oyaIndex == playerIndex ) {
+                    m_playerList[playerIndex].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
                 }
                 else {
-                    m_playerList[iPlayer].reduceTenbou( m_agariInfo.scoreInfo.koTsumo + (m_honba * 100) );
+                    m_playerList[playerIndex].reduceTenbou( m_agariInfo.scoreInfo.koTsumo + (m_honba * 100) );
                 }
             }
         }
@@ -1199,6 +1205,8 @@ public class MahjongMain : Mahjong
         int[] haiIds = getTestHaiIds();
         for( int i = 0; i < haiIds.Length - 1; i++ )
             m_playerList[iPlayer].Tehai.addJyunTehai( new Hai(haiIds[i]) );
+        
+        m_playerList[iPlayer].Tehai.Sort();
 
         /*
         // test Pon.
@@ -1215,7 +1223,7 @@ public class MahjongMain : Mahjong
 
     protected int[] getTestHaiIds() 
     {
-        int[] haiIds = { 27, 27, 27, 28, 28, 28, 0, 0, 1, 2, 3, 4, 5, 6 };
+        //int[] haiIds = { 27, 27, 27, 28, 28, 28, 0, 0, 1, 2, 3, 4, 5, 6 };
         //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 33, 33, 33, 31, 31};
         //int[] haiIds = {29, 29, 29, 30, 30, 30, 31, 31, 31, 32, 32, 33, 33, 33};
         //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 31, 31, 33, 33, 33};
@@ -1227,7 +1235,7 @@ public class MahjongMain : Mahjong
         //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
         //int[] haiIds = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};
         //int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};
-        //int[] haiIds = {0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 34};
+        int[] haiIds = {0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 33};
         //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
         //int[] haiIds = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7};
         //int[] haiIds = {19, 19, 20, 20, 21, 21, 23, 23, 23, 23, 25, 25, 25, 25};

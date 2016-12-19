@@ -95,6 +95,7 @@ public class PlayerInputPanel : UIObject
                     else{
                         PlayerAction.Response = EResponse.Chii_Right;
                     }
+
                     PlayerAction.ChiiSelectType = 0;
 
                     OwnerPlayer.OnPlayerInputFinished();
@@ -142,20 +143,14 @@ public class PlayerInputPanel : UIObject
                 }
                 else{
                     Hai kanHai = PlayerAction.TsumoKanHaiList[0];
-                    if( OwnerPlayer.Tehai.validKaKan(kanHai) )
-                    {
-                        PlayerAction.Response = EResponse.Kakan;
 
-                        OwnerPlayer.OnPlayerInputFinished();
-                        HideMenu();
-                    }
+                    if( OwnerPlayer.Tehai.validKaKan(kanHai) )
+                        PlayerAction.Response = EResponse.Kakan;
                     else
-                    {
                         PlayerAction.Response = EResponse.Ankan;
 
-                        OwnerPlayer.OnPlayerInputFinished();
-                        HideMenu();
-                    }
+                    OwnerPlayer.OnPlayerInputFinished();
+                    HideMenu();
                 }
             }
             else{

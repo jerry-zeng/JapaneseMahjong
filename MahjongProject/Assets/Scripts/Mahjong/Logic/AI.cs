@@ -22,16 +22,15 @@ public class AI : Player
             return DoResponse(EResponse.SuteHai);
         }
 
-        MahjongAgent.copyTehai(Tehai, JiKaze);
         Hai tsumoHai = haiToHandle;
 
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
         int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
-        if(agariScore > 0)
+        if( agariScore > 0 )
             return DoResponse(EResponse.Tsumo_Agari);
 
         // リーチの場合は、ツモ切りする。
-        if(MahjongAgent.isReach()) {
+        if( MahjongAgent.isReach() ){
             _action.SutehaiIndex = PlayerAction.Sutehai_Index_Max;
             return DoResponse(EResponse.SuteHai);
         }
@@ -39,7 +38,8 @@ public class AI : Player
         thinkSutehai(tsumoHai);
 
         // 捨牌を決めたので手牌を更新します。
-        if( _action.SutehaiIndex != PlayerAction.Sutehai_Index_Max ) {
+        if( _action.SutehaiIndex != PlayerAction.Sutehai_Index_Max )
+        {
             Tehai.removeJyunTehai(_action.SutehaiIndex);
             Tehai.addJyunTehai(tsumoHai);
         }
@@ -57,13 +57,9 @@ public class AI : Player
             return DoResponse(EResponse.Nagashi);
         }
 
-        MahjongAgent.copyTehai(Tehai, JiKaze);
-        MahjongAgent.copyHou(Hou, JiKaze);
-
-        if(isFuriten() == false)
+        if( isFuriten() == false )
         {
             int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle);
-
             if(agariScore > 0)
                 return DoResponse(EResponse.Ron_Agari);
         }
@@ -126,46 +122,6 @@ public class AI : Player
                     return true;
             }
         }
-        return false;
-    }
-
-
-    // 振听.
-    protected bool isFuriten()
-    {
-        List<Hai> machiHais;
-        if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
-        {
-            // check hou
-            SuteHai[] suteHais = Hou.getSuteHais();
-
-            for (int i = 0; i < suteHais.Length; i++)
-            {
-                SuteHai suteHaiTemp = suteHais[i];
-
-                for (int j = 0; j < machiHais.Count; j++)
-                {
-                    if(suteHaiTemp.ID == machiHais[j].ID)
-                        return true;
-                }
-            }
-
-            // check sutehai
-            suteHais = MahjongAgent.getSuteHaiList();
-
-            int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount(JiKaze);
-            for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++)
-            {
-                SuteHai suteHaiTemp = suteHais[playerSuteHaisCount];
-
-                for (int j = 0; j < machiHais.Count; j++)
-                {
-                    if(suteHaiTemp.ID == machiHais[j].ID)
-                        return true;
-                }
-            }
-        }
-
         return false;
     }
 

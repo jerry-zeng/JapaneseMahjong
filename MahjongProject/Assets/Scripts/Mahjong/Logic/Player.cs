@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 
-/// <summary>
-/// Player.
-/// </summary>
 
 public abstract class Player
 {
@@ -144,6 +142,46 @@ public abstract class Player
 
         return false;
     }
+
+    // 振听.
+    public bool isFuriten()
+    {
+        List<Hai> machiHais;
+        if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
+        {
+            // check hou
+            SuteHai[] suteHais = Hou.getSuteHais();
+
+            for( int i = 0; i < suteHais.Length; i++ )
+            {
+                SuteHai suteHaiTemp = suteHais[i];
+
+                for( int j = 0; j < machiHais.Count; j++ )
+                {
+                    if( suteHaiTemp.ID == machiHais[j].ID )
+                        return true;
+                }
+            }
+
+            // check sutehai
+            suteHais = MahjongAgent.getSuteHaiList();
+
+            int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount(JiKaze);
+            for( ; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++ )
+            {
+                SuteHai suteHaiTemp = suteHais[playerSuteHaisCount];
+
+                for( int j = 0; j < machiHais.Count; j++ )
+                {
+                    if( suteHaiTemp.ID == machiHais[j].ID )
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     #endregion
 
     protected GameAgent MahjongAgent

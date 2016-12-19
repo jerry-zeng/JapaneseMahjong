@@ -24,4 +24,9 @@ public class ScoreInfo
         this.koRon = koRon;
         this.koTsumo = koTsumo;
     }
+
+    public override string ToString()
+    {
+        return string.Format("[ScoreInfo] oyaRon = {0}, oyaTsumo = {1}, koRon = {2}, koTsumo = {3}", oyaRon, oyaTsumo, koRon, koTsumo);
+    }
 }
