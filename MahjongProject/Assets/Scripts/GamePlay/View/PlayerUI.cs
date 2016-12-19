@@ -112,6 +112,9 @@ public class PlayerUI : UIObject
         MahjongPai pai = tehai.SuteHai(index);
         AddSuteHai( pai );
     }
+    public void SortTehai(Hai[] hais){
+        tehai.SortTehai(hais);
+    }
     public void SetAllHaisVisiable( bool visiable ) {
         tehai.SetAllHaisVisiable(visiable);
     }

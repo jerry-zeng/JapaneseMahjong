@@ -12,10 +12,17 @@ public class TehaiUI : UIObject
 
     private List<MahjongPai> tehaiList = new List<MahjongPai>();
 
+    private UIPanel uiPanel;
+
+
+    void Awake(){
+        uiPanel = GetComponent<UIPanel>();
+    }
 
     void Start () {
-
+        
     }
+
 
     public override void Clear() {
         base.Clear();
@@ -27,41 +34,37 @@ public class TehaiUI : UIObject
     }
 
     public override void SetParentPanelDepth( int depth ) {
-        GetComponent<UIPanel>().depth = depth + TehaiDepth;
+        uiPanel.depth = depth + TehaiDepth;
     }
 
 
+    public void SortTehai(Hai[] hais)
+    {
+        StartCoroutine(Sort(hais));
+    }
+    protected IEnumerator Sort(Hai[] hais)
+    {
+        yield return new WaitForSeconds( MahjongView.SuteHaiAnimationTime );
+
+        SetTehai( hais );
+    }
+
     public void SetTehai(Hai[] hais) 
     {
-        Clear(); // clear then create new.
+        Clear();
 
-        if(hais != null)
+        for( int i = 0; i < hais.Length; i++ ) 
         {
-            for( int i = 0; i < hais.Length; i++ ) 
-            {
-                AddPai( hais[i] );
-            }
+            AddPai( hais[i], isShow: !OwnerPlayer.IsAI );
         }
+        //uiPanel.Update();
     }
 
     public void AddPai( Hai hai, bool newPicked = false, bool isShow = false )
     {
-        Transform parent = transform;
+        MahjongPai pai = PlayerUI.CreateMahjongPai( transform, Vector3.zero, hai, isShow );
 
-        int index = tehaiList.Count;
-        float posX = AlignLeftLocalPos.x + MahjongPai.Width * index + HaiPosOffsetX * index;
-        Vector3 localPos = new Vector3( posX, AlignLeftLocalPos.y, 0 );
-
-        MahjongPai pai = PlayerUI.CreateMahjongPai( parent, localPos, hai, isShow );
-
-        if(OwnerPlayer.IsAI == false)
-            pai.SetOnClick(OnClickMahjong);
-
-        pai.gameObject.name = hai.ID.ToString();
-        tehaiList.Add( pai );
-
-        if( newPicked ) 
-            pai.transform.localPosition += new Vector3( NewHaiPosOffsetX, 0, 0 );
+        AddPai(pai, newPicked, isShow);
     }
 
     public void AddPai( MahjongPai pai, bool newPicked = false, bool isShow = false )
@@ -97,17 +100,12 @@ public class TehaiUI : UIObject
             tehaiList.RemoveAt(index);
 
             pai.transform.parent = null;
-            Sort();
+
             return pai;
         }
         return null;
     }
 
-    // TODO
-    protected void Sort()
-    {
-        
-    }
 
     public void SetAllHaisVisiable(bool visiable) 
     {
@@ -120,6 +118,7 @@ public class TehaiUI : UIObject
                 tehaiList[i].Hide();
             }
         }
+        //uiPanel.Update();
     }
 
 
@@ -133,7 +132,7 @@ public class TehaiUI : UIObject
     {
         int index = tehaiList.IndexOf( MahjongPai.current );
 
-        index = OwnerPlayer.Tehai.getJyunTehaiCount() - 1; // Test: the last one.
+        //index = OwnerPlayer.Tehai.getJyunTehaiCount() - 1; // Test: the last one.
 
         switch(PlayerAction.State)
         {

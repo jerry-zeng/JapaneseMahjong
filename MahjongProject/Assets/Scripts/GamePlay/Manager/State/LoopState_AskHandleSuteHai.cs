@@ -24,7 +24,7 @@ public class LoopState_AskHandleSuteHai : MahjongState
     IEnumerator AskHandleSuteHai()
     {
         // wait for sute hai animation time.
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds( MahjongView.SuteHaiAnimationTime + 0.1f );
 
         logicOwner.Ask_Handle_SuteHai();
     }

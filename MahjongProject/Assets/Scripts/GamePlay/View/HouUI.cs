@@ -92,6 +92,9 @@ public class HouUI : UIObject
         pai.transform.localPosition = new Vector3(_curLineRightAligPosX, 0, 0);
 
         _allHais.Add(pai);
+
+        pai.Show();
+        lineParents[_curLine].GetComponent<UIPanel>().Update();
     }
 
     public bool setTedashi(bool isTedashi)

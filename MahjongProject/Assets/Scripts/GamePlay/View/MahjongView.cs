@@ -19,12 +19,15 @@ using System.Collections.Generic;
 
 public class MahjongView : UIObject, IObserver 
 {
+    public const float SuteHaiAnimationTime = 0.3f;
+
     private Dictionary<int, PlayerUI> playerUIDict = new Dictionary<int, PlayerUI>();
     private Dictionary<EKaze, PlayerUI> playerUIDict_Kaze = new Dictionary<EKaze, PlayerUI>();
     private GameInfoUI gameInfo;
 
     public PlayerInputPanel playerInputPanel;
     public SaifuriPanel saifuriPanel;
+    public RyuuKyokuPanel ryuuKyokuPanel;
     public Transform mahjongPoolRoot;
 
 
@@ -204,7 +207,7 @@ public class MahjongView : UIObject, IObserver
                     PlayerUI ui = playerUIDict[i];
 
                     ui.SetTehai( player.Tehai.getJyunTehai() );
-                    ui.SetAllHaisVisiable( true );
+                    ui.SetAllHaisVisiable( !player.IsAI );
 
                     playerUIDict_Kaze[player.JiKaze] = ui;
                 }
@@ -243,7 +246,7 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI.CollectMahjongPai(pai);
 
                 PlayerUI playerUI = playerUIDict_Kaze[activePlayer.JiKaze];
-                playerUI.PickHai( newHai, true, true );
+                playerUI.PickHai( newHai, true, !activePlayer.IsAI );
 
                 SetManInputEnable( !activePlayer.IsAI );
             }
@@ -269,6 +272,7 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.SuteHai(sutehaiIndex);
                 ui.SetTedashi();
+                ui.SortTehai( activePlayer.Tehai.getJyunTehai() );
 
                 SetManInputEnable(false);
             }
@@ -277,6 +281,15 @@ public class MahjongView : UIObject, IObserver
             case UIEventType.Pon:
             {
                 
+            }
+            break;
+
+            case UIEventType.RyuuKyoku:
+            {
+                int tenPaiCount = (int)args[0];
+
+                string msg = tenPaiCount.ToString() + "人听牌";
+                ryuuKyokuPanel.Show( msg, null );
             }
             break;
         }

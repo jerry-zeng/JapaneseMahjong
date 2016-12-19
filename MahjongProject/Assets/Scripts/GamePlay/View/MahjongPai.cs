@@ -12,7 +12,7 @@ public class MahjongPaiComparer : IComparer<MahjongPai>
 }
 
 [RequireComponent(typeof(BoxCollider))]
-public class MahjongPai : UIButtonColor 
+public class MahjongPai : UIObject 
 {
     protected Hai _data;
     public int ID
@@ -43,10 +43,16 @@ public class MahjongPai : UIButtonColor
     public const int LandHaiPosOffsetY = -15; // 当麻将横着放时，往下移15像素. /
 
 
-    protected Transform front;
-    protected Transform back;
-    protected UISprite majSprite;
+    public Color normalColor = Color.white;
+    public Color redDoraColor = Color.red;
+    public Color nakiColor = new Color(0.7f, 0.7f, 0.7f);
+    public Color disableColor = Color.gray;
+
+
     protected BoxCollider boxCollider;
+    protected UISprite background;
+    protected UISprite majSprite;
+
 
     protected EFrontBack curFrontBack = EFrontBack.Front;
     public bool IsShownOut 
@@ -70,21 +76,26 @@ public class MahjongPai : UIButtonColor
 
     public void SetEnableStateColor(bool state)
     {
-        SetState(state? State.Disabled : State.Normal, true);
+        if(state){
+            background.color = normalColor;
+        }
+        else{
+            background.color = disableColor;
+        }
     }
 
 
-    public void Init() 
+    public override void Init() 
     {
-        if( mInitDone == false )
+        base.Init();
+
+        if( isInit == false )
         {
-            OnInit();
-
-            front = transform.FindChild("Front");
-            back = transform.FindChild("Back");
-            majSprite = front.FindChild("info").GetComponent<UISprite>();
-
+            background = GetComponent<UISprite>();
+            majSprite = transform.FindChild("sprite").GetComponent<UISprite>();
             boxCollider = GetComponent<BoxCollider>();
+
+            isInit = true;
         }
 
         SetOrientation(EOrientation.Portrait);
@@ -94,8 +105,10 @@ public class MahjongPai : UIButtonColor
         DisableInput();
     }
 
-    public void Clear()
+    public override void Clear()
     {
+        base.Clear();
+
         SetRedDora(false);
         SetTedashi(false);
         SetNaki(false);
@@ -125,10 +138,10 @@ public class MahjongPai : UIButtonColor
         this.isRed = isRed;
 
         if( isRed ) {
-            majSprite.color = Color.red;
+            majSprite.color = redDoraColor;
         }
         else {
-            majSprite.color = Color.white;
+            majSprite.color = normalColor;
         }
     }
 
@@ -143,12 +156,11 @@ public class MahjongPai : UIButtonColor
     {
         this.isNaki = state;
 
-        UISprite fg = front.FindChild("background").GetComponent<UISprite>();
         if(isNaki){
-            fg.color = new Color(0.7f, 0.7f, 0.7f);
+            background.color = nakiColor;
         }
         else{
-            fg.color = defaultColor;
+            background.color = normalColor;
         }
     }
 
@@ -165,16 +177,17 @@ public class MahjongPai : UIButtonColor
         }
     }
 
+    /*
     public void SetHighlight(bool isLight)
     {
-        UISprite bg = back.FindChild("background").GetComponent<UISprite>();
         if( isLight ) {
-            bg.color = Color.magenta;
+            background.color = Color.magenta;
         }
         else {
-            bg.color = Color.white;
+            background.color = normalColor;
         }
     }
+    */
 
     public void Show() {
         SetFrontBack(EFrontBack.Front);
@@ -183,11 +196,22 @@ public class MahjongPai : UIButtonColor
         SetFrontBack(EFrontBack.Back);
     }
 
-    protected void SetFrontBack(EFrontBack fb) {
-        front.gameObject.SetActive( fb == EFrontBack.Front );
-        back.gameObject.SetActive( fb == EFrontBack.Back);
-
+    protected void SetFrontBack(EFrontBack fb)
+    {
         curFrontBack = fb;
+
+        if( fb == EFrontBack.Front ){
+            background.spriteName = "mj_bg";
+            majSprite.gameObject.SetActive(true);
+        }
+        else{
+            background.spriteName = "mj_bg_back";
+            majSprite.gameObject.SetActive(false);
+        }
+
+        // mark as changed. don't know why UIPanel won't update.
+        gameObject.SetActive(false);
+        gameObject.SetActive(true);
     }
 
     public void SetOrientation(EOrientation orien) {
