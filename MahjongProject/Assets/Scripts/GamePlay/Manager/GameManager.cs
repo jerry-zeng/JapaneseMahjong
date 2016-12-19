@@ -43,6 +43,12 @@ public class GameManager : StateMachine, IObserver
         ChangeState<InitGameState>();
     }
 
+    void OnApplicationQuit()
+    {
+        _onPlayerInput.Clear();
+        ResManager.ClearMahjongPaiPool();
+    }
+
 
     public void AddInputListener(Action<EPlayerInputType, EKaze, object[]> del)
     {

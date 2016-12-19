@@ -17,12 +17,14 @@ public class LoopState_AskHandleSuteHai : MahjongState
 
         logicOwner.onResponse_SuteHai_Handler = OnHandle_ResponseSuteHai;
 
-        logicOwner.Ask_Handle_SuteHai();
-        //StartCoroutine(AskHandleSuteHai());
+        //logicOwner.Ask_Handle_SuteHai();
+        StartCoroutine(AskHandleSuteHai());
     }
 
-    IEnumerator AskHandleSuteHai() {
-        yield return new WaitForSeconds(0.3f);
+    IEnumerator AskHandleSuteHai()
+    {
+        // wait for sute hai animation time.
+        yield return new WaitForSeconds(0.5f);
 
         logicOwner.Ask_Handle_SuteHai();
     }

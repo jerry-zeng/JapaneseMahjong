@@ -60,7 +60,8 @@ public class ResManager
     {
         for(int i = 0; i < _mahjongPaiPool.Count; i++)
         {
-            GameObject.Destroy( _mahjongPaiPool[i] );
+            if(_mahjongPaiPool[i] != null)
+                GameObject.Destroy( _mahjongPaiPool[i] );
         }
         _mahjongPaiPool.Clear();
     }
