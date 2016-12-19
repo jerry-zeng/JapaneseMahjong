@@ -129,8 +129,10 @@ public class MahjongView : UIObject, IObserver
                     ui.SetOyaKaze( i == Model.ChiiChaIndex );
                     ui.BindPlayer(player);
 
-                    if(player.JiKaze == Model.getManKaze())
+                    if(player.JiKaze == Model.getManKaze()){
                         playerInputPanel.BindPlayer( player );
+                        playerInputPanel.SetOwnerPlayerUI(ui);
+                    }
                 }
                 Debug.Log( "MahjongView: init player info ui end..." );
             }
@@ -201,7 +203,7 @@ public class MahjongView : UIObject, IObserver
                     int index = i % Yama.YAMA_HAIS_MAX;
                     int p = findPlayerForYamahaiIndex(index);
                     MahjongPai pai = playerUIDict[p].PickUpYamaHai(index);
-                    ResManager.collectMahjongObject(pai);
+                    ResManager.CollectMahjongObject(pai);
                 }
                 
                 /// set init Dora.
@@ -232,7 +234,7 @@ public class MahjongView : UIObject, IObserver
                 int yamaPlayerIndex = findPlayerForYamahaiIndex(lastPickIndex);
                 //Debug.LogFormat("-------- pick yama hai index {0} in player ui {1}------", lastPickIndex, yamaPlayerIndex);
                 MahjongPai pai = playerUIDict[yamaPlayerIndex].PickUpYamaHai(lastPickIndex);
-                ResManager.collectMahjongObject(pai);
+                ResManager.CollectMahjongObject(pai);
 
                 PlayerUI playerUI = playerUIDict_Kaze[activePlayer.JiKaze];
                 playerUI.PickHai( newHai, true, true );
@@ -248,7 +250,7 @@ public class MahjongView : UIObject, IObserver
             break;
             case UIEventType.HideMenuList:
             {
-                playerInputPanel.Hide();
+                playerInputPanel.HideMenu();
             }
             break;
 
@@ -261,17 +263,6 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.SuteHai(sutehaiIndex);
                 ui.SetTedashi();
-
-                int result = Random.Range(0,10);
-                if( result < 2 ){
-                    ui.SetNaki();
-                }
-                else if(result < 4){
-                    ui.Reach();
-                }
-                else{
-                    
-                }
 
                 SetManInputEnable(false);
             }

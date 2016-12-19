@@ -3,11 +3,13 @@
 public enum EActionState
 {
     None           = 0,
-    Select_Sutehai = 1,
-    Select_Chii    = 2,
-    Select_Kan     = 3,
-    Select_Reach   = 4,
-    Select_Agari   = 5, // ron or tsumo.
+
+    Select_Agari   = 1, // ron or tsumo. and enable sute hai.
+    Select_Sutehai = 2,
+
+    Select_Reach   = 3,
+    Select_Chii    = 4,
+    Select_Kan     = 5,
 }
 
 public enum EActionType
@@ -20,29 +22,14 @@ public enum EActionType
     Nagashi= 5,
 }
 
-public enum EKanType
-{
-    DaiMinKan,
-    KaKan,
-    AnKan
-}
-
-public enum EAgariType
-{
-    Tsumo,
-    Ron
-}
-
-public enum EChiiType
-{
-    Left,
-    Center,
-    Right
-}
-
 
 public class PlayerAction 
 {
+    public const int Chii_Select_Left = 0;
+    public const int Chii_Select_Center = 1;
+    public const int Chii_Select_Right = 2;
+
+
     public PlayerAction()
     {
         Reset();
@@ -52,7 +39,8 @@ public class PlayerAction
     {
         _response = EResponse.Nagashi;
         _state = EActionState.None;
-        _sutehaiIndex = 13;
+
+        _sutehaiIndex = Sutehai_Index_Max;
 
         _validRon = false;
         _validTsumo = false;
@@ -63,32 +51,18 @@ public class PlayerAction
         _validChiiCenter = false;
         _validChiiRight = false;
 
-        _validKan = false;
-        _kanCount = 0;
+        IsValidChii = false;
+        AllSarashiHais = new List<Hai>();
+
+        _validTsumoKan = false;
         _validDaiMinKan = false;
 
-        _displayMenu = false;
-        ClearMenus();
-        _menuSelectIndex = -1;
+        _menuList.Clear();
 
         _reachSelectIndex = -1;
         _ponSelectIndex = -1;
         _kanSelectIndex = -1;
-        _chiiSelectType = 0;
-
-        _indexList.Clear();
-    }
-
-
-    public void Waiting() {
-
-    }
-
-    public bool isActionRequest() 
-    {
-        return _validRon || _validTsumo || _validPon || _validReach
-            || _validChiiLeft || _validChiiCenter || _validChiiRight 
-            || _validKan || _validDaiMinKan;
+        _chiiSelectType = -1;
     }
 
 
@@ -111,9 +85,6 @@ public class PlayerAction
 
     // 捨牌のインデックス
     private int _sutehaiIndex = Sutehai_Index_Max;
-    /// <summary>
-    /// Gets or sets the index of the sutehai (0~13).
-    /// </summary>
     public int SutehaiIndex
     {
         get{ return _sutehaiIndex; }
@@ -153,74 +124,128 @@ public class PlayerAction
         set{ _validReach = value; }
     }
 
-    #region Chii
-    private Hai[] _sarashiHaiLeft = new Hai[2];
-    private bool _validChiiLeft = false;
+    // all reach hai index
+    private List<int> _reachIndexList;
+    public List<int> ReachHaiIndexList
+    {
+        get{ return _reachIndexList; }
+        set{ _reachIndexList = value; }
+    }
 
-    public void setValidChiiLeft(bool validChii, Hai[] sarashiHai)
+
+    #region Chii
+    public bool IsValidChii
+    {
+        get; protected set;
+    }
+    public List<Hai> AllSarashiHais
+    {
+        get; protected set;
+    }
+
+    protected void SetAnySarashiHai(List<Hai> sarashiHai)
+    {
+        if(sarashiHai == null) return;
+
+        IsValidChii = true;
+        for( int i = 0; i < sarashiHai.Count; i++ )
+        {
+            if( !AllSarashiHais.Exists( h=>h.ID == sarashiHai[i].ID ) )
+                AllSarashiHais.Add( new Hai(sarashiHai[i]) );
+        }
+    }
+
+
+    // chii left
+    private bool _validChiiLeft = false;
+    public bool IsValidChiiLeft
+    {
+        get{ return _validChiiLeft; }
+        protected set{ _validChiiLeft = value; }
+    }
+
+    private List<Hai> _sarashiHaiLeft;
+    public List<Hai> SarashiHaiLeft
+    {
+        get{ return _sarashiHaiLeft; }
+        protected set{ _sarashiHaiLeft = value; }
+    }
+
+    public void setValidChiiLeft(bool validChii, List<Hai> sarashiHai)
     {
         this._validChiiLeft = validChii;
         this._sarashiHaiLeft = sarashiHai;
-    }
-    public bool isValidChiiLeft() {
-        return _validChiiLeft;
-    }
-    public Hai[] getSarachiHaiLeft() {
-        return _sarashiHaiLeft;
+
+        SetAnySarashiHai(sarashiHai);
     }
 
-
-    private Hai[] _sarashiHaiCenter = new Hai[2];
+    // chii center
     private bool _validChiiCenter = false;
+    public bool IsValidChiiCenter
+    {
+        get{ return _validChiiCenter; }
+        protected set{ _validChiiCenter = value; }
+    }
 
-    public void setValidChiiCenter(bool validChii, Hai[] sarashiHai)
+    private List<Hai> _sarashiHaiCenter;
+    public List<Hai> SarashiHaiCenter
+    {
+        get{ return _sarashiHaiCenter; }
+        protected set{ _sarashiHaiCenter = value; }
+    }
+
+    public void setValidChiiCenter(bool validChii, List<Hai> sarashiHai)
     {
         this._validChiiCenter = validChii;
         this._sarashiHaiCenter = sarashiHai;
-    }
-    public bool isValidChiiCenter() {
-        return _validChiiCenter;
-    }
-    public Hai[] getSarachiHaiCenter() {
-        return _sarashiHaiCenter;
+
+        SetAnySarashiHai(sarashiHai);
     }
 
-
-    private Hai[] _sarashiHaiRight = new Hai[2];
+    // chii right
     private bool _validChiiRight = false;
+    public bool IsValidChiiRight
+    {
+        get{ return _validChiiRight; }
+        protected set{ _validChiiRight = value; }
+    }
 
-    public void setValidChiiRight(bool validChii, Hai[] sarashiHai)
+    private List<Hai> _sarashiHaiRight;
+    public List<Hai> SarashiHaiRight
+    {
+        get{ return _sarashiHaiRight; }
+        protected set{ _sarashiHaiRight = value; }
+    }
+
+    public void setValidChiiRight(bool validChii, List<Hai> sarashiHai)
     {
         this._validChiiRight = validChii;
         this._sarashiHaiRight = sarashiHai;
-    }
-    public bool isValidChiiRight() {
-        return _validChiiRight;
-    }
-    public Hai[] getSarachiHaiRight() {
-        return _sarashiHaiRight;
+
+        SetAnySarashiHai(sarashiHai);
     }
     #endregion
 
-    private bool _validKan = false;
-    private Hai[] _kanHais = new Hai[3];
-    private int _kanCount = 0;
 
-    // Kanが可能
-    public void setValidKan(bool validKan, Hai[] kanHais, int kanCount) 
+    // AnKan or KaKanが可能
+    private bool _validTsumoKan = false;
+    public bool IsValidTsumoKan
     {
-        this._validKan = validKan;
-        this._kanHais = kanHais;
-        this._kanCount = kanCount;
+        get{ return _validTsumoKan; }
+        protected set{ _validTsumoKan = value; }
     }
-    public bool isValidKan() {
-        return _validKan;
+
+    private List<Hai> _tsumoKanHais;
+    public List<Hai> TsumoKanHaiList
+    {
+        get{ return _tsumoKanHais; }
+        protected set{ _tsumoKanHais = value; }
     }
-    public Hai[] getKanHais() {
-        return _kanHais;
-    }
-    public int getKanCount() {
-        return _kanCount;
+
+    public void setValidTsumoKan(bool validKan, List<Hai> kanHais) 
+    {
+        _validTsumoKan = validKan;
+        _tsumoKanHais = kanHais;
     }
 
     // DaiMinKanが可能
@@ -231,12 +256,6 @@ public class PlayerAction
         set{ _validDaiMinKan = value; }
     }
 
-    private List<int> _indexList = new List<int>();
-    public List<int> HaiIndexList
-    {
-        get{ return _indexList; }
-        set{ _indexList = value; }
-    }
 
     #region Menu
     private List<EActionType> _menuList = new List<EActionType>();
@@ -244,28 +263,12 @@ public class PlayerAction
     {
         get{ return _menuList; }
     }
-    public void ClearMenus()
-    {
-        _menuList.Clear();
-    }
-
-
-    private bool _displayMenu;
-    public bool IsDisplayingMenu
-    {
-        get{ return _displayMenu; }
-        set{ _displayMenu = value; }
-    }
-
-    private int _menuSelectIndex;
-    public int MenuSelectIndex
-    {
-        get{ return _menuSelectIndex; }
-        set{ _menuSelectIndex = value; }
-    }
 
 
     private int _reachSelectIndex;
+    /// <summary>
+    /// Gets or sets the index of the ReachHaiIndexList
+    /// </summary>
     public int ReachSelectIndex
     {
         get{ return _reachSelectIndex; }
@@ -280,6 +283,9 @@ public class PlayerAction
     }
 
     private int _kanSelectIndex = 0;
+    /// <summary>
+    /// Gets or sets the selected index of the TsumoKanHaiList
+    /// </summary>
     public int KanSelectIndex
     {
         get{ return _kanSelectIndex; }

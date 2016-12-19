@@ -112,7 +112,7 @@ public class FuuroUI : UIObject
         // clear all pai.
         for( int i = 0; i < fuuroHais.Count; i++ ) {
             MahjongPai pai = fuuroHais[i];
-            ResManager.collectMahjongObject(pai);
+            ResManager.CollectMahjongObject(pai);
         }
         fuuroHais.Clear();
 

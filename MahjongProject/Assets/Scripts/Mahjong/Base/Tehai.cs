@@ -5,12 +5,13 @@
 /// 手牌:拿到手上的牌
 /// </summary>
 
-public class Tehai : IComparer<Hai>
+public class Tehai
 {
-    public int Compare(Hai x, Hai y)
+    public static int Compare( Hai x, Hai y )
     {
         return x.ID - y.ID;
     }
+
 
     // 純手牌の長さの最大値
     public readonly static int JYUN_TEHAI_LENGTH_MAX = 14;
@@ -104,7 +105,7 @@ public class Tehai : IComparer<Hai>
 
     public void Sort()
     {
-        _jyunTehais.Sort( this );
+        _jyunTehais.Sort( Tehai.Compare );
     }
 
     // 純手牌を取得する
@@ -116,6 +117,11 @@ public class Tehai : IComparer<Hai>
     public int getJyunTehaiCount()
     {
         return _jyunTehais.Count;
+    }
+
+    public int getHaiIndex(int haiID)
+    {
+        return _jyunTehais.FindIndex( h=> h.ID == haiID );
     }
 
     // 純手牌に牌を追加する
@@ -181,8 +187,9 @@ public class Tehai : IComparer<Hai>
         return true;
     }
 
+
     // チー(左)の可否をチェックする
-    public bool validChiiLeft(Hai suteHai, Hai[] sarashiHais)
+    public bool validChiiLeft(Hai suteHai, List<Hai> sarashiHais)
     {
         if (_fuuros.Count >= FUURO_MAX)
             return false;
@@ -205,8 +212,8 @@ public class Tehai : IComparer<Hai>
                 {
                     if (_jyunTehais[j].NumKind == noKindRight) 
                     {
-                        sarashiHais[0] = new Hai(_jyunTehais[i]);
-                        sarashiHais[1] = new Hai(_jyunTehais[j]);
+                        sarashiHais.Add( _jyunTehais[i] );
+                        sarashiHais.Add( _jyunTehais[j] );
 
                         return true;
                     }
@@ -220,12 +227,12 @@ public class Tehai : IComparer<Hai>
     // チー(左)を設定する
     public bool setChiiLeft(Hai suteHai, int relation)
     {
-        Hai[] sarashiHais = new Hai[2];
+        List<Hai> sarashiHais = new List<Hai>();
 
         if( !validChiiLeft(suteHai, sarashiHais) )
             return false;
 
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
+        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_3];
 
         hais[0] = new Hai(suteHai);
         int newPickIndex = 0;
@@ -250,8 +257,6 @@ public class Tehai : IComparer<Hai>
 
                         removeJyunTehai(j);
 
-                        hais[3] = new Hai();
-
                         _fuuros.Add( new Fuuro(EFuuroType.MinShun, hais, relation, newPickIndex) );
 
                         return true;
@@ -264,7 +269,7 @@ public class Tehai : IComparer<Hai>
     }
 
     // チー(中央)の可否をチェックする
-    public bool validChiiCenter(Hai suteHai, Hai[] sarashiHais)
+    public bool validChiiCenter(Hai suteHai, List<Hai> sarashiHais)
     {
         if (_fuuros.Count >= FUURO_MAX)
             return false;
@@ -287,8 +292,8 @@ public class Tehai : IComparer<Hai>
                 {
                     if (_jyunTehais[j].NumKind == noKindRight)
                     {
-                        sarashiHais[0] = new Hai(_jyunTehais[i]);
-                        sarashiHais[1] = new Hai(_jyunTehais[j]);
+                        sarashiHais.Add( _jyunTehais[i] );
+                        sarashiHais.Add( _jyunTehais[j] );
 
                         return true;
                     }
@@ -302,12 +307,12 @@ public class Tehai : IComparer<Hai>
     // チー(中央)を設定する
     public bool setChiiCenter(Hai suteHai, int relation)
     {
-        Hai[] sarashiHais = new Hai[2];
+        List<Hai> sarashiHais = new List<Hai>();
 
         if( !validChiiCenter(suteHai, sarashiHais) )
             return false;
 
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
+        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_3];
 
         hais[1] = new Hai(suteHai);
         int newPickIndex = 1;
@@ -332,8 +337,6 @@ public class Tehai : IComparer<Hai>
 
                         removeJyunTehai(j);
 
-                        hais[3] = new Hai();
-
                         _fuuros.Add( new Fuuro(EFuuroType.MinShun, hais, relation, newPickIndex) );
 
                         return true;
@@ -346,7 +349,7 @@ public class Tehai : IComparer<Hai>
     }
 
     // チー(右)の可否をチェックする
-    public bool validChiiRight(Hai suteHai, Hai[] sarashiHais)
+    public bool validChiiRight(Hai suteHai, List<Hai> sarashiHais)
     {
         if (_fuuros.Count >= FUURO_MAX)
             return false;
@@ -369,8 +372,8 @@ public class Tehai : IComparer<Hai>
                 {
                     if (_jyunTehais[j].NumKind == noKindCenter)
                     {
-                        sarashiHais[0] = new Hai(_jyunTehais[i]);
-                        sarashiHais[1] = new Hai(_jyunTehais[j]);
+                        sarashiHais.Add( _jyunTehais[i] );
+                        sarashiHais.Add( _jyunTehais[j] );
 
                         return true;
                     }
@@ -384,12 +387,12 @@ public class Tehai : IComparer<Hai>
     // チー(右)を設定する
     public bool setChiiRight(Hai suteHai, int relation)
     {
-        Hai[] sarashiHais = new Hai[2];
+        List<Hai> sarashiHais = new List<Hai>();
 
         if( !validChiiRight(suteHai, sarashiHais) )
             return false;
 
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
+        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_3];
 
         hais[2] = new Hai(suteHai);
         int newPickIndex = 2;
@@ -413,8 +416,6 @@ public class Tehai : IComparer<Hai>
                         hais[1] = new Hai(_jyunTehais[j]);
 
                         removeJyunTehai(j);
-
-                        hais[3] = new Hai();
 
                         _fuuros.Add( new Fuuro(EFuuroType.MinShun, hais, relation, newPickIndex) );
 
@@ -454,7 +455,7 @@ public class Tehai : IComparer<Hai>
         if( !validPon(suteHai) )
             return false;
 
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
+        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_3];
 
         hais[0] = new Hai(suteHai);
         int newPickIndex = 0;
@@ -475,24 +476,21 @@ public class Tehai : IComparer<Hai>
             }
         }
 
-        hais[count] = new Hai();
-
         _fuuros.Add( new Fuuro(EFuuroType.MinKou, hais, relation, newPickIndex) );
 
         return true;
     }
 
-    // 槓の可否をチェックする
-    public int validKan(Hai addHai, Hai[] kanHais)
+
+    // Any tsumo 槓の可否をチェックする
+    public bool validAnyTsumoKan(Hai addHai, List<Hai> kanHais)
     {
         if( _fuuros.Count >= FUURO_MAX )
-            return 0;
-
-        int kanCount = 0;
+            return false;
 
         addJyunTehai(addHai);
 
-        // 加カンのチェック
+        // 加槓のチェック
         for (int i = 0; i < _fuuros.Count; i++) 
         {
             if (_fuuros[i].Type == EFuuroType.MinKou)
@@ -501,8 +499,7 @@ public class Tehai : IComparer<Hai>
                 {
                     if (_fuuros[i].Hais[0].ID == _jyunTehais[j].ID) 
                     {
-                        kanHais[kanCount] = new Hai(_jyunTehais[j]);
-                        kanCount++;
+                        kanHais.Add( new Hai(_jyunTehais[j]) );
                     }
                 }
             }
@@ -510,6 +507,7 @@ public class Tehai : IComparer<Hai>
 
         int id = _jyunTehais[0].ID;
 
+        // 暗槓のチェック
         int count = 1; // include the addHai
         for (int i = 1; i < _jyunTehais.Count; i++) 
         {
@@ -517,8 +515,7 @@ public class Tehai : IComparer<Hai>
             {
                 count++;
                 if( count >= Tehai.MENTSU_LENGTH_4 ) {
-                    kanHais[kanCount] = new Hai(_jyunTehais[i]);
-                    kanCount++;
+                    kanHais.Add( new Hai(_jyunTehais[i]) );
                 }
             } 
             else{
@@ -529,8 +526,10 @@ public class Tehai : IComparer<Hai>
 
         removeJyunTehai(addHai);
 
-        return kanCount;
+        return kanHais.Count > 0;
     }
+
+
 
     public bool validDaiMinKan(Hai suteHai)
     {
@@ -581,6 +580,7 @@ public class Tehai : IComparer<Hai>
         return true;
     }
 
+
     // 加槓の可否をチェックする
     public bool validKaKan(Hai tsumoHai)
     {
@@ -612,19 +612,19 @@ public class Tehai : IComparer<Hai>
         {
             if( _fuuros[i].Type == EFuuroType.MinKou ) 
             {
-                Hai[] hais = _fuuros[i].Hais;
-
-                if(hais[0].ID == tsumoHai.ID)
+                if(_fuuros[i].Hais[0].ID == tsumoHai.ID)
                 {
-                    Hai.copy(hais[newPickIndex], tsumoHai);
+                    List<Hai> fuuroHais = new List<Hai>( _fuuros[i].Hais );
+                    fuuroHais.Add( new Hai(tsumoHai) );
 
-                    _fuuros[i].Update(EFuuroType.KaKan, hais, relation, newPickIndex);
+                    _fuuros[i].Update(EFuuroType.KaKan, fuuroHais.ToArray(), relation, newPickIndex);
                 }
             }
         }
 
         return true;
     }
+
 
     // 暗槓の可否をチェックする
     public bool validAnKan(Hai tsumoHai)

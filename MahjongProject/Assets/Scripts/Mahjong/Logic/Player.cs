@@ -153,10 +153,10 @@ public abstract class Player
 
     protected float ResponseDelayTime = 0.5f;
 
-    protected ERequest _request;
     protected Action<EKaze, EResponse> _onResponse;
 
-    public ERequest CurrentRequest
+    protected ERequest _request;
+    protected ERequest CurrentRequest
     {
         get{ return _request; }
     }
@@ -186,7 +186,7 @@ public abstract class Player
 
     public void OnPlayerInputFinished()
     {
-        UnityEngine.Debug.Log("~~~OnPlayerInputFinished(): " + _action.Response.ToString());
+        //UnityEngine.Debug.Log("~~~OnPlayerInputFinished(): " + _action.Response.ToString());
         DoResponseDirectly();
     }
 

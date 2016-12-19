@@ -9,6 +9,10 @@ public class UIObject : MonoBehaviour
     {
         get{ return _ownerPlayer; }
     }
+    protected PlayerAction PlayerAction
+    {
+        get{ return _ownerPlayer.Action; }
+    }
 
     public virtual void BindPlayer(Player p)
     {

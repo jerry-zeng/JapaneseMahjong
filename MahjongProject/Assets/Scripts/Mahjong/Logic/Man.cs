@@ -20,8 +20,7 @@ public class Man : Player
 
         if(inTest){
             _action.State = EActionState.Select_Sutehai;
-            DisplayMenuList();
-            return EResponse.SuteHai;
+            return DisplayMenuList();
         }
 
         // 手牌をコピーする。
@@ -29,13 +28,13 @@ public class Man : Player
         Hai tsumoHai = haiToHandle;
 
         // check enable Reach
-        List<int> haiIndexList = new List<int>();
-        if( !MahjongAgent.isReach() && MahjongAgent.getTsumoRemain() >= 4 ) 
+        if( !MahjongAgent.isReach() && MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount ) 
         {
+            List<int> haiIndexList;
             if( MahjongAgent.tryGetReachIndexs(Tehai, tsumoHai, out haiIndexList) )
             {
                 _action.IsValidReach = true;
-                _action.HaiIndexList = haiIndexList;
+                _action.ReachHaiIndexList = haiIndexList;
                 _action.MenuList.Add( EActionType.Reach );
             }
         }
@@ -44,23 +43,28 @@ public class Man : Player
         int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
         if (agariScore > 0) {
             _action.IsValidTsumo = true;
-            _action.IsDisplayingMenu = true;
             _action.MenuList.Add( EActionType.Agari );
         }
 
-        // 制限事項。リーチ後のカンをさせない。/
-        Hai[] kanHais = new Hai[4];
-        int kanCount = 0;
+        // 制限事項。リーチ後のカンをさせない
         if( !MahjongAgent.isReach() ) 
         {
-            kanCount = Tehai.validKan(tsumoHai, kanHais);
-            if (kanCount > 0) {
-                _action.setValidKan(true, kanHais, kanCount);
+            // tsumo kans
+            List<Hai> kanHais = new List<Hai>();
+            if( Tehai.validAnyTsumoKan(tsumoHai, kanHais) )
+            {
+                _action.setValidTsumoKan(true, kanHais);
+
                 _action.MenuList.Add( EActionType.Kan );
             }
         }
         else
         {
+            // TODO: enable AnKan after reach if the ankan MENTSU is not related to any MENTSU
+            // such as: 23444 4 is disable, while 22444 4 is enable.
+
+            //if( Tehai.validAnKan(tsumoHai) )
+
             if( _action.MenuList.Count == 0) {
                 _action.Reset();
                 _action.SutehaiIndex = Tehai.getJyunTehaiCount()-1;
@@ -69,9 +73,8 @@ public class Man : Player
             }
         }
 
-        // display menu ui.
-        DisplayMenuList();
-        return EResponse.SuteHai;
+        // always display menu on pick tsumo hai.
+        return DisplayMenuList();
     }
 
     protected override EResponse OnHandle_KakanHai(EKaze fromPlayerKaze, Hai haiToHandle)
@@ -138,15 +141,11 @@ public class Man : Player
             int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle);
             if (agariScore > 0) 
             {
-                _action.IsDisplayingMenu = true;
                 _action.IsValidRon = true;
                 _action.MenuList.Add( EActionType.Agari );
-                _action.MenuList.Add(EActionType.Nagashi);
-
                 _action.State = EActionState.Select_Agari;
 
-                DisplayMenuList();
-                return EResponse.Nagashi;
+                return DisplayMenuList();
             }
         }
 
@@ -159,7 +158,7 @@ public class Man : Player
 
         if(inTest){
             //_action.MenuList.Add(EActionType.Nagashi);
-            //DisplayMenuList();
+            //return DisplayMenuList();
             return DoResponse(EResponse.Nagashi);
         }
 
@@ -188,61 +187,50 @@ public class Man : Player
 
         // check menu Chii
         int relation = Mahjong.getRelation(fromPlayerKaze, JiKaze);
-        int chiiCount = 0;
-
         if( relation == (int)ERelation.KaMiCha ) 
         {
-            Hai[] sarashiHaiRight = new Hai[2];
-
+            List<Hai> sarashiHaiRight = new List<Hai>();
             if (Tehai.validChiiRight(suteHai, sarashiHaiRight))
             {
                 _action.setValidChiiRight(true, sarashiHaiRight);
 
-                if( chiiCount == 0 )
+                if( !_action.MenuList.Contains(EActionType.Chii) )
                     _action.MenuList.Add(EActionType.Chii);
-                
-                chiiCount++;
             }
 
 
-            Hai[] sarashiHaiCenter = new Hai[2];
-
+            List<Hai> sarashiHaiCenter = new List<Hai>();
             if (Tehai.validChiiCenter(suteHai, sarashiHaiCenter))
             {
                 _action.setValidChiiCenter(true, sarashiHaiCenter);
 
-                if( chiiCount == 0 )
+                if( !_action.MenuList.Contains(EActionType.Chii) )
                     _action.MenuList.Add(EActionType.Chii);
-
-                chiiCount++;
             }
 
 
-            Hai[] sarashiHaiLeft = new Hai[2];
-
+            List<Hai> sarashiHaiLeft = new List<Hai>();
             if (Tehai.validChiiLeft(suteHai, sarashiHaiLeft))
             {
                 _action.setValidChiiLeft(true, sarashiHaiLeft);
 
-                if( chiiCount == 0 )
+                if( !_action.MenuList.Contains(EActionType.Chii) )
                     _action.MenuList.Add(EActionType.Chii);
-                
-                chiiCount++;
             }
         }
 
 
-        if( _action.MenuList.Count > 0 ){
-            DisplayMenuList();
-            return EResponse.Nagashi;
-        }
+        if( _action.MenuList.Count > 0 )
+            return DisplayMenuList();
 
         return DoResponse(EResponse.Nagashi);
     }
 
 
-    protected void DisplayMenuList()
+    protected EResponse DisplayMenuList()
     {
         MahjongAgent.PostUiEvent(UIEventType.DisplayMenuList);
+
+        return EResponse.Nagashi;
     }
 }

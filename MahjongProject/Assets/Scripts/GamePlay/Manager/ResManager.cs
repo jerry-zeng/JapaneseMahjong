@@ -45,26 +45,60 @@ public class ResManager
         return key;
     }
 
-    public static GameObject CreateMahjongObject() {
-        return Object.Instantiate(Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/MahjongPai")) as GameObject;
-    }
+
+    private static List<GameObject> _mahjongPaiPool = new List<GameObject>();
+    private static Transform poolRoot = null;
+    private static GameObject mahjongPaiPrefab = null;
 
 
-    public static MahjongPai getMahjongObject() {
-        return null;
+    public static void ClearMahjongPaiPool()
+    {
+        for(int i = 0; i < _mahjongPaiPool.Count; i++)
+        {
+            GameObject.Destroy( _mahjongPaiPool[i] );
+        }
+        _mahjongPaiPool.Clear();
     }
-    public static bool collectMahjongObject(MahjongPai obj) {
-        if( obj == null )
+
+    public static GameObject CreateMahjongObject()
+    {
+        if(_mahjongPaiPool.Count > 0)
+        {
+            GameObject pai = _mahjongPaiPool[0].gameObject;
+            pai.SetActive(true);
+
+            _mahjongPaiPool.RemoveAt(0);
+
+            return pai;
+        }
+        else{
+            if( mahjongPaiPrefab == null )
+                Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/MahjongPai");
+            return Object.Instantiate(mahjongPaiPrefab) as GameObject;
+        }
+    }
+
+    public static bool CollectMahjongObject(MahjongPai pai)
+    {
+        if( pai == null )
             return false;
 
-        obj.ClearOnClick();
-        obj.transform.parent = null;
-        GameObject.Destroy(obj.gameObject);
+        pai.Clear();
+
+        if(poolRoot == null)
+            poolRoot = new GameObject("MahjongPoolRoot").transform;
+
+        pai.transform.parent = poolRoot;
+
+        pai.gameObject.SetActive(false);
+        _mahjongPaiPool.Add( pai.gameObject );
 
         return true;
     }
 
-    public static GameObject CreatePlayerUIObject() {
+
+    public static GameObject CreatePlayerUIObject()
+    {
         return Object.Instantiate(Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/PlayerUI")) as GameObject;
     }
 

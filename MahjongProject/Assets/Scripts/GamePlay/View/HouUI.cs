@@ -9,8 +9,8 @@ public class HouUI : UIObject
     public int HaiPosOffsetX = 2;
 
     public int Line_PosY_1 = 0;
-    public int Line_PosY_2 = -65;
-    public int Line_PosY_3 = -130;
+    public int Line_PosY_2 = -85;
+    public int Line_PosY_3 = -170;
 
     public const int Max_Lines = 3;
     public const int MaxCoutPerLine = 6;
@@ -50,7 +50,7 @@ public class HouUI : UIObject
 
         // clear all hai.
         for( int i = 0; i < _allHais.Count; i++ ) {
-            ResManager.collectMahjongObject(_allHais[i]);
+            ResManager.CollectMahjongObject(_allHais[i]);
         }
         _allHais.Clear();
     }

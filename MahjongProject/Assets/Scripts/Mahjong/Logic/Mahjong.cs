@@ -6,9 +6,9 @@
 
 public abstract class Mahjong 
 {
-    // 面子の構成牌の数(3個)
+    // 面子の構成牌の数(3個:Chii,Pon)
     public readonly static int MENTSU_HAI_MEMBERS_3 = 3;
-    // 面子の構成牌の数(4個)
+    // 面子の構成牌の数(4個:Kan)
     public readonly static int MENTSU_HAI_MEMBERS_4 = 4;
 
 

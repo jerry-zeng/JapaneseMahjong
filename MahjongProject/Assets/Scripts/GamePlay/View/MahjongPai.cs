@@ -40,7 +40,7 @@ public class MahjongPai : UIButtonColor
     public readonly static float Width  = 58f;
     public readonly static float Height = 84f;
 
-    public const int LandHaiPosOffsetY = -10; // 当麻将横着放时，往下移15像素. /
+    public const int LandHaiPosOffsetY = -15; // 当麻将横着放时，往下移15像素. /
 
 
     protected Transform front;
@@ -55,15 +55,24 @@ public class MahjongPai : UIButtonColor
     }
 
 
-    public void DisableInput()
+    public void DisableInput(bool updateColor = false)
     {
         boxCollider.enabled = false;
-        ResetDefaultColor();
+
+        if(updateColor) SetEnableStateColor(false);
     }
-    public void EnableInput()
+    public void EnableInput(bool updateColor = false)
     {
         boxCollider.enabled = true;
+
+        if(updateColor) SetEnableStateColor(true);
     }
+
+    public void SetEnableStateColor(bool state)
+    {
+        SetState(state? State.Disabled : State.Normal, true);
+    }
+
 
     public void Init() 
     {
@@ -83,6 +92,22 @@ public class MahjongPai : UIButtonColor
         Hide();
 
         DisableInput();
+    }
+
+    public void Clear()
+    {
+        SetRedDora(false);
+        SetTedashi(false);
+        SetNaki(false);
+        SetReach(false);
+
+        Hide();
+
+        DisableInput();
+        SetEnableStateColor(true);
+
+        SetOnClick(null);
+        SetInfo(null);
     }
 
     public void SetInfo(Hai hai)

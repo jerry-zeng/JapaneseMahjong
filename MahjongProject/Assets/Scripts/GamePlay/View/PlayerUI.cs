@@ -13,7 +13,7 @@ public class PlayerUI : UIObject
 
     private int panelDepth = 0;
 
-    /*
+
     public PlayerInfoUI Info
     {
         get{ return playerInfo; }
@@ -34,7 +34,7 @@ public class PlayerUI : UIObject
     {
         get{ return fuuro; }
     }
-    */
+
 
     void Start () {
         Init();
