@@ -20,6 +20,7 @@ using System.Collections.Generic;
 public class MahjongView : UIObject, IObserver 
 {
     public const float SuteHaiAnimationTime = 0.3f;
+    public const float NakiAnimationTime = 0.3f;
 
     private Dictionary<int, PlayerUI> playerUIDict = new Dictionary<int, PlayerUI>();
     private Dictionary<EKaze, PlayerUI> playerUIDict_Kaze = new Dictionary<EKaze, PlayerUI>();
@@ -347,7 +348,7 @@ public class MahjongView : UIObject, IObserver
     /// <summary>
     /// 获取对应玩家的Yama范围.
     ///          P2(68~101)
-    /// P3(34~68)          P1(102~135)
+    /// P3(34~67)          P1(102~135)
     ///          P0(0~33)
     /// </summary>
     int[] getStartEndOfYamaUIOfPlayer(int playerIndex)

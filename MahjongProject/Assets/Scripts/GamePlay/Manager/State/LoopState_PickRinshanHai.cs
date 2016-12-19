@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class LoopState_PickRinshanHai : MahjongState 
+public class LoopState_PickRinshanHai : GameStateBase 
 {
     public override void Enter() 
     {

@@ -338,22 +338,23 @@ public abstract class Mahjong
 
 
     // -----------------------static methods start---------------------------
-    public static int getRelation(EKaze from, EKaze to)
+    public static int getRelation(EKaze otherKaze, EKaze selfKaze)
     {
-        int fromKaze = (int)from;
-        int toKaze = (int)to;
+        int other = (int)otherKaze;
+        int self = (int)selfKaze;
 
         ERelation relation;
-        if( fromKaze == toKaze ) {
+
+        if( self == other ) {
             relation = ERelation.JiBun; //自家
         }
-        else if( (fromKaze + 1) % 4 == toKaze ) {
+        else if( (self + 1) % 4 == other ) {
             relation = ERelation.ShiMoCha; //下家.
         }
-        else if( (fromKaze + 2) % 4 == toKaze ) {
+        else if( (self + 2) % 4 == other ) {
             relation = ERelation.ToiMen;  //对家
         }
-        else //if( (fromKaze + 3) % 4 == toKaze )
+        else //if( (self + 3) % 4 == other )
         {
             relation = ERelation.KaMiCha; //上家.
         }
@@ -369,6 +370,6 @@ public abstract class Mahjong
 
     // abstract methods.
     protected abstract void initialize();
-    public abstract void PostUIEvent(UIEventType eventType, params object[] args);
+
 }
 

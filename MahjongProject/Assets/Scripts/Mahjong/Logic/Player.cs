@@ -213,6 +213,11 @@ public abstract class Player
                 OnHandle_SuteHai(fromPlayerKaze, haiToHandle);
             }
             break;
+            case ERequest.Select_SuteHai:
+            {
+                OnSelect_SuteHai(fromPlayerKaze, haiToHandle);
+            }
+            break;
             default:
             {
                 DoResponse( EResponse.Nagashi );
@@ -224,6 +229,7 @@ public abstract class Player
     protected abstract EResponse OnHandle_TsumoHai(EKaze fromPlayerKaze, Hai haiToHandle);
     protected abstract EResponse OnHandle_KakanHai(EKaze fromPlayerKaze, Hai haiToHandle);
     protected abstract EResponse OnHandle_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle);
+    protected abstract EResponse OnSelect_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle);
 
     public abstract bool IsAI { get; }
 

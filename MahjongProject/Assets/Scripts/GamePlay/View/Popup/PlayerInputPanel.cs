@@ -70,7 +70,7 @@ public class PlayerInputPanel : UIObject
 
             if( PlayerAction.AllSarashiHais.Count > 0 )
             {
-                if( PlayerAction.AllSarashiHais.Count > 1 )
+                if( PlayerAction.AllSarashiHais.Count > 2 )
                 {
                     // list chii hai selection.
                     List<int> enableIndexList = new List<int>();

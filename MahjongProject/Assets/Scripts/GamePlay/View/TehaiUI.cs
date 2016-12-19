@@ -131,12 +131,12 @@ public class TehaiUI : UIObject
     void OnClickMahjong()
     {
         int index = tehaiList.IndexOf( MahjongPai.current );
-
+        //Debug.Log("OnClick Mahjong " + index.ToString());
         //index = OwnerPlayer.Tehai.getJyunTehaiCount() - 1; // Test: the last one.
 
         switch(PlayerAction.State)
         {
-            case EActionState.Select_Agari:
+            //case EActionState.Select_Agari:
             case EActionState.Select_Sutehai:
             {
                 PlayerAction.Response = EResponse.SuteHai;

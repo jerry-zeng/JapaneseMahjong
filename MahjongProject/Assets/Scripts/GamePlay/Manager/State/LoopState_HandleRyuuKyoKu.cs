@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class LoopState_HandleRyuuKyoKu : MahjongState 
+public class LoopState_HandleRyuuKyoKu : GameStateBase 
 {
     public override void Enter()
     {

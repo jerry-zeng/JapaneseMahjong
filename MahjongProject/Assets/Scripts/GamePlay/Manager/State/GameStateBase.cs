@@ -2,13 +2,13 @@
 using System.Collections;
 
 
-public class MahjongState : State 
+public class GameStateBase : State 
 {
-
     protected MahjongMain logicOwner;
     protected GameManager owner;
 
-    protected virtual void Awake() {
+    protected virtual void Awake()
+    {
         owner = GetComponent<GameManager>();
         logicOwner = owner.MahjongMain;
     }

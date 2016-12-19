@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class HaiPaiState : MahjongState 
+public class HaiPaiState : GameStateBase 
 {
 
     protected override void AddListeners()
@@ -42,6 +42,8 @@ public class HaiPaiState : MahjongState
     {
         yield return new WaitForSeconds(0.5f);
 
-        owner.ChangeState<LoopState_Start>();
+        logicOwner.PrepareToStart();
+
+        owner.ChangeState<LoopState_PickHai>();
     }
 }

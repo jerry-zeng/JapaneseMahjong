@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class LoopState_AskHandleSuteHai : MahjongState
+public class LoopState_AskHandleSuteHai : GameStateBase
 {
     public override void Exit()
     {
@@ -17,7 +17,6 @@ public class LoopState_AskHandleSuteHai : MahjongState
 
         logicOwner.onResponse_SuteHai_Handler = OnHandle_ResponseSuteHai;
 
-        //logicOwner.Ask_Handle_SuteHai();
         StartCoroutine(AskHandleSuteHai());
     }
 
@@ -29,12 +28,13 @@ public class LoopState_AskHandleSuteHai : MahjongState
         logicOwner.Ask_Handle_SuteHai();
     }
 
-
     void OnHandle_ResponseSuteHai()
     {
         if( logicOwner.CheckMultiRon() == true )
         {
-            logicOwner.HandleMultiRon();
+            logicOwner.Handle_SuteHai_Ron();
+
+            // show ron ui
         }
         else
         {
@@ -59,12 +59,16 @@ public class LoopState_AskHandleSuteHai : MahjongState
                     {
                         case EResponse.Pon:
                         {
+                            logicOwner.Handle_Pon();
 
+                            owner.ChangeState<LoopState_AskSelectSuteHai>();
                         }
                         break;
                         case EResponse.DaiMinKan:
                         {
+                            logicOwner.Handle_DaiMinKan();
 
+                            owner.ChangeState<LoopState_PickRinshanHai>();
                         }
                         break;
                     }
@@ -96,20 +100,22 @@ public class LoopState_AskHandleSuteHai : MahjongState
                         {
                             case EResponse.Chii_Left:
                             {
-
+                                logicOwner.Handle_ChiiLeft();
                             }
                             break;
                             case EResponse.Chii_Center:
                             {
-
+                                logicOwner.Handle_ChiiCenter();
                             }
                             break;
                             case EResponse.Chii_Right:
                             {
-
+                                logicOwner.Handle_ChiiRight();
                             }
                             break;
                         }
+
+                        owner.ChangeState<LoopState_AskSelectSuteHai>();
                     }
                     else{
                         throw new InvalidResponseException("More than one player perform Chii!?");

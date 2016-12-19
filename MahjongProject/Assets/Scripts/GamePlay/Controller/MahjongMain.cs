@@ -237,7 +237,7 @@ public class MahjongMain : Mahjong
     public void GameOver()
     {
         Debug.LogWarning("Game Over!!!");
-        PostUIEvent(UIEventType.End_Game);
+        //PostUIEvent(UIEventType.End_Game);
     }
 
     public void SetNextPlayer()
@@ -297,6 +297,11 @@ public class MahjongMain : Mahjong
                 OnResponse_Handle_TsumoHai();
             }
             break;
+            case ERequest.Select_SuteHai:
+            {
+                OnResponse_Handle_Select_SuteHai();
+            }
+            break;
             case ERequest.Handle_KaKanHai:
             {
                 // add to response list, if all other players do response, handle response.
@@ -321,6 +326,7 @@ public class MahjongMain : Mahjong
                 }
             }
             break;
+
             default:
             {
                 throw new InvalidResponseException("Unhandled request: " + m_request.ToString());
@@ -339,6 +345,14 @@ public class MahjongMain : Mahjong
                    response != EResponse.Kakan &&
                    response != EResponse.Reach && 
                    response != EResponse.SuteHai )
+                {
+                    return false;
+                }
+            }
+            break;
+            case ERequest.Select_SuteHai:
+            {
+                if(response != EResponse.SuteHai)
                 {
                     return false;
                 }
@@ -482,90 +496,32 @@ public class MahjongMain : Mahjong
         {
             case EResponse.Tsumo_Agari:
             {
-                bool enableTsumoCheck = false;
-                if( enableTsumoCheck == true )
-                {
-                    HandleTsumo();
-                }
-                else{
-                    Debug.LogError("The active player Can't tsumo!!!");
-                }
+                Handle_TsumoAgari();
             }
             break;
-
             case EResponse.Ankan:
             {
-                // set kan.
-                m_isChiihou = false;
-
-                PickRinshanHai();
-                m_isRinshan = true;
+                Handle_AnKan();
             }
             break;
-
             case EResponse.Kakan:
             {
-                m_isChiihou = false;
-
-                // ask cyan kan(抢槓)
-                m_kakanHai = null; //TODO: set kakan
-
-                //Ask_Handle_KaKanHai();
+                Handle_KaKan();
             }
             break;
-
             case EResponse.Reach:
             {
-                m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
-                m_activePlayer.IsReach = true;
-
-                if( m_isChiihou )
-                    m_activePlayer.IsDoubleReach = true;
-
-                m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
-
-                m_activePlayer.reduceTenbou( 1000 );
-                m_activePlayer.IsReach = true;
-                m_reachbou++;
-
-                m_activePlayer.IsIppatsu = true;
-
-                // cache.
-                //Ask_Handle_SuteHai();
+                Handle_Reach();
             }
             break;
-
             case EResponse.SuteHai:
             {
-                // 捨牌のインデックスを取得する。
-                m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
-
-                if( m_sutehaiIndex >= m_activePlayer.Tehai.getJyunTehaiCount() ) {// ツモ切り
-                    Hai.copy( m_suteHai, m_tsumoHai );
-                    m_activePlayer.Hou.addHai( m_suteHai );
-                }
-                else {// 手出し
-                    m_activePlayer.Tehai.copyJyunTehaiIndex( m_suteHai, m_sutehaiIndex );
-                    m_activePlayer.Tehai.removeJyunTehai( m_sutehaiIndex );
-                    m_activePlayer.Tehai.Sort();
-
-                    m_activePlayer.Hou.addHai( m_suteHai );
-                    m_activePlayer.Hou.setTedashi( true );
-                }
-
-                m_suteHaiList.Add( new SuteHai( m_suteHai ) );
-
-                if( !m_activePlayer.IsReach )
-                    m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
-
-                // cache.
-                //Ask_Handle_SuteHai();
+                Handle_SuteHai();
             }
             break;
         }
     }
     #endregion
-
 
     #region Ask Handle KaKan Hai
     public void Ask_Handle_KaKanHai()
@@ -601,14 +557,11 @@ public class MahjongMain : Mahjong
     {
         if( CheckMultiRon() == true )
         {
-            HandleMultiRon();
+            Handle_KaKan_Ron();
         }
         else
         {
-            // if nobody cyan kan, then pick up rinshan hai
-            m_isRinshan = true;
-            PickRinshanHai();
-            m_isRinshan = false;
+            Handle_KaKan_Nagashi();
         }
     }
     #endregion
@@ -660,7 +613,7 @@ public class MahjongMain : Mahjong
     {
         if( CheckMultiRon() == true )
         {
-            HandleMultiRon();
+            Handle_SuteHai_Ron();
         }
         else
         {
@@ -685,12 +638,12 @@ public class MahjongMain : Mahjong
                     {
                         case EResponse.Pon:
                         {
-
+                            Handle_Pon();
                         }
                         break;
                         case EResponse.DaiMinKan:
                         {
-
+                            Handle_DaiMinKan();
                         }
                         break;
                     }
@@ -722,17 +675,17 @@ public class MahjongMain : Mahjong
                         {
                             case EResponse.Chii_Left:
                             {
-
+                                Handle_ChiiLeft();
                             }
                             break;
                             case EResponse.Chii_Center:
                             {
-
+                                Handle_ChiiCenter();
                             }
                             break;
                             case EResponse.Chii_Right:
                             {
-
+                                Handle_ChiiRight();
                             }
                             break;
                         }
@@ -743,12 +696,164 @@ public class MahjongMain : Mahjong
                 }
                 else // Nagashi
                 {
-                    SetNextPlayer();
-
-                    PickNewTsumoHai();
+                    Handle_SuteHai_Nagashi();
                 }
             }
         }
+    }
+    #endregion
+
+    #region Ask Handle Sute Hai
+    public System.Action onResponse_Select_SuteHai_Handler;
+
+    public void Ask_Select_SuteHai()
+    {
+        SetRequest(ERequest.Select_SuteHai);
+        SendRequestToActivePlayer(null);
+    }
+
+    public void OnResponse_Handle_Select_SuteHai()
+    {
+        if(onResponse_Select_SuteHai_Handler != null)
+            onResponse_Select_SuteHai_Handler.Invoke();
+        else
+            Handle_Response_Select_SuteHai_Internel();
+    }
+    protected void Handle_Response_Select_SuteHai_Internel()
+    {
+        Handle_SelectSuteHai();
+    }
+    #endregion
+
+
+    #region Handler for All Player Responses
+    // for ERequest.Handle_TsumoHai
+    public void Handle_TsumoAgari()
+    {
+        
+    }
+
+    public void Handle_AnKan()
+    {
+        // set kan.
+        m_isChiihou = false;
+
+        PickRinshanHai();
+        m_isRinshan = true;
+    }
+
+    public void Handle_KaKan()
+    {
+        // ask cyan kan(抢槓)
+        m_kakanHai = null; //TODO: set kakan
+    }
+
+    public void Handle_Reach()
+    {
+        m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
+        m_activePlayer.IsReach = true;
+
+        if( m_isChiihou )
+            m_activePlayer.IsDoubleReach = true;
+
+        m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
+
+        m_activePlayer.reduceTenbou( 1000 );
+        m_activePlayer.IsReach = true;
+        m_reachbou++;
+
+        m_activePlayer.IsIppatsu = true;
+
+        // cache.
+        //Ask_Handle_SuteHai();
+    }
+
+    public void Handle_SuteHai()
+    {
+        // 捨牌のインデックスを取得する。
+        m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
+
+        if( m_sutehaiIndex >= m_activePlayer.Tehai.getJyunTehaiCount() ) {// ツモ切り
+            Hai.copy( m_suteHai, m_tsumoHai );
+            m_activePlayer.Hou.addHai( m_suteHai );
+        }
+        else {// 手出し
+            m_activePlayer.Tehai.copyJyunTehaiIndex( m_suteHai, m_sutehaiIndex );
+            m_activePlayer.Tehai.removeJyunTehai( m_sutehaiIndex );
+
+            m_activePlayer.Tehai.addJyunTehai( m_tsumoHai );
+
+            m_activePlayer.Tehai.Sort();
+
+            m_activePlayer.Hou.addHai( m_suteHai );
+            m_activePlayer.Hou.setTedashi( true );
+        }
+
+        m_suteHaiList.Add( new SuteHai( m_suteHai ) );
+
+        if( !m_activePlayer.IsReach )
+            m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
+
+        //PostUIEvent(UIEventType.SuteHai);
+        //Ask_Handle_SuteHai();
+    }
+
+    // for ERequest.Handle_KaKanHai
+    public void Handle_KaKan_Ron()
+    {
+        HandleMultiRon();
+    }
+
+    public void Handle_KaKan_Nagashi()
+    {
+        // if nobody cyan kan, then pick up rinshan hai
+        m_isRinshan = true;
+        PickRinshanHai();
+        m_isRinshan = false;
+    }
+
+    // for ERequest.Handle_SuteHai
+    public void Handle_SuteHai_Ron()
+    {
+        HandleMultiRon();
+    }
+
+    public void Handle_SuteHai_Nagashi()
+    {
+        // go to next loop.
+        SetNextPlayer();
+        PickNewTsumoHai();
+    }
+
+    public void Handle_Pon()
+    {
+
+    }
+
+    public void Handle_DaiMinKan()
+    {
+
+    }
+
+    public void Handle_ChiiLeft()
+    {
+
+    }
+
+    public void Handle_ChiiCenter()
+    {
+
+    }
+
+    public void Handle_ChiiRight()
+    {
+
+    }
+
+    // for ERequest.Select_SuteHai
+    public void Handle_SelectSuteHai()
+    {
+        Ask_Handle_SuteHai();
     }
     #endregion
 
@@ -757,7 +862,7 @@ public class MahjongMain : Mahjong
 
     #region RyuuKyoku
     public bool HasRyuukyokuMan() 
-    { 
+    {
         // 流し満貫の確認をする。
         for( int i = 0, j = m_oyaIndex; i < m_playerList.Count; i++, j++ ) 
         {
@@ -769,7 +874,6 @@ public class MahjongMain : Mahjong
             SuteHai[] suteHais = m_playerList[j].Hou.getSuteHais();
             for( int k = 0; k < suteHais.Length; k++ )
             {
-                // check 1,9,字./
                 if( suteHais[k].IsNaki || !suteHais[k].IsYaochuu )
                 {
                     agari = false;
@@ -852,7 +956,7 @@ public class MahjongMain : Mahjong
                 m_reachbou = 0;
 
                 // UIイベント（ツモあがり）を発行する。
-                PostUIEvent( UIEventType.Tsumo_Agari, m_kazeFrom, m_kazeFrom );
+                //PostUIEvent( UIEventType.Tsumo_Agari, m_kazeFrom, m_kazeFrom );
 
                 // 親を更新する。
                 if( m_oyaIndex != getPlayerIndex( m_kazeFrom ) )
@@ -872,14 +976,25 @@ public class MahjongMain : Mahjong
 
     }
 
+    public List<int> GetTenpaiPlayerIndex()
+    {
+        List<int> result = new List<int>();
+
+        for( int i = 0; i < m_playerList.Count; i++ )
+        {
+            if( m_playerList[i].isTenpai() )
+                result.Add(i);
+        }
+        return result;
+    }
+
     // テンパイの確認をする
     public bool HasRyuukyokuTenpai()
     {
         for( int i = 0; i < m_playerList.Count; i++ )
-        {
             if( m_playerList[i].isTenpai() )
                 return true;
-        }
+        
         return false;
     }
 
@@ -904,20 +1019,21 @@ public class MahjongMain : Mahjong
             case 0:
             break;
             case 1:
-            increasedScore = 3000;
-            reducedScore = 1000;
+                increasedScore = 3000;
+                reducedScore = 1000;
             break;
             case 2:
-            increasedScore = 1500;
-            reducedScore = 1500;
+                increasedScore = 1500;
+                reducedScore = 1500;
             break;
             case 3:
-            increasedScore = 1000;
-            reducedScore = 3000;
+                increasedScore = 1000;
+                reducedScore = 3000;
             break;
         }
 
-        if(tenpaiCount > 0){
+        if(tenpaiCount > 0)
+        {
             for( int i = 0; i < tenpaiFlags.Length; i++ )
             {
                 if( tenpaiFlags[i] == true ){
@@ -930,7 +1046,7 @@ public class MahjongMain : Mahjong
         }
 
         // UIイベント（流局）を発行する。
-        PostUIEvent( UIEventType.RyuuKyoku );
+        //PostUIEvent( UIEventType.RyuuKyoku );
 
         // 親を更新する,上がり連荘とする
         SetNextOya();
@@ -988,7 +1104,7 @@ public class MahjongMain : Mahjong
         m_reachbou = 0;
 
         // UIイベント（ツモあがり）を発行する。
-        PostUIEvent( UIEventType.Tsumo_Agari, m_kazeFrom, m_kazeFrom );
+        //PostUIEvent( UIEventType.Tsumo_Agari, m_kazeFrom, m_kazeFrom );
 
         // 親を更新する。
         if( m_oyaIndex != getPlayerIndex( m_kazeFrom ) ) 
@@ -1042,7 +1158,7 @@ public class MahjongMain : Mahjong
         m_reachbou = 0;
 
         // UIイベント（ロン）を発行する。
-        PostUIEvent( UIEventType.Ron_Agari, m_kazeFrom, m_kazeFrom );
+        //PostUIEvent( UIEventType.Ron_Agari, m_kazeFrom, m_kazeFrom );
 
         // 親を更新する。
         if( m_oyaIndex != getPlayerIndex( m_kazeFrom ) )
@@ -1063,11 +1179,6 @@ public class MahjongMain : Mahjong
     }
     #endregion
 
-
-    public override void PostUIEvent(UIEventType eventType, params object[] args)
-    {
-        EventManager.Get().SendEvent(eventType, args);
-    }
 
 
 

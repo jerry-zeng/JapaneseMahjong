@@ -35,14 +35,6 @@ public class GameAgent
         return _game.getOmotoDoras();
     }
 
-    // 自風を取得する
-    public EKaze getJikaze() {
-        return _game.getJiKaze();
-    }
-
-    public void copyTehai(Tehai tehai) {
-        _game.copyTehai(tehai, _game.getJiKaze());
-    }
     public void copyTehai(Tehai tehai, EKaze kaze) {
         _game.copyTehai(tehai, kaze);
     }
@@ -97,16 +89,17 @@ public class GameAgent
         return _game.ReachBou;
     }
 
-    public void PostUiEvent(UIEventType eventId, params object[] args){
-        _game.PostUIEvent(eventId, args);
+    public void PostUiEvent(UIEventType eventType, params object[] args)
+    {
+        EventManager.Get().SendEvent(eventType, args);
     }
 
     public SuteHai[] getSuteHaiList() {
         return _game.AllSuteHaiList.ToArray();
     }
 
-    public int getPlayerSuteHaisCount() {
-        return _game.getPlayer(_game.getJiKaze()).SuteHaisCount;
+    public int getPlayerSuteHaisCount(EKaze kaze) {
+        return _game.getPlayer(kaze).SuteHaisCount;
     }
 
     public Hai[] getOmotoDoraHais(){

@@ -22,7 +22,7 @@ public class AI : Player
             return DoResponse(EResponse.SuteHai);
         }
 
-        MahjongAgent.copyTehai(Tehai);
+        MahjongAgent.copyTehai(Tehai, JiKaze);
         Hai tsumoHai = haiToHandle;
 
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
@@ -57,8 +57,8 @@ public class AI : Player
             return DoResponse(EResponse.Nagashi);
         }
 
-        MahjongAgent.copyTehai(Tehai);
-        MahjongAgent.copyHou(Hou, MahjongAgent.getJikaze());
+        MahjongAgent.copyTehai(Tehai, JiKaze);
+        MahjongAgent.copyHou(Hou, JiKaze);
 
         if(isFuriten() == false)
         {
@@ -76,6 +76,13 @@ public class AI : Player
         return DoResponse(EResponse.Nagashi);
     }
 
+
+    protected override EResponse OnSelect_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle)
+    {
+        _action.Reset();
+        _action.SutehaiIndex = UnityEngine.Random.Range(0, Tehai.getJyunTehaiCount());
+        return DoResponse(EResponse.SuteHai);
+    }
 
 
     protected void thinkSutehai(Hai addHai)
@@ -146,7 +153,7 @@ public class AI : Player
             // check sutehai
             suteHais = MahjongAgent.getSuteHaiList();
 
-            int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount();
+            int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount(JiKaze);
             for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++)
             {
                 SuteHai suteHaiTemp = suteHais[playerSuteHaisCount];

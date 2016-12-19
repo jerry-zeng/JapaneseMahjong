@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class LoopState_ToNextLoop : MahjongState 
+public class LoopState_ToNextLoop : GameStateBase 
 {
 
     public override void Enter() {

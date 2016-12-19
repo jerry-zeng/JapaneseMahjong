@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class LoopState_AskHandleKakanHai : MahjongState
+public class LoopState_AskHandleKakanHai : GameStateBase
 {
     public override void Exit()
     {
@@ -30,14 +30,15 @@ public class LoopState_AskHandleKakanHai : MahjongState
     {
         if( logicOwner.CheckMultiRon() == true )
         {
-            logicOwner.HandleMultiRon();
+            logicOwner.Handle_KaKan_Ron();
+
+            // show ron ui.
         }
         else
         {
-            // if nobody cyan kan, then pick up rinshan hai
-            logicOwner.isRinshan = true;
-            logicOwner.PickRinshanHai();
-            logicOwner.isRinshan = false;
+            //logicOwner.Handle_KaKan_Nagashi();
+
+            owner.ChangeState<LoopState_PickRinshanHai>();
         }
     }
 }

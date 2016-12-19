@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class KyoKuOverState : MahjongState 
+public class KyoKuOverState : GameStateBase 
 {
 
     public override void Enter() {

@@ -6,7 +6,7 @@ using System.Collections;
 /// Sai sai furi for deciding Qin jia.
 /// </summary>
 
-public class PrepareState : MahjongState 
+public class PrepareState : GameStateBase 
 {
 
     protected override void AddListeners()

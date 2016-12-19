@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class InitGameState : MahjongState 
+public class InitGameState : GameStateBase 
 {
 
     public override void Enter() {

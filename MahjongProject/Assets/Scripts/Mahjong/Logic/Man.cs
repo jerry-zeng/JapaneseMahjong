@@ -17,14 +17,14 @@ public class Man : Player
     protected override EResponse OnHandle_TsumoHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
         _action.Reset();
+        _action.State = EActionState.Select_Sutehai;
 
         if(inTest){
-            _action.State = EActionState.Select_Sutehai;
-            return DisplayMenuList();
+            //_action.State = EActionState.Select_Sutehai;
+            //return DisplayMenuList();
         }
 
         // 手牌をコピーする。
-        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
         Hai tsumoHai = haiToHandle;
 
         // check enable Reach
@@ -47,7 +47,7 @@ public class Man : Player
         }
 
         // 制限事項。リーチ後のカンをさせない
-        if( !MahjongAgent.isReach() ) 
+        if( !MahjongAgent.isReach(JiKaze) ) 
         {
             // tsumo kans
             List<Hai> kanHais = new List<Hai>();
@@ -82,57 +82,41 @@ public class Man : Player
         _action.Reset();
 
         if(inTest){
-            return DoResponse(EResponse.Nagashi);
+            //return DoResponse(EResponse.Nagashi);
         }
-
-        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
 
         bool furiten = false;
 
         List<Hai> machiHais;
         if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
         {
-            MahjongAgent.copyHou(Hou, MahjongAgent.getJikaze());
-
             SuteHai[] suteHais = Hou.getSuteHais();
 
             for (int i = 0; i < suteHais.Length; i++)
             {
                 SuteHai suteHaiTemp = suteHais[i];
-                for (int j = 0; j < machiHais.Count; j++) 
-                {
-                    if (suteHaiTemp.ID == machiHais[j].ID)
-                    {
-                        furiten = true;
-                        goto End_REACH_CHECK;
-                    }
+
+                if( machiHais.Exists( h => h.ID == suteHaiTemp.ID ) ){
+                    furiten = true;
+                    break;
                 }
-            }
-            End_REACH_CHECK: {
-                // go out of double for().
             }
 
             if( furiten == false ) 
             {
                 suteHais = MahjongAgent.getSuteHaiList();
 
-                int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount();
+                int playerSuteHaisCount = MahjongAgent.getPlayerSuteHaisCount(JiKaze);
                 for(; playerSuteHaisCount < suteHais.Length - 1; playerSuteHaisCount++ )
                 {
                     Hai suteHaiTemp = suteHais[playerSuteHaisCount];
 
-                    for (int j = 0; j < machiHais.Count; j++)
-                    {
-                        if (suteHaiTemp.ID == machiHais[j].ID) {
-                            furiten = true;
-                            goto End_REACH_CHECK_2;
-                        }
+                    if( machiHais.Exists( h => h.ID == suteHaiTemp.ID ) ){
+                        furiten = true;
+                        break;
                     }
                 }
-                End_REACH_CHECK_2: {
-                    // go out of double for().
-                }
-            } // end if (!furiten).
+            } // end if(furiten == false).
         }
 
         // didn't fruiten
@@ -143,7 +127,7 @@ public class Man : Player
             {
                 _action.IsValidRon = true;
                 _action.MenuList.Add( EActionType.Agari );
-                _action.State = EActionState.Select_Agari;
+                _action.MenuList.Add( EActionType.Nagashi );
 
                 return DisplayMenuList();
             }
@@ -159,22 +143,28 @@ public class Man : Player
         if(inTest){
             //_action.MenuList.Add(EActionType.Nagashi);
             //return DisplayMenuList();
+            //return DoResponse(EResponse.Nagashi);
+        }
+
+        Hai suteHai = haiToHandle;
+
+        // also check ron.
+        if( MahjongAgent.isReach() || MahjongAgent.getTsumoRemain() <= 0 )
+        {
+            int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai);
+            if (agariScore > 0) // Ron
+            {
+                _action.IsValidRon = true;
+                _action.MenuList.Add( EActionType.Agari );
+                _action.MenuList.Add( EActionType.Nagashi );
+
+                return DisplayMenuList();
+            }
             return DoResponse(EResponse.Nagashi);
         }
 
-        // also need check ron.
-        if( MahjongAgent.isReach() )
-            return DoResponse(EResponse.Nagashi);
-
-        if( MahjongAgent.getTsumoRemain() <= 0 )
-            return DoResponse(EResponse.Nagashi);
-
-        // 手牌をコピーする。
-        MahjongAgent.copyTehai(Tehai, MahjongAgent.getJikaze());
-        Hai suteHai = haiToHandle;
-
         // check menu Kan
-        if ( Tehai.validDaiMinKan(suteHai) ) {
+        if( Tehai.validDaiMinKan(suteHai) ) {
             _action.IsValidDaiMinKan = true;
             _action.MenuList.Add( EActionType.Kan );
         }
@@ -198,7 +188,6 @@ public class Man : Player
                     _action.MenuList.Add(EActionType.Chii);
             }
 
-
             List<Hai> sarashiHaiCenter = new List<Hai>();
             if (Tehai.validChiiCenter(suteHai, sarashiHaiCenter))
             {
@@ -207,7 +196,6 @@ public class Man : Player
                 if( !_action.MenuList.Contains(EActionType.Chii) )
                     _action.MenuList.Add(EActionType.Chii);
             }
-
 
             List<Hai> sarashiHaiLeft = new List<Hai>();
             if (Tehai.validChiiLeft(suteHai, sarashiHaiLeft))
@@ -219,11 +207,21 @@ public class Man : Player
             }
         }
 
-
-        if( _action.MenuList.Count > 0 )
+        if( _action.MenuList.Count > 0 ){
+            _action.MenuList.Add( EActionType.Nagashi );
             return DisplayMenuList();
+        }
 
         return DoResponse(EResponse.Nagashi);
+    }
+
+
+    protected override EResponse OnSelect_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle)
+    {
+        _action.Reset();
+        _action.State = EActionState.Select_Sutehai;
+
+        return DisplayMenuList();
     }
 
 
