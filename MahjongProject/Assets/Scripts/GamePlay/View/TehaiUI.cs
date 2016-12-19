@@ -21,7 +21,7 @@ public class TehaiUI : UIObject
         base.Clear();
 
         for( int i = 0; i < tehaiList.Count; i++ ) {
-            ResManager.CollectMahjongObject( tehaiList[i] );
+            PlayerUI.CollectMahjongPai( tehaiList[i] );
         }
         tehaiList.Clear();
     }

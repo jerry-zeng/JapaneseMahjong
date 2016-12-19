@@ -51,6 +51,11 @@ public class ResManager
     private static GameObject mahjongPaiPrefab = null;
 
 
+    public static void SetPoolRoot(Transform root)
+    {
+        poolRoot = root;
+    }
+
     public static void ClearMahjongPaiPool()
     {
         for(int i = 0; i < _mahjongPaiPool.Count; i++)
@@ -73,12 +78,12 @@ public class ResManager
         }
         else{
             if( mahjongPaiPrefab == null )
-                Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/MahjongPai");
+                mahjongPaiPrefab = Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/MahjongPai");
             return Object.Instantiate(mahjongPaiPrefab) as GameObject;
         }
     }
 
-    public static bool CollectMahjongObject(MahjongPai pai)
+    public static bool CollectMahjongPai(MahjongPai pai)
     {
         if( pai == null )
             return false;

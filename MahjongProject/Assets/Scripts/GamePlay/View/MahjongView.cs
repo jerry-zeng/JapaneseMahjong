@@ -24,6 +24,8 @@ public class MahjongView : UIObject, IObserver
     private GameInfoUI gameInfo;
 
     public PlayerInputPanel playerInputPanel;
+    public SaifuriPanel saifuriPanel;
+    public Transform mahjongPoolRoot;
 
 
     private MahjongMain Model
@@ -92,7 +94,9 @@ public class MahjongView : UIObject, IObserver
 
         gameInfo = transform.FindChild("Info_Panel/GameInfo").GetComponent<GameInfoUI>();
 
-        isInit = true;       
+        ResManager.SetPoolRoot( mahjongPoolRoot );
+
+        isInit = true;
     }
 
 
@@ -172,25 +176,10 @@ public class MahjongView : UIObject, IObserver
                 /// set game info.
                 gameInfo.SetKyoku( Model.getBaKaze(), Model.Kyoku );
                 gameInfo.SetReachCount( Model.ReachBou );
-                gameInfo.SetHonba(Model.HonBa);
+                gameInfo.SetHonba( Model.HonBa );
+                gameInfo.SetRemain( Model.getTsumoRemainCount() );
 
-                int totalPickHaiCount = 0;
-
-                int PlayerCount = Model.PlayerList.Count;
-                /// set tehais.
-                for( int i = 0; i < PlayerCount; i++ ) 
-                {
-                    Player player = Model.PlayerList[i];
-
-                    PlayerUI ui = playerUIDict[i];
-
-                    ui.SetTehai( player.Tehai.getJyunTehai() );
-                    ui.SetAllHaisVisiable( true );
-
-                    playerUIDict_Kaze[player.JiKaze] = ui;
-
-                    totalPickHaiCount += player.Tehai.getJyunTehai().Length;
-                }
+                int totalPickHaiCount = (4*3 + 1) * Model.PlayerList.Count;
 
                 /// set yama.
                 int waremeIndex = Model.Wareme;
@@ -203,9 +192,24 @@ public class MahjongView : UIObject, IObserver
                     int index = i % Yama.YAMA_HAIS_MAX;
                     int p = findPlayerForYamahaiIndex(index);
                     MahjongPai pai = playerUIDict[p].PickUpYamaHai(index);
-                    ResManager.CollectMahjongObject(pai);
+                    PlayerUI.CollectMahjongPai(pai);
                 }
-                
+
+                /// set tehais.
+                int PlayerCount = Model.PlayerList.Count;
+                for( int i = 0; i < PlayerCount; i++ ) 
+                {
+                    Player player = Model.PlayerList[i];
+
+                    PlayerUI ui = playerUIDict[i];
+
+                    ui.SetTehai( player.Tehai.getJyunTehai() );
+                    ui.SetAllHaisVisiable( true );
+
+                    playerUIDict_Kaze[player.JiKaze] = ui;
+                }
+
+
                 /// set init Dora.
                 int showIndex = waremeIndex - 5;
                 if( showIndex < 0 )
@@ -227,6 +231,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.PickTsumoHai:
             {
+                gameInfo.SetRemain( Model.getTsumoRemainCount() );
+
                 Player activePlayer = (Player)args[0];
                 int lastPickIndex = (int)args[1];
                 Hai newHai = (Hai)args[2];
@@ -234,7 +240,7 @@ public class MahjongView : UIObject, IObserver
                 int yamaPlayerIndex = findPlayerForYamahaiIndex(lastPickIndex);
                 //Debug.LogFormat("-------- pick yama hai index {0} in player ui {1}------", lastPickIndex, yamaPlayerIndex);
                 MahjongPai pai = playerUIDict[yamaPlayerIndex].PickUpYamaHai(lastPickIndex);
-                ResManager.CollectMahjongObject(pai);
+                PlayerUI.CollectMahjongPai(pai);
 
                 PlayerUI playerUI = playerUIDict_Kaze[activePlayer.JiKaze];
                 playerUI.PickHai( newHai, true, true );
@@ -283,7 +289,6 @@ public class MahjongView : UIObject, IObserver
 
 
     // sais panel objects.
-    public SaifuriPanel saifuriPanel;
     UIEventType lastSaifuriTarget;
 
     void SetSaisPanel(UIEventType saiTarget) 

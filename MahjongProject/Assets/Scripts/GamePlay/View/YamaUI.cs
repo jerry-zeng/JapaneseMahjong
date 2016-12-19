@@ -72,7 +72,7 @@ public class YamaUI : UIObject
         base.Clear();
 
         foreach( var kv in mahjongYama ) {
-            ResManager.CollectMahjongObject(kv.Value);
+            PlayerUI.CollectMahjongPai(kv.Value);
         }
         mahjongYama.Clear();
     }

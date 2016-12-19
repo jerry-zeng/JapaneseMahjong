@@ -178,7 +178,10 @@ public class PlayerUI : UIObject
     }
 
 
-
+    public static void CollectMahjongPai(MahjongPai pai) 
+    {
+        ResManager.CollectMahjongPai(pai);
+    }
     public static MahjongPai CreateMahjongPai(Transform parent, Vector3 localPos, Hai info, bool isShow = true) 
     {
         if( Hai.IsValidHai(info) == false ){

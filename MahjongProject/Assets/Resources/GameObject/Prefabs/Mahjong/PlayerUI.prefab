@@ -292,7 +292,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 111606}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -85, z: 0}
+  m_LocalPosition: {x: 0, y: -80, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411608}
@@ -371,7 +371,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 111618}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -170, z: -1}
+  m_LocalPosition: {x: 0, y: -160, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411608}
@@ -599,8 +599,8 @@ MonoBehaviour:
   AlignLeftLocalPos: {x: -150, y: 0}
   HaiPosOffsetX: 2
   Line_PosY_1: 0
-  Line_PosY_2: -85
-  Line_PosY_3: -170
+  Line_PosY_2: -80
+  Line_PosY_3: -160
 --- !u!114 &11411610
 MonoBehaviour:
   m_ObjectHideFlags: 1

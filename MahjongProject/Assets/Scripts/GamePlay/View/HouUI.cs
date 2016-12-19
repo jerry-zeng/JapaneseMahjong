@@ -50,7 +50,7 @@ public class HouUI : UIObject
 
         // clear all hai.
         for( int i = 0; i < _allHais.Count; i++ ) {
-            ResManager.CollectMahjongObject(_allHais[i]);
+            PlayerUI.CollectMahjongPai(_allHais[i]);
         }
         _allHais.Clear();
     }
