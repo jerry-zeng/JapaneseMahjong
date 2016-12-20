@@ -43,6 +43,8 @@ public class Yaku
         #endregion
 
         this._kokushi = _yakuHandlers[0].isHantei();
+
+        FilterYakuPiece();
     }
 
     public Yaku(Tehai tehai, Hai addHai, HaiCombi combi, AgariParam param)
@@ -51,9 +53,7 @@ public class Yaku
         this._addHai = addHai;
         this._combi  = combi;
         this._agariParam = param;
-
-        //鳴きがある場合
-        _nakiFlag = tehai.isNaki();
+        this._nakiFlag = tehai.isNaki();
 
         #region handlers
         _yakuHandlers = new YakuHandler[]
@@ -108,19 +108,7 @@ public class Yaku
 
         _yakuHandlers[_yakuHandlers.Length - 1].setHanSuu(_doraCount);
 
-        //役満成立時は他の一般役は切り捨てる
-        for(int i = 0 ; i < _yakuHandlers.Length ; i++)
-        {
-            if( (_yakuHandlers[i].isYakuman() == true) && (_yakuHandlers[i].isHantei() == true)) 
-            {
-                for(int j = 0 ; j < _yakuHandlers.Length; j++)
-                {
-                    if(_yakuHandlers[j].isYakuman() == false){
-                        _yakuHandlers[j].setYakuHantei(false);
-                    }
-                }
-            }
-        } // end for(int i).
+        FilterYakuPiece();
     }
 
     public Yaku(Tehai tehai, Hai addHai, HaiCombi combi, AgariParam param, int a_status)
@@ -129,6 +117,7 @@ public class Yaku
         this._addHai = addHai;
         this._combi  = combi;
         this._agariParam = param;
+        this._nakiFlag = tehai.isNaki();
 
         #region handlers
         _yakuHandlers = new YakuHandler[]
@@ -153,6 +142,27 @@ public class Yaku
         #endregion
 
         _yakuHandlers[_yakuHandlers.Length - 1].setHanSuu(_doraCount);
+
+        FilterYakuPiece();
+    }
+
+    protected void FilterYakuPiece()
+    {
+        //役満成立時は他の一般役は切り捨てる
+        if(_yakuHandlers != null)
+        {
+            for(int i = 0; i < _yakuHandlers.Length; i++)
+            {
+                if( _yakuHandlers[i].isYakuman() && _yakuHandlers[i].isHantei()) 
+                {
+                    for(int j = 0; j < _yakuHandlers.Length; j++)
+                    {
+                        if(_yakuHandlers[j].isYakuman() == false)
+                            _yakuHandlers[j].setYakuHantei(false);
+                    }
+                }
+            }
+        }
     }
 
 
@@ -561,6 +571,30 @@ public class Yaku
         if(_nakiFlag == true)
             return false;
 
+        Tehai tehai = new Tehai(_tehai);
+        tehai.addJyunTehai(_addHai);
+        tehai.Sort();
+        Hai[] jyunTehai = tehai.getJyunTehai();
+
+        Hai checkHai = jyunTehai[0];
+        int count = 1;
+
+        for(int i = 1; i < jyunTehai.Length; i++)
+        {
+            if( jyunTehai[i].ID == checkHai.ID ){
+                count++;
+            }
+            else{
+                if(count != 2){
+                    return false;
+                }
+                else{
+                    checkHai = jyunTehai[i];
+                    count = 1;
+                }
+            }
+        }
+
         return true;
     }
 
@@ -708,14 +742,16 @@ public class Yaku
         bool[][] sansyokuFlag = new bool[3][];
 
         //フラグの初期化
-        for(int i = 0 ; i < sansyokuFlag.Length; i++)
+        for(int i = 0; i < sansyokuFlag.Length; i++)
         {
-            for( int k = 0; k < Column; k++ ) {
+            sansyokuFlag[i] = new bool[Column];
+
+            for(int k = 0; k < sansyokuFlag[i].Length; k++){
                 sansyokuFlag[i][k] = false;
             }
         }
 
-        int id;
+        int id = 0;
 
         //手牌の順子をチェック
         for(int i = 0 ; i < _combi.shunCount ; i++)
@@ -763,12 +799,14 @@ public class Yaku
         //フラグの初期化
         for(int i = 0; i < sansyokuFlag.Length; i++)
         {
-            for(int k = 0; k < Column; k++){
+            sansyokuFlag[i] = new bool[Column];
+
+            for(int k = 0; k < sansyokuFlag[i].Length; k++){
                 sansyokuFlag[i][k] = false;
             }
         }
 
-        int id;
+        int id = 0;
 
         //手牌の刻子をチェック
         for(int i = 0 ; i < _combi.kouCount ; i++)
@@ -824,7 +862,7 @@ public class Yaku
         }
 
         //手牌に順子がある
-        if( (_combi.shunCount != 0) || (minShunCount != 0) ){
+        if( _combi.shunCount != 0 || minShunCount != 0 ){
             return false;
         }
         else{
@@ -843,7 +881,7 @@ public class Yaku
 
         Fuuro[] fuuros = _tehai.getFuuros();
 
-        for (int i = 0; i < fuuros.Length; i++) 
+        for(int i = 0; i < fuuros.Length; i++) 
         {
             if( fuuros[i].Type == EFuuroType.AnKan )
                 anKanCount++;
@@ -890,7 +928,7 @@ public class Yaku
                         {
                             switch(_addHai.Num)
                             {
-                            case 1:
+                                case 1:
                                 {
                                     if(numKind == _combi.shunNumKinds[i]){
                                         checkshun = true;
@@ -898,7 +936,7 @@ public class Yaku
                                 }
                                 break;
 
-                            case 2:
+                                case 2:
                                 {
                                     if((numKind == _combi.shunNumKinds[i]) ||
                                        (numKind-1 == _combi.shunNumKinds[i]))
@@ -908,11 +946,11 @@ public class Yaku
                                 }
                                 break;
 
-                            case 3:
-                            case 4:
-                            case 5:
-                            case 6:
-                            case 7:
+                                case 3:
+                                case 4:
+                                case 5:
+                                case 6:
+                                case 7:
                                 {
                                     if( (numKind == _combi.shunNumKinds[i]) ||
                                        (numKind-1 == _combi.shunNumKinds[i]) ||
@@ -923,7 +961,7 @@ public class Yaku
                                 }
                                 break;
 
-                            case 8:
+                                case 8:
                                 {
                                     if( (numKind-1 == _combi.shunNumKinds[i]) ||
                                        (numKind-2 == _combi.shunNumKinds[i]))
@@ -933,7 +971,7 @@ public class Yaku
                                 }
                                 break;
 
-                            case 9:
+                                case 9:
                                 {
                                     if( numKind-2 == _combi.shunNumKinds[i] ){
                                         checkshun = true;
@@ -1616,34 +1654,34 @@ public class Yaku
         int doraCount = 0;
 
         /// all doras
-        Hai[] omoteDoras = AgariParam.getOmoteDoraHais();
-        Hai[] uraDoras = AgariParam.getUraDoraHais();
+        Hai[] omoteDoras = AgariParam.getOmoteDoraHais() ?? new Hai[0];
+        Hai[] uraDoras = AgariParam.getUraDoraHais() ?? new Hai[0];
 
         Hai[] allDoraHais = new Hai[omoteDoras.Length + uraDoras.Length];
         for( int i = 0; i < omoteDoras.Length; i++)
         {
-            allDoraHais[i] = omoteDoras[i];    
+            allDoraHais[i] = omoteDoras[i];
         }
         for( int i = 0; i < uraDoras.Length; i++)
         {
-            allDoraHais[omoteDoras.Length + i] = uraDoras[i];    
+            allDoraHais[omoteDoras.Length + i] = uraDoras[i];
         }
 
         // 手牌
         Hai[] jyunTehai = _tehai.getJyunTehai();
-        for (int i = 0; i < allDoraHais.Length; i++)
+        for(int i = 0; i < allDoraHais.Length; i++)
         {
             for (int j = 0; j < jyunTehai.Length; j++)
             {
-                if (allDoraHais[i].NextHaiID == jyunTehai[j].ID)
+                if( allDoraHais[i].NextHaiID == jyunTehai[j].ID )
                     doraCount++;
             }
         }
 
         // add Hai
-        for (int i = 0; i < allDoraHais.Length; i++)
+        for(int i = 0; i < allDoraHais.Length; i++)
         {
-            if (allDoraHais[i].NextHaiID == _addHai.ID)
+            if( allDoraHais[i].NextHaiID == _addHai.ID )
             {
                 doraCount++;
                 break;
@@ -1651,27 +1689,27 @@ public class Yaku
         }
 
         // red dora
-        for (int j = 0; j < jyunTehai.Length; j++)
+        for(int j = 0; j < jyunTehai.Length; j++)
         {
-            if (jyunTehai[j].IsRed)
+            if( jyunTehai[j].IsRed )
                 doraCount++;
         }
-        if (_addHai.IsRed)
+        if( _addHai.IsRed )
             doraCount++;
 
         // 副露
         Fuuro[] fuuros = _tehai.getFuuros();
-        for (int i = 0; i < fuuros.Length; i++) 
+        for(int i = 0; i < fuuros.Length; i++) 
         {
             switch (fuuros[i].Type)
             {
                 case EFuuroType.MinShun:
                 {
-                    for (int j = 0; j < allDoraHais.Length; j++)
+                    for(int j = 0; j < allDoraHais.Length; j++)
                     {
-                        for (int k = 0; k < 3; k++)
+                        for(int k = 0; k < 3; k++)
                         {
-                            if (allDoraHais[j].NextHaiID == fuuros[i].Hais[k].ID)
+                            if(allDoraHais[j].NextHaiID == fuuros[i].Hais[k].ID)
                             {
                                 doraCount += 1;
                                 goto MinShun_Loop_End;
@@ -1686,9 +1724,9 @@ public class Yaku
 
                 case EFuuroType.MinKou:
                 {
-                    for (int j = 0; j < allDoraHais.Length; j++)
+                    for(int j = 0; j < allDoraHais.Length; j++)
                     {
-                        if (allDoraHais[j].NextHaiID == fuuros[i].Hais[0].ID) {
+                        if(allDoraHais[j].NextHaiID == fuuros[i].Hais[0].ID) {
                             doraCount += 3;
                             break;
                         }
@@ -1700,9 +1738,9 @@ public class Yaku
                 case EFuuroType.KaKan:
                 case EFuuroType.AnKan:
                 {
-                    for (int j = 0; j < allDoraHais.Length; j++)
+                    for(int j = 0; j < allDoraHais.Length; j++)
                     {
-                        if (allDoraHais[j].NextHaiID == fuuros[i].Hais[0].ID) {
+                        if(allDoraHais[j].NextHaiID == fuuros[i].Hais[0].ID) {
                             doraCount += 4;
                             break;
                         }
@@ -1713,16 +1751,16 @@ public class Yaku
         }
 
         // red dora.
-        for (int i = 0; i < fuuros.Length; i++) 
+        for(int i = 0; i < fuuros.Length; i++) 
         {
-            switch (fuuros[i].Type)
+            switch(fuuros[i].Type)
             {
                 case EFuuroType.MinShun:
                 case EFuuroType.MinKou:
                 {
-                    for (int j = 0; j < 3; j++)
+                    for(int j = 0; j < 3; j++)
                     {
-                        if (fuuros[i].Hais[j].IsRed)
+                        if(fuuros[i].Hais[j].IsRed)
                             doraCount++;
                     }
                 }
@@ -1732,9 +1770,9 @@ public class Yaku
                 case EFuuroType.KaKan:
                 case EFuuroType.AnKan:
                 {
-                    for (int j = 0; j < 4; j++)
+                    for(int j = 0; j < 4; j++)
                     {
-                        if (fuuros[i].Hais[j].IsRed)
+                        if(fuuros[i].Hais[j].IsRed)
                             doraCount++;
                     }
                 }

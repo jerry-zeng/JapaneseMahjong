@@ -27,8 +27,25 @@ public class Man : Player
         // 手牌をコピーする。
         Hai tsumoHai = haiToHandle;
 
+        // check enable Tsumo
+        int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
+        if( agariScore > 0 )
+        {
+            if( isFuriten() == false )
+            {
+                _action.IsValidTsumo = true;
+                _action.MenuList.Add( EActionType.Agari );
+
+                if( MahjongAgent.isReach(JiKaze) )
+                    return DisplayMenuList();
+            }
+            else{
+                Utils.LogWarningFormat( "Player {0} is enable tsumo but furiten...", JiKaze.ToString() );
+            }
+        }
+
         // check enable Reach
-        if( !MahjongAgent.isReach() && MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount ) 
+        if( !MahjongAgent.isReach(JiKaze) && MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount ) 
         {
             List<int> haiIndexList;
             if( MahjongAgent.tryGetReachIndexs(Tehai, tsumoHai, out haiIndexList) )
@@ -37,13 +54,6 @@ public class Man : Player
                 _action.ReachHaiIndexList = haiIndexList;
                 _action.MenuList.Add( EActionType.Reach );
             }
-        }
-
-        // check enable Tsumo
-        int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
-        if( agariScore > 0 ){
-            _action.IsValidTsumo = true;
-            _action.MenuList.Add( EActionType.Agari );
         }
 
         // 制限事項。リーチ後のカンをさせない
@@ -65,6 +75,7 @@ public class Man : Player
 
             //if( Tehai.validAnKan(tsumoHai) )
 
+            // can Ron or Ankan, sute hai automatically.
             if( _action.MenuList.Count == 0) {
                 _action.Reset();
                 _action.SutehaiIndex = Tehai.getJyunTehaiCount()-1;
@@ -85,17 +96,21 @@ public class Man : Player
             //return DoResponse(EResponse.Nagashi);
         }
 
-        // didn't fruiten
-        if( isFuriten() == false ) 
+        Hai kanHai = haiToHandle;
+
+        int agariScore = MahjongAgent.getAgariScore(Tehai, kanHai);
+        if( agariScore > 0 ) 
         {
-            int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle);
-            if( agariScore > 0 ) 
+            if( isFuriten() == false ) 
             {
                 _action.IsValidRon = true;
                 _action.MenuList.Add( EActionType.Agari );
                 _action.MenuList.Add( EActionType.Nagashi );
 
                 return DisplayMenuList();
+            }
+            else{
+                Utils.LogWarningFormat( "Player {0} is enable ron but furiten...", JiKaze.ToString() );
             }
         }
 
@@ -117,22 +132,26 @@ public class Man : Player
         int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai);
         if( agariScore > 0 ) // Ron
         {
-            _action.IsValidRon = true;
-            _action.MenuList.Add( EActionType.Agari );
+            if( isFuriten() == false )
+            {
+                _action.IsValidRon = true;
+                _action.MenuList.Add( EActionType.Agari );
 
-            if( MahjongAgent.isReach() ){
-                //_action.MenuList.Add( EActionType.Nagashi );
-                return DisplayMenuList();
+                if( MahjongAgent.isReach(JiKaze) ){
+                    //_action.MenuList.Add( EActionType.Nagashi );
+                    return DisplayMenuList();
+                }
+                else{
+                    _action.MenuList.Add( EActionType.Nagashi );
+                }
             }
             else{
-                _action.MenuList.Add( EActionType.Nagashi );
+                Utils.LogWarningFormat( "Player {0} is enable ron but furiten...", JiKaze.ToString() );
             }
         }
-        else
-        {
-            if( MahjongAgent.getTsumoRemain() <= 0 )
-                return DoResponse(EResponse.Nagashi);
-        }
+
+        if( MahjongAgent.getTsumoRemain() <= 0 )
+            return DoResponse(EResponse.Nagashi);
 
         // check menu Kan
         if( Tehai.validDaiMinKan(suteHai) ) {

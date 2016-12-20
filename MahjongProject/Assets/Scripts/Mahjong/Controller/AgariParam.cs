@@ -17,10 +17,10 @@ public class AgariParam
     private bool[] _yakuFlag = new bool[(int)EYakuFlagType.Count];
 
     // 表ドラ
-    private Hai[] _omoteDoraHais = new Hai[4];
+    private Hai[] _omoteDoraHais = null;
 
     // 裏ドラ
-    private Hai[] _uraDoraHais = new Hai[4];
+    private Hai[] _uraDoraHais = null;
 
 
     public AgariParam(Mahjong game)

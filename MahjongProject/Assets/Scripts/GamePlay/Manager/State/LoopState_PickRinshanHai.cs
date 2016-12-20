@@ -11,5 +11,27 @@ public class LoopState_PickRinshanHai : GameStateBase
         logicOwner.PickRinshanHai();
 
 
+        if( logicOwner.IsKanCountOverFlow() ){
+            Debug.LogWarning("## Kan Count OverFlow");
+        }
+        else{
+            Hai rinshanHai = logicOwner.TsumoHai;
+
+            int lastPickIndex = logicOwner.Yama.getPreRinshanHaiIndex();
+            int newDoraHaiIndex = logicOwner.Yama.getLastOmoteHaiIndex();
+
+            EventManager.Get().SendEvent(UIEventType.PickRinshanHai, logicOwner.ActivePlayer, lastPickIndex, rinshanHai, newDoraHaiIndex );
+
+            StartCoroutine( AskHandleRinshanHai() );
+        }
+
     }
+
+    IEnumerator AskHandleRinshanHai()
+    {
+        yield return new WaitForSeconds( MahjongView.NakiAnimationTime );
+
+        owner.ChangeState<LoopState_AskHandleTsumoHai>();
+    }
+
 }

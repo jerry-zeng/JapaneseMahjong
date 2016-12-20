@@ -30,11 +30,17 @@ public class LoopState_AskHandleSuteHai : GameStateBase
 
     void OnHandle_ResponseSuteHai()
     {
-        if( logicOwner.CheckMultiRon() == true )
+        Player activePlayer = logicOwner.ActivePlayer;
+
+        List<EKaze> ronPlayers = logicOwner.GetRonPlayers();
+        if( ronPlayers.Count > 0 )
         {
             logicOwner.Handle_SuteHai_Ron();
 
-            // show ron ui
+            // show ron ui.
+            EventManager.Get().SendEvent(UIEventType.Ron_Agari, ronPlayers, logicOwner.FromKaze);
+
+            owner.ChangeState<LoopState_AgariRon>();
         }
         else
         {
@@ -61,12 +67,16 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                         {
                             logicOwner.Handle_Pon();
 
+                            EventManager.Get().SendEvent(UIEventType.Pon, activePlayer, logicOwner.FromKaze);
+
                             owner.ChangeState<LoopState_AskSelectSuteHai>();
                         }
                         break;
                         case EResponse.DaiMinKan:
                         {
                             logicOwner.Handle_DaiMinKan();
+
+                            EventManager.Get().SendEvent(UIEventType.DaiMinKan, activePlayer, logicOwner.FromKaze);
 
                             owner.ChangeState<LoopState_PickRinshanHai>();
                         }
@@ -86,7 +96,7 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                        info.Value == EResponse.Chii_Right )
                     {
                         validKaze.Add( info.Key );
-                    }                        
+                    }
                 }
 
                 if( validKaze.Count > 0 )
@@ -101,16 +111,22 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                             case EResponse.Chii_Left:
                             {
                                 logicOwner.Handle_ChiiLeft();
+
+                                EventManager.Get().SendEvent(UIEventType.Chii_Left, activePlayer, logicOwner.FromKaze);
                             }
                             break;
                             case EResponse.Chii_Center:
                             {
                                 logicOwner.Handle_ChiiCenter();
+
+                                EventManager.Get().SendEvent(UIEventType.Chii_Center, activePlayer, logicOwner.FromKaze);
                             }
                             break;
                             case EResponse.Chii_Right:
                             {
                                 logicOwner.Handle_ChiiRight();
+
+                                EventManager.Get().SendEvent(UIEventType.Chii_Right, activePlayer, logicOwner.FromKaze);
                             }
                             break;
                         }
@@ -123,6 +139,8 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                 }
                 else // Nagashi
                 {
+                    logicOwner.Handle_SuteHai_Nagashi();
+
                     owner.ChangeState<LoopState_ToNextLoop>();
                 }
             }

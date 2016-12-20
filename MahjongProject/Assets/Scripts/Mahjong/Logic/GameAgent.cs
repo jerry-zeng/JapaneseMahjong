@@ -60,10 +60,6 @@ public class GameAgent
         return _game.getAgariScore(tehai, addHai);
     }
 
-    public bool isReach() {
-        return _game.getPlayer(_game.getJiKaze()).IsReach;
-    }
-
     // リーチを取得する
     public bool isReach(EKaze kaze) {
         return _game.getPlayer(kaze).IsReach;
@@ -128,7 +124,12 @@ public class GameAgent
     }
 
     #region Logic
-    private static HaiCombi[] combis = new HaiCombi[0];
+    private static HaiCombi[] combis = new HaiCombi[10]
+    {
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),
+    };
     private static CountFormat countFormat = new CountFormat();
 
     // 打哪些牌(indexs)可以立直.

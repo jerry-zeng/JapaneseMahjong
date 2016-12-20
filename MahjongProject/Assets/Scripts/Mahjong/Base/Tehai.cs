@@ -40,6 +40,8 @@ public class Tehai
     {
         initialize();
         copy( this, src, true );
+
+        Sort();
     }
 
     public void initialize()
@@ -56,16 +58,14 @@ public class Tehai
         {
             dest._jyunTehais.Clear();
 
-            for(int i = 0; i < src._jyunTehais.Count; i++){
+            for(int i = 0; i < src._jyunTehais.Count; i++)
                 dest._jyunTehais.Add( new Hai( src._jyunTehais[i] ) );
-            }
         }
 
         dest._fuuros.Clear();
 
-        for(int i = 0; i < src._fuuros.Count; i++){
+        for(int i = 0; i < src._fuuros.Count; i++)
             dest._fuuros.Add( new Fuuro( src._fuuros[i] ) );
-        }
     }
 
 
@@ -93,12 +93,11 @@ public class Tehai
 
     public static bool copyFuuros(Fuuro[] dest, Fuuro[] src, int length)
     {
-        if (length > FUURO_MAX)
+        if(length > FUURO_MAX)
             return false;
 
-        for (int i = 0; i < length; i++) {
+        for(int i = 0; i < length; i++)
             Fuuro.copy(dest[i], src[i]);
-        }
 
         return true;
     }
@@ -106,6 +105,7 @@ public class Tehai
     public void Sort()
     {
         _jyunTehais.Sort( Tehai.Compare );
+        return;
     }
 
     // 純手牌を取得する
@@ -125,7 +125,6 @@ public class Tehai
     }
 
     // 純手牌に牌を追加する
-    // _jyunTehais won't sort automatically on new hais added.
     public bool addJyunTehai(Hai hai)
     {
         if( _jyunTehais.Count >= JYUN_TEHAI_LENGTH_MAX )
@@ -136,24 +135,40 @@ public class Tehai
         return true;
     }
 
-    // 純手牌から指定位置の牌を削除する
-    public bool removeJyunTehai(int index)
+    public bool insertJyunTehai(int index, Hai hai)
     {
-        if( index >= _jyunTehais.Count )
+        if( _jyunTehais.Count >= JYUN_TEHAI_LENGTH_MAX )
             return false;
 
-        _jyunTehais.RemoveAt(index);
+        if( index < 0 || index > _jyunTehais.Count )
+            return false;
+
+        _jyunTehais.Insert(index, hai);
 
         return true;
+    }
+
+    // 純手牌から指定位置の牌を削除する
+    public Hai removeJyunTehaiAt(int index)
+    {
+        if( index >= _jyunTehais.Count )
+            return null;
+
+        Hai hai = _jyunTehais[index];
+        _jyunTehais.RemoveAt(index);
+
+        return hai;
     }
 
     // 純手牌から指定の牌を削除する
     public bool removeJyunTehai(Hai hai)
     {
-        for (int i = 0; i < _jyunTehais.Count; i++)
+        for( int i = 0; i < _jyunTehais.Count; i++ )
         {
-            if( _jyunTehais[i].ID == hai.ID )
-                return removeJyunTehai(i);
+            if( _jyunTehais[i].ID == hai.ID ){
+                _jyunTehais.RemoveAt(i);
+                return true;
+            }
         }
 
         return false;
@@ -168,7 +183,7 @@ public class Tehai
         if( length > JYUN_TEHAI_LENGTH_MAX )
             return false;
 
-        for (int i = 0; i < length; i++)
+        for(int i = 0; i < length; i++)
         {
             Hai.copy(dest[i], src[i]);
         }
@@ -247,7 +262,7 @@ public class Tehai
             {
                 hais[1] = new Hai(_jyunTehais[i]);
 
-                removeJyunTehai(i);
+                removeJyunTehaiAt(i);
 
                 for (int j = i; j < _jyunTehais.Count; j++)
                 {
@@ -255,7 +270,7 @@ public class Tehai
                     {
                         hais[2] = new Hai(_jyunTehais[j]);
 
-                        removeJyunTehai(j);
+                        removeJyunTehaiAt(j);
 
                         _fuuros.Add( new Fuuro(EFuuroType.MinShun, hais, relation, newPickIndex) );
 
@@ -327,7 +342,7 @@ public class Tehai
             {
                 hais[0] = new Hai(_jyunTehais[i]);
 
-                removeJyunTehai(i);
+                removeJyunTehaiAt(i);
 
                 for (int j = i; j < _jyunTehais.Count; j++)
                 {
@@ -335,7 +350,7 @@ public class Tehai
                     {
                         hais[2] = new Hai(_jyunTehais[j]);
 
-                        removeJyunTehai(j);
+                        removeJyunTehaiAt(j);
 
                         _fuuros.Add( new Fuuro(EFuuroType.MinShun, hais, relation, newPickIndex) );
 
@@ -407,7 +422,7 @@ public class Tehai
             {
                 hais[0] = new Hai(_jyunTehais[i]);
 
-                removeJyunTehai(i);
+                removeJyunTehaiAt(i);
 
                 for (int j = i; j < _jyunTehais.Count; j++)
                 {
@@ -415,7 +430,7 @@ public class Tehai
                     {
                         hais[1] = new Hai(_jyunTehais[j]);
 
-                        removeJyunTehai(j);
+                        removeJyunTehaiAt(j);
 
                         _fuuros.Add( new Fuuro(EFuuroType.MinShun, hais, relation, newPickIndex) );
 
@@ -468,7 +483,7 @@ public class Tehai
                 hais[count] = new Hai(_jyunTehais[i]);
                 count++;
 
-                removeJyunTehai(i);
+                removeJyunTehaiAt(i);
                 i--;
 
                 if (count >= Tehai.MENTSU_LENGTH_3)
@@ -489,42 +504,45 @@ public class Tehai
             return false;
 
         addJyunTehai(addHai);
+        Sort();
+
+        Hai checkHai = null;
 
         // 加槓のチェック
-        for (int i = 0; i < _fuuros.Count; i++) 
+        for(int i = 0; i < _fuuros.Count; i++) 
         {
-            if (_fuuros[i].Type == EFuuroType.MinKou)
+            if(_fuuros[i].Type == EFuuroType.MinKou)
             {
-                for (int j = 0; j < _jyunTehais.Count; j++) 
+                checkHai = _fuuros[i].Hais[0];
+                for(int j = 0; j < _jyunTehais.Count; j++) 
                 {
-                    if (_fuuros[i].Hais[0].ID == _jyunTehais[j].ID) 
-                    {
-                        kanHais.Add( new Hai(_jyunTehais[j]) );
-                    }
+                    if( _jyunTehais[j].ID == checkHai.ID ) 
+                        kanHais.Add( new Hai(checkHai) );
                 }
             }
         }
 
-        int id = _jyunTehais[0].ID;
 
         // 暗槓のチェック
-        int count = 1; // include the addHai
-        for (int i = 1; i < _jyunTehais.Count; i++) 
+        checkHai = _jyunTehais[0];
+        int count = 1;
+
+        for(int i = 1; i < _jyunTehais.Count; i++) 
         {
-            if(id == _jyunTehais[i].ID)
+            if( _jyunTehais[i].ID == checkHai.ID)
             {
                 count++;
-                if( count >= Tehai.MENTSU_LENGTH_4 ) {
-                    kanHais.Add( new Hai(_jyunTehais[i]) );
-                }
-            } 
+                if( count >= Tehai.MENTSU_LENGTH_4 )
+                    kanHais.Add( new Hai( checkHai ) );
+            }
             else{
-                id = _jyunTehais[i].ID;
+                checkHai = _jyunTehais[i];
                 count = 1;
             }
         }
 
         removeJyunTehai(addHai);
+        Sort();
 
         return kanHais.Count > 0;
     }
@@ -567,7 +585,7 @@ public class Tehai
                 hais[count] = new Hai(_jyunTehais[i]);
                 count++;
 
-                removeJyunTehai(i);
+                removeJyunTehaiAt(i);
                 i--;
 
                 if( count >= Tehai.MENTSU_LENGTH_4 )
@@ -667,7 +685,7 @@ public class Tehai
                 hais[count] = new Hai(_jyunTehais[i]);
                 count++;
 
-                removeJyunTehai(i);
+                removeJyunTehaiAt(i);
                 i--;
 
                 if( count >= Tehai.MENTSU_LENGTH_4 )

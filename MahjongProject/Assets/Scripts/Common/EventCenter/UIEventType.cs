@@ -4,6 +4,8 @@ public enum UIEventType
     #region event id
     // pick a tsumo hai. 
     PickTsumoHai,
+    PickRinshanHai,
+
     // 捨牌の選択 
     Select_SuteHai,
     // 捨牌 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 
 public class LoopState_HandleRyuuKyoKu : GameStateBase 
@@ -9,14 +10,9 @@ public class LoopState_HandleRyuuKyoKu : GameStateBase
         base.Enter();
         Debug.LogWarning("## Ryuu KyoKu 流局 ##");
 
-        int tenpaiCount = 0;
-        for( int i = 0; i < logicOwner.PlayerList.Count; i++ )
-        {
-            if( logicOwner.PlayerList[i].isTenpai() == true ) 
-                tenpaiCount++;
-        }
+        List<int> tenpaiPlayers = logicOwner.GetTenpaiPlayerIndex();
 
-        EventManager.Get().SendEvent(UIEventType.RyuuKyoku, tenpaiCount);
+        EventManager.Get().SendEvent(UIEventType.RyuuKyoku, tenpaiPlayers);
 
         /*
         if( logicOwner.HasRyuukyokuMan() ) {

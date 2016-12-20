@@ -11,7 +11,7 @@ public class Fuuro
     private EFuuroType _type = EFuuroType.MinShun;
 
     // 構成牌
-    private Hai[] _hais;
+    private Hai[] _hais = null;
 
     // 他家との関係(和其他人的关系, 新牌从谁那里得来)
     private int _fromRelation = -1;
@@ -79,8 +79,16 @@ public class Fuuro
         dest._fromRelation = src._fromRelation;
         dest._newPickIndex = src._newPickIndex;
 
-        for (int i = 0; i < src._hais.Length; i++)
-            Hai.copy(dest._hais[i], src._hais[i]);
+        if( src._hais != null )
+        {
+            List<Hai> hai_copy = new List<Hai>();
+
+            for(int i = 0; i < src._hais.Length; i++)
+                hai_copy.Add( new Hai(src._hais[i]) );
+
+            dest._hais = hai_copy.ToArray();
+        }
+
     }
 
 }

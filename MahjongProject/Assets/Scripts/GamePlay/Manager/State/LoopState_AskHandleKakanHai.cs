@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 
 public class LoopState_AskHandleKakanHai : GameStateBase
@@ -20,7 +21,7 @@ public class LoopState_AskHandleKakanHai : GameStateBase
     }
 
     IEnumerator AskHandleKakanHai() {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds( MahjongView.NakiAnimationTime + 0.1f );
 
         logicOwner.Ask_Handle_KaKanHai();
     }
@@ -28,15 +29,19 @@ public class LoopState_AskHandleKakanHai : GameStateBase
 
     void OnHandle_ResponseKakanHai()
     {
-        if( logicOwner.CheckMultiRon() == true )
+        List<EKaze> ronPlayers = logicOwner.GetRonPlayers();
+        if( ronPlayers.Count > 0 )
         {
             logicOwner.Handle_KaKan_Ron();
 
             // show ron ui.
+            EventManager.Get().SendEvent(UIEventType.Ron_Agari, ronPlayers, logicOwner.FromKaze);
+
+            owner.ChangeState<LoopState_AgariRon>();
         }
         else
         {
-            //logicOwner.Handle_KaKan_Nagashi();
+            logicOwner.Handle_KaKan_Nagashi();
 
             owner.ChangeState<LoopState_PickRinshanHai>();
         }

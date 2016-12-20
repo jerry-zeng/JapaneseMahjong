@@ -98,8 +98,9 @@ public class PlayerInputPanel : UIObject
 
                     PlayerAction.ChiiSelectType = 0;
 
-                    OwnerPlayer.OnPlayerInputFinished();
                     HideMenu();
+                    OwnerPlayer.OnPlayerInputFinished();
+
                 }
             }
             else{
@@ -114,9 +115,9 @@ public class PlayerInputPanel : UIObject
             Debug.Log("+ OnClick_Pon()");
 
             PlayerAction.Response = EResponse.Pon;
-            OwnerPlayer.OnPlayerInputFinished();
 
             HideMenu();
+            OwnerPlayer.OnPlayerInputFinished();
         }
     }
 
@@ -143,21 +144,24 @@ public class PlayerInputPanel : UIObject
                 }
                 else{
                     Hai kanHai = PlayerAction.TsumoKanHaiList[0];
+                    OwnerPlayer.Action.KanSelectIndex = 0;
 
                     if( OwnerPlayer.Tehai.validKaKan(kanHai) )
                         PlayerAction.Response = EResponse.Kakan;
                     else
                         PlayerAction.Response = EResponse.Ankan;
 
-                    OwnerPlayer.OnPlayerInputFinished();
                     HideMenu();
+                    OwnerPlayer.OnPlayerInputFinished();
+
                 }
             }
             else{
                 PlayerAction.Response = EResponse.DaiMinKan;
 
-                OwnerPlayer.OnPlayerInputFinished();
                 HideMenu();
+                OwnerPlayer.OnPlayerInputFinished();
+
             }
         }
     }
@@ -195,9 +199,10 @@ public class PlayerInputPanel : UIObject
                 PlayerAction.Response = EResponse.Tsumo_Agari;
             else
                 PlayerAction.Response = EResponse.Ron_Agari;
-            
-            OwnerPlayer.OnPlayerInputFinished();
+
             HideMenu();
+            OwnerPlayer.OnPlayerInputFinished();
+
         }
     }
 
@@ -208,8 +213,9 @@ public class PlayerInputPanel : UIObject
 
             PlayerAction.Response = EResponse.Nagashi;
 
-            OwnerPlayer.OnPlayerInputFinished();
             HideMenu();
+            OwnerPlayer.OnPlayerInputFinished();
+
         }
     }
 

@@ -21,3 +21,9 @@ public enum EPlayerInputType
     SelectNaki,
     SelectSutehai,
 }
+
+public enum ERonType
+{
+    SuteHaiRon,
+    KaKanRon
+}

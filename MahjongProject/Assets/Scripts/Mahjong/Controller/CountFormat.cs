@@ -259,11 +259,11 @@ public class CountFormat
         int center = startIndex + 1;
         int right = startIndex + 2;
 
-        if( !Hai.CheckIsTsuu(_counterArr[left].numKind) ) 
+        if( (left < _counterArr.Count) && !Hai.CheckIsTsuu(_counterArr[left].numKind) ) 
         {
-            if ((_counterArr[left].numKind + 1 == _counterArr[center].numKind) && (_counterArr[center].count > 0)) 
+            if( (center < _counterArr.Count) && (_counterArr[left].numKind + 1 == _counterArr[center].numKind) && (_counterArr[center].count > 0)) 
             {
-                if ((_counterArr[left].numKind + 2 == _counterArr[right].numKind) && (_counterArr[right].count > 0)) 
+                if( (right < _counterArr.Count) &&  (_counterArr[left].numKind + 2 == _counterArr[right].numKind) && (_counterArr[right].count > 0)) 
                 {
                     // 順子を確定する
                     _counterArr[left].count --;
@@ -294,7 +294,7 @@ public class CountFormat
         }
 
         // 刻子をチェックする。
-        if (_counterArr[startIndex].count >= 3)
+        if( _counterArr[startIndex].count >= 3 )
         {
             // 刻子を確定する。
             _counterArr[startIndex].count -= 3;

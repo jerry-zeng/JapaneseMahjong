@@ -30,7 +30,7 @@ public class AI : Player
             return DoResponse(EResponse.Tsumo_Agari);
 
         // リーチの場合は、ツモ切りする。
-        if( MahjongAgent.isReach() ){
+        if( MahjongAgent.isReach(JiKaze) ){
             _action.SutehaiIndex = PlayerAction.Sutehai_Index_Max;
             return DoResponse(EResponse.SuteHai);
         }
@@ -40,7 +40,7 @@ public class AI : Player
         // 捨牌を決めたので手牌を更新します。
         if( _action.SutehaiIndex != PlayerAction.Sutehai_Index_Max )
         {
-            Tehai.removeJyunTehai(_action.SutehaiIndex);
+            Tehai.removeJyunTehaiAt(_action.SutehaiIndex);
             Tehai.addJyunTehai(tsumoHai);
         }
 
@@ -92,11 +92,9 @@ public class AI : Player
         Hai[] jyunTehaiCopy = new Hai[jyunTehai.Length];
         Tehai.copyJyunTehai(jyunTehaiCopy, jyunTehai);
 
-        for (int i = 0; i < jyunTehai.Length; i++)
+        for( int i = 0; i < jyunTehai.Length; i++ )
         {
-            Hai hai = new Hai();
-            Tehai.copyJyunTehaiIndex(hai, i);
-            Tehai.removeJyunTehai(i);
+            Hai hai = Tehai.removeJyunTehaiAt(i);
 
             FormatWorker.setCounterFormat(Tehai, addHai);
             int score = getCountFormatScore(FormatWorker);
@@ -106,7 +104,7 @@ public class AI : Player
                 _action.SutehaiIndex = i;
             }
 
-            Tehai.addJyunTehai(hai);
+            Tehai.insertJyunTehai(i, hai);
         }
     }
 

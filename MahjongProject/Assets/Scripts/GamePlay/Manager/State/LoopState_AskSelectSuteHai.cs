@@ -31,6 +31,8 @@ public class LoopState_AskSelectSuteHai : GameStateBase
 
     void OnHandle_ResponseSelectSuteHai()
     {
+        logicOwner.Handle_SelectSuteHai();
+
         owner.ChangeState<LoopState_AskHandleSuteHai>();
     }
 }

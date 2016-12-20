@@ -19,7 +19,8 @@ public class GameManager : StateMachine, IObserver
     }
 
 
-    private List<Action<EPlayerInputType, EKaze, object[]>> _onPlayerInput;
+    private List<Action<EPlayerInputType, EKaze, object[]>> _onPlayerInput = 
+        new List<Action<EPlayerInputType, EKaze, object[]>>();
 
 
     void OnEnable() 
@@ -35,8 +36,6 @@ public class GameManager : StateMachine, IObserver
     void Awake() {
         _instance = this;
         mahjong = new MahjongMain();
-
-        _onPlayerInput = new List<Action<EPlayerInputType, EKaze, object[]>>();
     }
 
     void Start() {
@@ -46,6 +45,7 @@ public class GameManager : StateMachine, IObserver
     void OnApplicationQuit()
     {
         _onPlayerInput.Clear();
+
         ResManager.ClearMahjongPaiPool();
     }
 

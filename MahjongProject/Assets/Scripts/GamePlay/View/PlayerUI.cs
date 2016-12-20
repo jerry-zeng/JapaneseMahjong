@@ -99,7 +99,7 @@ public class PlayerUI : UIObject
 
 
     // 手牌.
-    public void SetTehai(Hai[] hais) {
+    public void SetTehai(Hai[] hais, bool setLastNew = false) {
         tehai.SetTehai(hais);
     }
     public void PickHai( Hai hai, bool newPicked = false, bool isShow = false ) {
@@ -112,8 +112,8 @@ public class PlayerUI : UIObject
         MahjongPai pai = tehai.SuteHai(index);
         AddSuteHai( pai );
     }
-    public void SortTehai(Hai[] hais){
-        tehai.SortTehai(hais);
+    public void SortTehai(Hai[] hais, float delay, bool setLastNew = false){
+        tehai.SortTehai(hais, delay, setLastNew);
     }
     public void SetAllHaisVisiable( bool visiable ) {
         tehai.SetAllHaisVisiable(visiable);

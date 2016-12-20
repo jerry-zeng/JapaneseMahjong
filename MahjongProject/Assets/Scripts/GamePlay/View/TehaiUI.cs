@@ -38,24 +38,24 @@ public class TehaiUI : UIObject
     }
 
 
-    public void SortTehai(Hai[] hais)
+    public void SortTehai(Hai[] hais, float delay, bool setLastNew)
     {
-        StartCoroutine(Sort(hais));
+        StartCoroutine(Sort(hais, delay, setLastNew));
     }
-    protected IEnumerator Sort(Hai[] hais)
+    protected IEnumerator Sort(Hai[] hais, float delay, bool setLastNew)
     {
-        yield return new WaitForSeconds( MahjongView.SuteHaiAnimationTime );
+        yield return new WaitForSeconds( delay );
 
         SetTehai( hais );
     }
 
-    public void SetTehai(Hai[] hais) 
+    public void SetTehai(Hai[] hais, bool setLastNew = false) 
     {
         Clear();
 
         for( int i = 0; i < hais.Length; i++ ) 
         {
-            AddPai( hais[i], isShow: !OwnerPlayer.IsAI );
+            AddPai( hais[i], setLastNew, !OwnerPlayer.IsAI );
         }
         //uiPanel.Update();
     }

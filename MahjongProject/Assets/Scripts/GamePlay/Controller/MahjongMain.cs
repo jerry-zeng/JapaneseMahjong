@@ -77,7 +77,7 @@ public class MahjongMain : Mahjong
             m_playerList[i].Tenbou = GameSettings.TENBOU_INIT;
         }
 
-        // プレイヤーに提供する情報を作成する。
+
         GameAgent.Instance.Initialize(this);
     }
 
@@ -140,7 +140,7 @@ public class MahjongMain : Mahjong
         m_suteHaiList.Clear();
 
         // 洗牌する。
-        m_yama.XiPai();
+        m_yama.Shuffle();
     }
 
     // 山に割れ目を設定する
@@ -278,6 +278,10 @@ public class MahjongMain : Mahjong
     {
         m_kazeFrom = m_activePlayer.JiKaze;
     }
+    public void ActivatePlayerBack()
+    {
+        m_activePlayer = getPlayer(m_kazeFrom);
+    }
 
     protected void ClearResponseCache()
     {
@@ -400,6 +404,7 @@ public class MahjongMain : Mahjong
     {
         // ツモ牌を取得する。
         m_tsumoHai = m_yama.PickTsumoHai();
+        m_isTsumo = true;
 
         int tsumoNokori = m_yama.getTsumoNokori();
         if( tsumoNokori <= 0 ) {
@@ -408,6 +413,8 @@ public class MahjongMain : Mahjong
         else if( tsumoNokori < 66 ) {
             m_isChiihou = false;
         }
+
+        if(testHaipai) m_tsumoHai = getTestPickHai();
 
         //Handle_TsumoHai_Internel();
     }
@@ -452,6 +459,8 @@ public class MahjongMain : Mahjong
         m_tsumoHai = m_yama.PickRinshanTsumoHai();
         isRinshan = true;
 
+        if(testHaipai) m_tsumoHai = getTestRinshanHai();
+
         //Handle_RinshanHai_Internel();
     }
     protected void Handle_RinshanHai_Internel()
@@ -460,15 +469,23 @@ public class MahjongMain : Mahjong
         // 2. yama remove a rinshan hai
         // 3. yama open a new omote dora hai.
 
-        bool allKanCountOver4 = (m_tsumoHai == null);
-
-        if( allKanCountOver4 == true ){
+        if( IsKanCountOverFlow() == true ){
             HandleInvalidKyoku();
         }
         else{
             Ask_Handle_TsumoHai();
         }
     }
+
+    /// <summary>
+    /// Is the kan count over 4. Note: call this method after pick rinshan hai.
+    /// </summary>
+    public bool IsKanCountOverFlow()
+    {
+
+        return m_tsumoHai == null;
+    }
+
     #endregion
 
 
@@ -569,15 +586,21 @@ public class MahjongMain : Mahjong
 
     public bool CheckMultiRon()
     {
-        int ronPlayerCount = 0;
+        foreach( var info in m_playerRespDict )
+            if(info.Value == EResponse.Ron_Agari)
+                return true;
+
+        return false;
+    }
+    public List<EKaze> GetRonPlayers()
+    {
+        List<EKaze> ronPlayers = new List<EKaze>();
 
         foreach( var info in m_playerRespDict )
-        {
             if(info.Value == EResponse.Ron_Agari)
-                ronPlayerCount++;
-        }
+                ronPlayers.Add(info.Key);
 
-        return ronPlayerCount > 0;
+        return ronPlayers;
     }
 
     #region Ask Handle Sute Hai
@@ -736,21 +759,37 @@ public class MahjongMain : Mahjong
 
     public void Handle_AnKan()
     {
-        // set kan.
+        m_isTenhou = false;
         m_isChiihou = false;
 
-        PickRinshanHai();
+        int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
+        Hai kanHai = ActivePlayer.Action.TsumoKanHaiList[kanSelectIndex];
+
+        ActivePlayer.Tehai.setAnKan( kanHai );
+        ActivePlayer.Tehai.Sort();
+
+
         m_isRinshan = true;
+
+        //PickRinshanHai();
     }
 
     public void Handle_KaKan()
     {
-        // ask cyan kan(抢槓)
-        m_kakanHai = null; //TODO: set kakan
+        m_isChanKan = true;
+
+
+        // ask chan kan(抢槓)
+        int index = ActivePlayer.Action.KanSelectIndex;
+        m_kakanHai = new Hai( ActivePlayer.Action.TsumoKanHaiList[index]);
+
+        m_isRinshan = true;
     }
 
     public void Handle_Reach()
     {
+        m_isRinshan = false;
+
         m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
         m_activePlayer.IsReach = true;
 
@@ -771,6 +810,8 @@ public class MahjongMain : Mahjong
 
     public void Handle_SuteHai()
     {
+        m_isRinshan = false;
+
         // 捨牌のインデックスを取得する。
         m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
 
@@ -779,8 +820,7 @@ public class MahjongMain : Mahjong
             m_activePlayer.Hou.addHai( m_suteHai );
         }
         else {// 手出し
-            m_activePlayer.Tehai.copyJyunTehaiIndex( m_suteHai, m_sutehaiIndex );
-            m_activePlayer.Tehai.removeJyunTehai( m_sutehaiIndex );
+            m_suteHai = m_activePlayer.Tehai.removeJyunTehaiAt( m_sutehaiIndex );
 
             m_activePlayer.Tehai.addJyunTehai( m_tsumoHai );
 
@@ -803,14 +843,15 @@ public class MahjongMain : Mahjong
     public void Handle_KaKan_Ron()
     {
         HandleMultiRon();
+        m_isChanKan = false;
     }
 
     public void Handle_KaKan_Nagashi()
     {
+        m_isChanKan = false;
+
         // if nobody cyan kan, then pick up rinshan hai
-        m_isRinshan = true;
-        PickRinshanHai();
-        m_isRinshan = false;
+        //PickRinshanHai();
     }
 
     // for ERequest.Handle_SuteHai
@@ -822,8 +863,8 @@ public class MahjongMain : Mahjong
     public void Handle_SuteHai_Nagashi()
     {
         // go to next loop.
-        SetNextPlayer();
-        PickNewTsumoHai();
+        //SetNextPlayer();
+        //PickNewTsumoHai();
     }
 
     public void Handle_Pon()
@@ -854,7 +895,7 @@ public class MahjongMain : Mahjong
     // for ERequest.Select_SuteHai
     public void Handle_SelectSuteHai()
     {
-        Ask_Handle_SuteHai();
+        //Ask_Handle_SuteHai();
     }
     #endregion
 
@@ -1065,11 +1106,11 @@ public class MahjongMain : Mahjong
         int playerIndex = 0;
 
         param.setOmoteDoraHais( getOmotoDoras() );
-        if( m_activePlayer.IsReach )                    
+        if( m_activePlayer.IsReach )
             param.setUraDoraHais( getUraDoras() );
 
         AgariScoreManager.GetAgariScore( m_activePlayer.Tehai, m_tsumoHai, param, ref m_combis, ref m_agariInfo );
-        UnityEngine.Debug.Log( AgariInfo.ToString() );
+        Utils.Log( AgariInfo.ToString() );
 
         playerIndex = getPlayerIndex( m_kazeFrom );
 
@@ -1140,7 +1181,7 @@ public class MahjongMain : Mahjong
         int score = 0;
 
         param.setOmoteDoraHais( getOmotoDoras() );
-        if( m_activePlayer.IsReach )                    
+        if( m_activePlayer.IsReach )
             param.setUraDoraHais( getUraDoras() );
 
         AgariScoreManager.GetAgariScore( m_activePlayer.Tehai, m_suteHai, param, ref m_combis, ref m_agariInfo );
@@ -1191,15 +1232,21 @@ public class MahjongMain : Mahjong
     #region Other Method
     protected bool testHaipai = false;
 
+    protected Hai getTestPickHai()
+    {
+        return new Hai(33);
+    }
+    protected Hai getTestRinshanHai()
+    {
+        return new Hai(0);
+    }
+
     protected void StartTest()
     {
-        if(testHaipai == false)
-            return;
-
         // remove all the hais of player 0.
         int iPlayer = 0;
         while( m_playerList[iPlayer].Tehai.getJyunTehai().Length > 0 )
-            m_playerList[iPlayer].Tehai.removeJyunTehai(0);
+            m_playerList[iPlayer].Tehai.removeJyunTehaiAt(0);
 
         // add the test hais.
         int[] haiIds = getTestHaiIds();
@@ -1207,56 +1254,32 @@ public class MahjongMain : Mahjong
             m_playerList[iPlayer].Tehai.addJyunTehai( new Hai(haiIds[i]) );
         
         m_playerList[iPlayer].Tehai.Sort();
-
-        /*
-        // test Pon.
-        m_players[iPlayer].getTehai().removeJyunTehai(0);
-        m_players[iPlayer].getTehai().setPon(new Hai(0), getRelation(m_kazeFrom, m_kazeTo));
-        m_players[iPlayer].getTehai().setPon(new Hai(31), getRelation(m_kazeFrom, m_kazeTo));
-
-        // test ChiiLeft.
-        m_players[iPlayer].getTehai().removeJyunTehai(0);
-        m_players[iPlayer].getTehai().setChiiLeft(new Hai(0), getRelation(m_kazeFrom, m_kazeTo));
-        m_players[iPlayer].getKawa().add(new Hai(0));
-        */
     }
 
     protected int[] getTestHaiIds() 
     {
-        //int[] haiIds = { 27, 27, 27, 28, 28, 28, 0, 0, 1, 2, 3, 4, 5, 6 };
-        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 33, 33, 33, 31, 31};
-        //int[] haiIds = {29, 29, 29, 30, 30, 30, 31, 31, 31, 32, 32, 33, 33, 33};
-        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 31, 31, 33, 33, 33};
-        //int[] haiIds = {0, 1, 2, 10, 11, 12, 13, 14, 15, 31, 31, 33, 33, 33};
-        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 31, 31, 32, 32, 32};
-        //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
-        //int[] haiIds = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};
-        //int[] haiIds = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7};
-        //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
-        //int[] haiIds = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};
-        //int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};
-        int[] haiIds = {0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 33};
-        //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};
-        //int[] haiIds = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7};
-        //int[] haiIds = {19, 19, 20, 20, 21, 21, 23, 23, 23, 23, 25, 25, 25, 25};
-        //int[] haiIds = {0, 0, 0, 8, 8, 8, 9, 9, 9, 17, 17, 17, 18, 18};
-        //int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};
-        //int[] haiIds = {0, 0, 0, 8, 8, 8, 9, 9, 9, 18, 18, 18, 26, 26};
-        //int[] haiIds = {27, 27, 27, 28, 28, 28, 29, 29, 29, 30, 30, 31, 31, 31};
-        //int[] haiIds = {31, 31, 31, 32, 32, 32, 33, 33, 33, 30, 30, 30, 29, 29};
-        //int[] haiIds = {0, 0, 1, 1, 2, 2, 6, 6, 7, 7, 8, 8, 9, 9};
-        //int[] haiIds = {31, 31, 31, 32, 32, 32, 33, 33, 3, 4, 5, 6, 7, 8};
-        //int[] haiIds = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4};
-        //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 27, 27, 29, 28, 28};
-        //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 27, 27, 28, 28, 28};
-        //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 5, 6, 7, 27, 27};
-        //int[] haiIds = {0, 0, 0, 2, 2, 2, 3, 3, 3, 5, 6, 7, 27, 27};
-        //int[] haiIds = {0, 0, 0, 2, 2, 2, 3, 3, 3, 4, 4, 4, 10, 10};
-        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 10, 10}; // イッツー
-        //int[] haiIds = {0, 1, 2, 9, 10, 11, 18, 19, 20, 33, 33, 33, 27, 27};
-        //int[] haiIds = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4}; // リーチタンピンイーペーコー
-        //int[] haiIds = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7}; // リーチタンピンイーペーコー
-        //int[] haiIds = {1, 1, 2, 2, 3, 3, 4, 5, 6, 10, 10, 10, 11, 12}; // リーチタンピンイーペーコー
+        //int[] haiIds = {0, 1, 2, 10, 11, 12, 13, 14, 15, 31, 31, 33, 33, 33};    //普通牌
+        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 27, 27, 27, 30, 30};          //东北新干线.
+        //int[] haiIds = {0, 1, 2, 9, 10, 11, 18, 19, 20, 33, 33, 33, 27, 27};     //三色同顺 混全.
+        //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 1, 2, 3, 27, 27};          //三色同刻 三暗刻.
+        //int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};             //三槓.
+        //int[] haiIds = {31, 31, 31, 32, 32, 32, 33, 33, 3, 4, 5, 6, 7, 8};       //小三元.
+        //int[] haiIds = {0, 0, 1, 2, 3, 4, 5, 6, 27, 27, 27, 28, 28, 28};         //清一色.
+        //int[] haiIds = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 5, 5};               //清一色 一色四连顺.
+        //int[] haiIds = {0, 0, 1, 1, 2, 2, 6, 6, 7, 7, 8, 8, 8, 8};               //清一色 纯全 二杯口.
+        //int[] haiIds = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};         //七对子.
+
+        //int[] haiIds = {10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16}; //连七对(大车轮).
+        int[] haiIds = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};   //字一色 七对子.
+        //int[] haiIds = {19, 19, 20, 20, 21, 21, 23, 23, 23, 23, 25, 25, 25, 25}; //绿一色.
+        //int[] haiIds = {0, 0, 0, 8, 8, 8, 9, 9, 9, 17, 17, 17, 18, 18};          //清老头.
+        //int[] haiIds = {29, 29, 30, 30, 30, 31, 31, 31, 32, 32, 32, 33, 33, 33}; //字一色 大三元
+        //int[] haiIds = {27, 27, 27, 28, 28, 28, 29, 29, 29, 30, 30, 31, 31, 31}; //字一色 小四喜.
+        //int[] haiIds = {27, 27, 27, 28, 28, 28, 29, 29, 29, 30, 30, 30, 31, 31}; //字一色 大四喜.
+        //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 27, 27, 28, 28, 28};       //四暗刻.
+        //int[] haiIds = {0, 0, 0, 2, 2, 2, 3, 3, 3, 4, 4, 4, 10, 10};             //四暗刻单骑.
+        //int[] haiIds = {0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 33};    //国士无双十三面.
+        //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};               //纯正九连宝灯.
 
         return haiIds;
     }

@@ -59,10 +59,10 @@ public class PlayerAction
 
         _menuList.Clear();
 
-        _reachSelectIndex = -1;
-        _ponSelectIndex = -1;
-        _kanSelectIndex = -1;
-        _chiiSelectType = -1;
+        _reachSelectIndex = 0;
+        _ponSelectIndex = 0;
+        _kanSelectIndex = 0;
+        _chiiSelectType = 0;
     }
 
 
@@ -265,7 +265,7 @@ public class PlayerAction
     }
 
 
-    private int _reachSelectIndex;
+    private int _reachSelectIndex = 0;
     /// <summary>
     /// Gets or sets the index of the ReachHaiIndexList
     /// </summary>
@@ -292,7 +292,7 @@ public class PlayerAction
         set{ _kanSelectIndex = value; }
     }
 
-    private int _chiiSelectType;
+    private int _chiiSelectType = 0;
     public int ChiiSelectType
     {
         get{ return _chiiSelectType; }

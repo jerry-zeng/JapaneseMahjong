@@ -22,7 +22,7 @@ public class AgariInfo
         sb.Append( "\n" );
         sb.Append( "Fu: " + fu.ToString() );
         sb.Append( "\n" );
-        sb.Append( "Yaku Names: " );
+        sb.Append( "Yaku Names: \n" );
 
         for(int i = 0; i < yakuNames.Length; i++)
             sb.Append(  yakuNames[i] + "\n" );

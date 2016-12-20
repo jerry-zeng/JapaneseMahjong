@@ -34,7 +34,7 @@ public class Hou
         for (int i = 0; i < src._suteHais.Count; i++)
         {
             dest._suteHais.Add( new SuteHai(src._suteHais[i]) );
-        }            
+        }
     }
 
 

@@ -1,4 +1,5 @@
-﻿
+﻿//#define Disable_Agari
+
 /// <summary>
 /// Agari(あがり) = 胡牌.
 /// </summary>
@@ -23,9 +24,9 @@ public sealed class AgariScoreManager
         {new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000)}
     };
 
-
+    #if !Disable_Agari
     private static CountFormat formatWorker = new CountFormat();
-
+    #endif
 
     // 上がり点数を取得します
     static ScoreInfo GetScoreInfo(int hanSuu, int huSuu)
@@ -212,6 +213,10 @@ public sealed class AgariScoreManager
 
     public static int GetAgariScore(Tehai tehai, Hai addHai, AgariParam param, ref HaiCombi[] combis, ref AgariInfo agariInfo)
     {
+        #if Disable_Agari
+        return 0;
+        #else
+
         // カウントフォーマットを取得します。
         formatWorker.setCounterFormat(tehai, addHai);
 
@@ -219,9 +224,11 @@ public sealed class AgariScoreManager
         int combisCount = formatWorker.calculateCombisCount(combis);
         combis = formatWorker.getCombis();
 
-        if (formatWorker.isChiitoitsu())
+        if( formatWorker.isChiitoitsu() )
         {
-            Yaku yaku = new Yaku(tehai, addHai, combis[0], param, 0);
+            HaiCombi combi = combis.Length <= 0? new HaiCombi() : combis[0];
+            
+            Yaku yaku = new Yaku(tehai, addHai, combi, param, 0);
 
             string[] yakuNames = yaku.getYakuNames();
             int hanSuu = yaku.getHan();
@@ -234,7 +241,7 @@ public sealed class AgariScoreManager
             return agariInfo.scoreInfo.koRon;
         }
 
-        if (formatWorker.isKokushi())
+        if( formatWorker.isKokushi() )
         {
             Yaku yaku = new Yaku(tehai, addHai, param);
 
@@ -254,7 +261,7 @@ public sealed class AgariScoreManager
         }
 
         // あがりの組み合わせがない場合は0点
-        if (combisCount == 0)
+        if( combisCount == 0 )
             return 0;
 
         int[] hanSuuArr = new int[combisCount]; // 役
@@ -293,6 +300,7 @@ public sealed class AgariScoreManager
         }
 
         return maxAgariScore;
+        #endif
     }
 
 }

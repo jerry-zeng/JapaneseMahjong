@@ -149,7 +149,12 @@ public abstract class Mahjong
         set{ m_kakanHai = value; }
     }
 
-    protected HaiCombi[] m_combis = new HaiCombi[0];
+    protected HaiCombi[] m_combis = new HaiCombi[10]
+    {
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),
+        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),
+    };
     public HaiCombi[] Combis
     {
         get{ return m_combis; }
@@ -189,6 +194,13 @@ public abstract class Mahjong
     {
         get{ return m_isRinshan; }
         set{ m_isRinshan = value; }
+    }
+
+    protected bool m_isChanKan = false;
+    public bool isChanKan
+    {
+        get{ return m_isChanKan; }
+        set{ m_isChanKan = value; }
     }
 
     protected bool m_isLast = false;
@@ -260,7 +272,8 @@ public abstract class Mahjong
     // 自風を取得する
     public EKaze getJiKaze() 
     {
-        return m_playerList[m_oyaIndex].JiKaze;
+        return ActivePlayer.JiKaze;
+        //return m_playerList[m_oyaIndex].JiKaze;
     }
 
     // 場風を取得する
@@ -313,6 +326,10 @@ public abstract class Mahjong
 
         if( m_isTsumo && m_isRinshan ) {
             param.setYakuFlag((int)EYakuFlagType.RINSYAN, true);
+        }
+
+        if( m_isChanKan ){
+            param.setYakuFlag((int)EYakuFlagType.CHANKAN, true);
         }
 
         if( m_isLast ) {

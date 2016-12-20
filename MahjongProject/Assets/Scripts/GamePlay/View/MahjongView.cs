@@ -21,6 +21,7 @@ public class MahjongView : UIObject, IObserver
 {
     public const float SuteHaiAnimationTime = 0.3f;
     public const float NakiAnimationTime = 0.3f;
+    public const float AgariAnimationTime = 0.3f;
 
     private Dictionary<int, PlayerUI> playerUIDict = new Dictionary<int, PlayerUI>();
     private Dictionary<EKaze, PlayerUI> playerUIDict_Kaze = new Dictionary<EKaze, PlayerUI>();
@@ -242,12 +243,33 @@ public class MahjongView : UIObject, IObserver
                 Hai newHai = (Hai)args[2];
 
                 int yamaPlayerIndex = findPlayerForYamahaiIndex(lastPickIndex);
-                //Debug.LogFormat("-------- pick yama hai index {0} in player ui {1}------", lastPickIndex, yamaPlayerIndex);
                 MahjongPai pai = playerUIDict[yamaPlayerIndex].PickUpYamaHai(lastPickIndex);
                 PlayerUI.CollectMahjongPai(pai);
 
                 PlayerUI playerUI = playerUIDict_Kaze[activePlayer.JiKaze];
                 playerUI.PickHai( newHai, true, !activePlayer.IsAI );
+
+                SetManInputEnable( !activePlayer.IsAI );
+            }
+            break;
+
+            case UIEventType.PickRinshanHai:
+            {
+                Player activePlayer = (Player)args[0];
+                int lastPickRinshanIndex = (int)args[1];
+                Hai newHai = (Hai)args[2];
+                int newDoraHaiIndex = (int)args[3];
+
+                int yamaPlayerIndex = findPlayerForYamahaiIndex(lastPickRinshanIndex);
+                MahjongPai pai = playerUIDict[yamaPlayerIndex].PickUpYamaHai(lastPickRinshanIndex);
+                PlayerUI.CollectMahjongPai(pai);
+
+                PlayerUI playerUI = playerUIDict_Kaze[activePlayer.JiKaze];
+                playerUI.PickHai( newHai, true, !activePlayer.IsAI );
+
+                // open a omote dora hai
+                int omoteDoraPlayerIndex = findPlayerForYamahaiIndex(newDoraHaiIndex);
+                playerUIDict[omoteDoraPlayerIndex].ShowYamaHai(newDoraHaiIndex);
 
                 SetManInputEnable( !activePlayer.IsAI );
             }
@@ -264,6 +286,7 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
+
             case UIEventType.SuteHai:
             {
                 Player activePlayer = (Player)args[0];
@@ -273,23 +296,122 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.SuteHai(sutehaiIndex);
                 ui.SetTedashi();
-                ui.SortTehai( activePlayer.Tehai.getJyunTehai() );
+                ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
 
                 SetManInputEnable(false);
             }
             break;
 
+            case UIEventType.Reach:
+            {
+                Player activePlayer = (Player)args[0];
+                int sutehaiIndex = (int)args[1];
+                //Hai suteHai = (Hai)args[2];
+
+                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
+                ui.SuteHai(sutehaiIndex);
+                ui.Reach();
+                ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
+
+                ui.Info.SetReach(true);
+                ui.Info.SetTenbou( activePlayer.Tenbou );
+
+                SetManInputEnable(false);
+            }
+            break;
+
+            case UIEventType.Kakan:
+            {
+                Player activePlayer = (Player)args[0];
+                //Hai kakanHai = (Hai)args[1];
+
+                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
+                ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
+                ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+            }
+            break;
+
+            case UIEventType.Ankan:
+            {
+                Player activePlayer = (Player)args[0];
+
+                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
+                ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
+                ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+            }
+            break;
+
+            case UIEventType.DaiMinKan:
+            {
+                Player activePlayer = (Player)args[0];
+                EKaze fromKaze = (EKaze)args[1];
+
+                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
+                ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
+                ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+
+                PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
+                fromUI.SetNaki();
+            }
+            break;
+
             case UIEventType.Pon:
             {
-                
+                Player activePlayer = (Player)args[0];
+                EKaze fromKaze = (EKaze)args[1];
+
+                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
+                ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
+                ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+
+                PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
+                fromUI.SetNaki();
+            }
+            break;
+
+            case UIEventType.Chii_Left:
+            case UIEventType.Chii_Center:
+            case UIEventType.Chii_Right:
+            {
+                Player activePlayer = (Player)args[0];
+                EKaze fromKaze = (EKaze)args[1];
+
+                PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
+                ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
+                ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+
+                PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
+                fromUI.SetNaki();
+            }
+            break;
+
+            case UIEventType.Ron_Agari:
+            {
+                List<EKaze> ronPlayers = (List<EKaze>)args[0];
+                //EKaze fromKaze = (EKaze)args[1];
+
+                for( int i = 0; i < ronPlayers.Count; i++ )
+                    Debug.LogWarning("Ron!!!");
+            }
+            break;
+
+            case UIEventType.Tsumo_Agari:
+            {
+                //Player activePlayer = (Player)args[0];
+                Debug.LogWarning("Tsumo!!!");
             }
             break;
 
             case UIEventType.RyuuKyoku:
             {
-                int tenPaiCount = (int)args[0];
+                List<int> tenpaiPlayers = (List<int>)args[0];
 
-                string msg = tenPaiCount.ToString() + "人听牌";
+                string tenpaiIndex = "";
+                for(int i = 0; i < tenpaiPlayers.Count; i++)
+                    tenpaiIndex += tenpaiPlayers[i].ToString() + ",";
+
+                string msg = string.Format( "{0}人听牌: {1}", tenpaiPlayers.Count.ToString(), 
+                                           (tenpaiIndex.Length > 0? tenpaiIndex.Substring(0, tenpaiIndex.Length-1) : "" ) );
                 ryuuKyokuPanel.Show( msg, null );
             }
             break;

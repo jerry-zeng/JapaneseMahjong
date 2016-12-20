@@ -28,21 +28,37 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
             case EResponse.Tsumo_Agari:
             {
                 logicOwner.Handle_TsumoAgari();
+
+                EventManager.Get().SendEvent(UIEventType.Tsumo_Agari, activePlayer);
+
+                owner.ChangeState<LoopState_AgariTsumo>();
             }
             break;
             case EResponse.Ankan:
             {
                 logicOwner.Handle_AnKan();
+
+                EventManager.Get().SendEvent(UIEventType.Ankan, activePlayer);
+
+                owner.ChangeState<LoopState_PickRinshanHai>();
             }
             break;
             case EResponse.Kakan:
             {
                 logicOwner.Handle_KaKan();
+
+                EventManager.Get().SendEvent(UIEventType.Kakan, activePlayer, logicOwner.KakanHai);
+
+                owner.ChangeState<LoopState_AskHandleKakanHai>();
             }
             break;
             case EResponse.Reach:
             {
                 logicOwner.Handle_Reach();
+
+                EventManager.Get().SendEvent(UIEventType.Reach, activePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai);
+
+                owner.ChangeState<LoopState_AskHandleSuteHai>();
             }
             break;
             case EResponse.SuteHai:
