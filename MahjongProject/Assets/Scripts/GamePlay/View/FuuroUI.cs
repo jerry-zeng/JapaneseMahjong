@@ -64,6 +64,8 @@ public class FuuroUI : UIObject
 
                             pai.transform.localPosition += new Vector3(0, MahjongPai.LandHaiPosOffsetY, 0);
                         }
+
+                        pai.DisableInput();
                         fuuroHais.Add(pai);
 
                         // update curMaxPosX.

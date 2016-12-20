@@ -23,6 +23,8 @@ public class LoopState_AgariRon : GameStateBase
         List<EKaze> ronPlayers = logicOwner.GetRonPlayers();
         Debug.LogWarning("## show agari result: Ron player count = " + ronPlayers.Count.ToString());
 
+        logicOwner.ResetActivePlayer( ronPlayers[0] );
+        logicOwner.HandleRon();
     }
 
 }

@@ -280,7 +280,11 @@ public class MahjongMain : Mahjong
     }
     public void ActivatePlayerBack()
     {
-        m_activePlayer = getPlayer(m_kazeFrom);
+        ResetActivePlayer(m_kazeFrom);
+    }
+    public void ResetActivePlayer(EKaze kaze)
+    {
+        m_activePlayer = getPlayer(kaze);
     }
 
     protected void ClearResponseCache()
@@ -311,11 +315,8 @@ public class MahjongMain : Mahjong
                 // add to response list, if all other players do response, handle response.
                 m_playerRespDict.Add(responserKaze, response);
 
-                if( m_playerRespDict.Count >= GameSettings.PlayerCount-1 ){
+                if( m_playerRespDict.Count >= GameSettings.PlayerCount-1 )
                     OnResponse_Handle_KaKanHai();
-
-                    ClearResponseCache();
-                }
             }
             break;
             case ERequest.Handle_SuteHai:
@@ -323,11 +324,8 @@ public class MahjongMain : Mahjong
                 // add to response list, if all other players do response, handle response.
                 m_playerRespDict.Add(responserKaze, response);
 
-                if( m_playerRespDict.Count >= GameSettings.PlayerCount-1 ){
+                if( m_playerRespDict.Count >= GameSettings.PlayerCount-1 )
                     OnResponse_Handle_SuteHai();
-
-                    ClearResponseCache();
-                }
             }
             break;
 
@@ -665,6 +663,8 @@ public class MahjongMain : Mahjong
                     EKaze kaze = validKaze[0];
                     EResponse resp = m_playerRespDict[kaze];
 
+                    ResetActivePlayer(kaze);
+
                     switch( resp )
                     {
                         case EResponse.Pon:
@@ -701,6 +701,8 @@ public class MahjongMain : Mahjong
                     {
                         EKaze kaze = validKaze[0];
                         EResponse resp = m_playerRespDict[kaze];
+
+                        ResetActivePlayer(kaze);
 
                         switch( resp )
                         {
@@ -786,14 +788,17 @@ public class MahjongMain : Mahjong
 
         Hai kanHai = null;
 
-        if( count >= Tehai.MENTSU_LENGTH_4 )
+        if( count < Tehai.MENTSU_LENGTH_4 )
         {
-            kanHai = ActivePlayer.Tehai.removeJyunTehaiAt(oneIndex);
-            //ActivePlayer.Tehai.Sort();
+            if(count != Tehai.MENTSU_LENGTH_3) Utils.LogError("Error!!!");
+
+            kanHai = m_tsumoHai;
         }
         else{
-            if(count != Tehai.MENTSU_LENGTH_3) Utils.LogError("Error!!!");
-            kanHai = m_tsumoHai;
+            kanHai = ActivePlayer.Tehai.removeJyunTehaiAt(oneIndex);
+
+            ActivePlayer.Tehai.addJyunTehai( new Hai(m_tsumoHai) );
+            ActivePlayer.Tehai.Sort();
         }
 
         ActivePlayer.Tehai.setAnKan( kanHai );
@@ -832,6 +837,12 @@ public class MahjongMain : Mahjong
         //PickRinshanHai();
     }
 
+
+    public bool isTedashi
+    {
+        get; private set;
+    }
+
     public void Handle_Reach()
     {
         if( ActivePlayer.Tenbou < GameSettings.Reach_Cost )
@@ -841,20 +852,49 @@ public class MahjongMain : Mahjong
         m_isRinshan = false;
         m_isTsumo = false;
 
-
-        m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
+        // cost to set reach.
         m_activePlayer.IsReach = true;
         m_activePlayer.IsIppatsu = true;
 
         if( m_isChiihou )
             m_activePlayer.IsDoubleReach = true;
 
-        m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
-
         m_activePlayer.reduceTenbou( GameSettings.Reach_Cost );
         m_reachbou++;
 
-        // cache.
+        // sute hai.
+        int reachSelectIndex = m_activePlayer.Action.ReachSelectIndex;
+        int reachHaiIndex = m_activePlayer.Action.ReachHaiIndexList[reachSelectIndex];
+
+        if( reachHaiIndex >= m_activePlayer.Tehai.getJyunTehaiCount() ) // ツモ切り
+        {
+            m_sutehaiIndex = m_activePlayer.Tehai.getJyunTehaiCount();
+            m_suteHai = new Hai(m_tsumoHai);
+
+            m_activePlayer.Hou.addHai( m_suteHai );
+
+            isTedashi = false;
+        }
+        else {// 手出し
+            m_sutehaiIndex = reachHaiIndex;
+            m_suteHai = m_activePlayer.Tehai.removeJyunTehaiAt( m_sutehaiIndex );
+
+            m_activePlayer.Tehai.addJyunTehai( m_tsumoHai );
+
+            m_activePlayer.Tehai.Sort();
+
+            m_activePlayer.Hou.addHai( m_suteHai );
+            m_activePlayer.Hou.setTedashi( true );
+
+            isTedashi = true;
+        }
+
+        // add sute hai to list
+        m_suteHaiList.Add( new SuteHai( m_suteHai ) );
+
+        m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
+
+        //PostUIEvent(UIEventType.Reach);
         //Ask_Handle_SuteHai();
     }
 
@@ -865,11 +905,16 @@ public class MahjongMain : Mahjong
         m_isTsumo = false;
 
         // 捨牌のインデックスを取得する。
-        m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
+        m_sutehaiIndex = m_activePlayer.Action.SutehaiIndex;
 
-        if( m_sutehaiIndex >= m_activePlayer.Tehai.getJyunTehaiCount() ) {// ツモ切り
-            Hai.copy( m_suteHai, m_tsumoHai );
+        if( m_sutehaiIndex >= m_activePlayer.Tehai.getJyunTehaiCount() ) // ツモ切り
+        {
+            m_sutehaiIndex = m_activePlayer.Tehai.getJyunTehaiCount();
+            m_suteHai = new Hai(m_tsumoHai);
+
             m_activePlayer.Hou.addHai( m_suteHai );
+
+            isTedashi = false;
         }
         else {// 手出し
             m_suteHai = m_activePlayer.Tehai.removeJyunTehaiAt( m_sutehaiIndex );
@@ -880,6 +925,8 @@ public class MahjongMain : Mahjong
 
             m_activePlayer.Hou.addHai( m_suteHai );
             m_activePlayer.Hou.setTedashi( true );
+
+            isTedashi = true;
         }
 
         m_suteHaiList.Add( new SuteHai( m_suteHai ) );
@@ -896,7 +943,8 @@ public class MahjongMain : Mahjong
     // for ERequest.Handle_KaKanHai
     public void Handle_KaKan_Ron()
     {
-        HandleMultiRon();
+        m_isTsumo = false;
+        //HandleMultiRon();
     }
 
     public void Handle_KaKan_Nagashi()
@@ -910,7 +958,7 @@ public class MahjongMain : Mahjong
     // for ERequest.Handle_SuteHai
     public void Handle_SuteHai_Ron()
     {
-        HandleMultiRon();
+        //HandleMultiRon();
     }
 
     public void Handle_SuteHai_Nagashi()
@@ -985,6 +1033,32 @@ public class MahjongMain : Mahjong
     // for ERequest.Select_SuteHai
     public void Handle_SelectSuteHai()
     {
+        m_isTenhou = false;
+        m_isRinshan = false;
+        m_isTsumo = false;
+
+        // 捨牌のインデックスを取得する。
+        m_sutehaiIndex = m_activePlayer.Action.SutehaiIndex;
+
+        m_suteHai = m_activePlayer.Tehai.removeJyunTehaiAt( m_sutehaiIndex );
+        if(m_suteHai == null)
+            throw new InvalidResponseException("Select sute hai won't be null, how it happend!?");
+
+        m_activePlayer.Tehai.Sort();
+
+        m_activePlayer.Hou.addHai( m_suteHai );
+        m_activePlayer.Hou.setTedashi( true );
+
+        isTedashi = true;
+
+        m_suteHaiList.Add( new SuteHai( m_suteHai ) );
+
+        if( !m_activePlayer.IsReach )
+            m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
+
+        m_activePlayer.IsIppatsu = false;
+
+        //PostUIEvent(UIEventType.SuteHai);
         //Ask_Handle_SuteHai();
     }
     #endregion
@@ -1275,6 +1349,7 @@ public class MahjongMain : Mahjong
             param.setUraDoraHais( getUraDoras() );
 
         AgariScoreManager.GetAgariScore( m_activePlayer.Tehai, m_suteHai, param, ref m_combis, ref m_agariInfo );
+        Utils.Log( AgariInfo.ToString() );
 
         if( m_oyaIndex == getPlayerIndex( m_kazeFrom ) ) {
             score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
@@ -1324,11 +1399,13 @@ public class MahjongMain : Mahjong
 
     protected Hai getTestPickHai()
     {
-        return new Hai(33);
+        //return new Hai(33);
+        return m_tsumoHai;
     }
     protected Hai getTestRinshanHai()
     {
-        return new Hai(0);
+        //return new Hai(0);
+        return m_tsumoHai;
     }
 
     protected void StartTest()
@@ -1360,8 +1437,8 @@ public class MahjongMain : Mahjong
         //int[] haiIds = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};         //七对子.
 
         //int[] haiIds = {10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16}; //连七对(大车轮).
-        int[] haiIds = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};   //字一色 七对子.
-        //int[] haiIds = {19, 19, 20, 20, 21, 21, 23, 23, 23, 23, 25, 25, 25, 25}; //绿一色.
+        //int[] haiIds = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};   //字一色 七对子.
+        int[] haiIds = {19, 19, 20, 20, 21, 21, 23, 23, 23, 23, 25, 25, 25, 25}; //绿一色.
         //int[] haiIds = {0, 0, 0, 8, 8, 8, 9, 9, 9, 17, 17, 17, 18, 18};          //清老头.
         //int[] haiIds = {29, 29, 30, 30, 30, 31, 31, 31, 32, 32, 32, 33, 33, 33}; //字一色 大三元
         //int[] haiIds = {27, 27, 27, 28, 28, 28, 29, 29, 29, 30, 30, 31, 31, 31}; //字一色 小四喜.

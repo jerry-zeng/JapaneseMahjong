@@ -22,11 +22,6 @@ public abstract class Player
         get{ return _action; }
     }
 
-    public int getSutehaiIndex()
-    {
-        return _action.SutehaiIndex;
-    }
-
 
     // 手牌
     protected Tehai _tehai = new Tehai();

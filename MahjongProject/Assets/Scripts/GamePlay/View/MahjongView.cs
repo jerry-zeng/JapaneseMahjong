@@ -234,6 +234,19 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
+
+            case UIEventType.DisplayMenuList:
+            {
+                playerInputPanel.Show();
+            }
+            break;
+            case UIEventType.HideMenuList:
+            {
+                playerInputPanel.HideMenu();
+            }
+            break;
+
+
             case UIEventType.PickTsumoHai:
             {
                 gameInfo.SetRemain( Model.getTsumoRemainCount() );
@@ -275,27 +288,16 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
-            case UIEventType.DisplayMenuList:
-            {
-                playerInputPanel.Show();
-            }
-            break;
-            case UIEventType.HideMenuList:
-            {
-                playerInputPanel.HideMenu();
-            }
-            break;
-
-
             case UIEventType.SuteHai:
             {
                 Player activePlayer = (Player)args[0];
                 int sutehaiIndex = (int)args[1];
                 //Hai suteHai = (Hai)args[2];
+                bool isTedashi = (bool)args[3];
 
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.SuteHai(sutehaiIndex);
-                ui.SetTedashi();
+                ui.SetTedashi(isTedashi);
                 ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
 
                 SetManInputEnable(false);
@@ -307,9 +309,11 @@ public class MahjongView : UIObject, IObserver
                 Player activePlayer = (Player)args[0];
                 int sutehaiIndex = (int)args[1];
                 //Hai suteHai = (Hai)args[2];
+                bool isTedashi = (bool)args[3];
 
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.SuteHai(sutehaiIndex);
+                ui.SetTedashi(isTedashi);
                 ui.Reach();
                 ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
 
@@ -328,6 +332,8 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+
+                SetManInputEnable(!activePlayer.IsAI);
             }
             break;
 
@@ -338,6 +344,8 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+
+                SetManInputEnable(!activePlayer.IsAI);
             }
             break;
 
@@ -352,6 +360,8 @@ public class MahjongView : UIObject, IObserver
 
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
                 fromUI.SetNaki();
+
+                SetManInputEnable(!activePlayer.IsAI);
             }
             break;
 
@@ -366,6 +376,8 @@ public class MahjongView : UIObject, IObserver
 
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
                 fromUI.SetNaki();
+
+                SetManInputEnable(!activePlayer.IsAI);
             }
             break;
 
@@ -382,6 +394,8 @@ public class MahjongView : UIObject, IObserver
 
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
                 fromUI.SetNaki();
+
+                SetManInputEnable(!activePlayer.IsAI);
             }
             break;
 
@@ -410,8 +424,8 @@ public class MahjongView : UIObject, IObserver
                 for(int i = 0; i < tenpaiPlayers.Count; i++)
                     tenpaiIndex += tenpaiPlayers[i].ToString() + ",";
 
-                string msg = string.Format( "{0}人听牌: {1}", tenpaiPlayers.Count.ToString(), 
-                                           (tenpaiIndex.Length > 0? tenpaiIndex.Substring(0, tenpaiIndex.Length-1) : "" ) );
+                string msg = string.Format( "{0}人听牌{1}", tenpaiPlayers.Count.ToString(), 
+                                           (tenpaiIndex.Length > 0? (": " + tenpaiIndex.Substring(0, tenpaiIndex.Length-1)) : "" ) );
                 ryuuKyokuPanel.Show( msg, null );
             }
             break;

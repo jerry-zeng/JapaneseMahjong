@@ -419,6 +419,8 @@ public class Hai
         else {
             id = numKind - KIND_WAN + ID_WAN_1 - 1;
         }
+        if(id < ID_MIN || id > ID_MAX) 
+            Utils.LogError("Invalid hai numKind " + numKind.ToString());
         return id;
     }
 

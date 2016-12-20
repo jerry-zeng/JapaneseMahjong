@@ -19,6 +19,7 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
         logicOwner.Ask_Handle_TsumoHai();
     }
 
+
     void OnHandle_ResponseTsumoHai()
     {
         Player activePlayer = logicOwner.ActivePlayer;
@@ -56,7 +57,7 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
             {
                 logicOwner.Handle_Reach();
 
-                EventManager.Get().SendEvent(UIEventType.Reach, activePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai);
+                EventManager.Get().SendEvent(UIEventType.Reach, activePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai, logicOwner.isTedashi);
 
                 owner.ChangeState<LoopState_AskHandleSuteHai>();
             }
@@ -65,7 +66,7 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
             {
                 logicOwner.Handle_SuteHai();
 
-                EventManager.Get().SendEvent(UIEventType.SuteHai, activePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai);
+                EventManager.Get().SendEvent(UIEventType.SuteHai, activePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai, logicOwner.isTedashi);
 
                 owner.ChangeState<LoopState_AskHandleSuteHai>();
             }

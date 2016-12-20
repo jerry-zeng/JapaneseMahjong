@@ -145,7 +145,9 @@ public class GameAgent
 
         // As _jyunTehais won't sort automatically on new hais added, 
         // so we can add tsumo hai directly to simplify the checks.
+
         tehai.addJyunTehai(tsumoHai);
+
         Hai[] jyunTehai = tehai.getJyunTehai();
 
         for( int i = 0; i < jyunTehai.Length; i++ )
@@ -154,20 +156,17 @@ public class GameAgent
 
             tehai.removeJyunTehai(jyunTehai[i]);
 
-            for (int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
+            for( int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++ )
             {
                 Hai addHai = new Hai(id);
-                tehai.addJyunTehai(addHai);
 
-                countFormat.setCounterFormat(tehai, null);
+                countFormat.setCounterFormat(tehai, addHai);
+
                 if( countFormat.calculateCombisCount(combis) > 0 )
                 {
                     haiIndexList.Add(i);
-                    tehai.removeJyunTehai(addHai);
                     break;
                 }
-
-                tehai.removeJyunTehai(addHai);
             }
 
             tehai.addJyunTehai(haiTemp);
@@ -188,7 +187,7 @@ public class GameAgent
             Hai addHai = new Hai(id);
 
             countFormat.setCounterFormat(tehai, addHai);
-            if (countFormat.calculateCombisCount(combis) > 0)
+            if( countFormat.calculateCombisCount(combis) > 0 )
             {
                 hais.Add( addHai );
             }

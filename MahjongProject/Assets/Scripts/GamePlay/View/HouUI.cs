@@ -91,6 +91,8 @@ public class HouUI : UIObject
         pai.transform.parent = lineParents[_curLine];
         pai.transform.localPosition = new Vector3(_curLineRightAligPosX, 0, 0);
 
+        pai.DisableInput();
+        pai.SetEnableStateColor(true);
         _allHais.Add(pai);
 
         pai.Show();

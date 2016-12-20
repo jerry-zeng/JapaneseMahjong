@@ -33,6 +33,8 @@ public class LoopState_AskSelectSuteHai : GameStateBase
     {
         logicOwner.Handle_SelectSuteHai();
 
+        EventManager.Get().SendEvent(UIEventType.SuteHai, logicOwner.ActivePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai, logicOwner.isTedashi);
+
         owner.ChangeState<LoopState_AskHandleSuteHai>();
     }
 }

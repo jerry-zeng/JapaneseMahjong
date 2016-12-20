@@ -30,8 +30,6 @@ public class LoopState_AskHandleSuteHai : GameStateBase
 
     void OnHandle_ResponseSuteHai()
     {
-        Player activePlayer = logicOwner.ActivePlayer;
-
         List<EKaze> ronPlayers = logicOwner.GetRonPlayers();
         if( ronPlayers.Count > 0 )
         {
@@ -61,13 +59,15 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                     EKaze kaze = validKaze[0];
                     EResponse resp = logicOwner.PlayerResponseMap[kaze];
 
+                    logicOwner.ResetActivePlayer(kaze);
+
                     switch( resp )
                     {
                         case EResponse.Pon:
                         {
                             logicOwner.Handle_Pon();
 
-                            EventManager.Get().SendEvent(UIEventType.Pon, activePlayer, logicOwner.FromKaze);
+                            EventManager.Get().SendEvent(UIEventType.Pon, logicOwner.ActivePlayer, logicOwner.FromKaze);
 
                             owner.ChangeState<LoopState_AskSelectSuteHai>();
                         }
@@ -76,7 +76,7 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                         {
                             logicOwner.Handle_DaiMinKan();
 
-                            EventManager.Get().SendEvent(UIEventType.DaiMinKan, activePlayer, logicOwner.FromKaze);
+                            EventManager.Get().SendEvent(UIEventType.DaiMinKan, logicOwner.ActivePlayer, logicOwner.FromKaze);
 
                             owner.ChangeState<LoopState_PickRinshanHai>();
                         }
@@ -106,27 +106,29 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                         EKaze kaze = validKaze[0];
                         EResponse resp = logicOwner.PlayerResponseMap[kaze];
 
+                        logicOwner.ResetActivePlayer(kaze);
+
                         switch( resp )
                         {
                             case EResponse.Chii_Left:
                             {
                                 logicOwner.Handle_ChiiLeft();
 
-                                EventManager.Get().SendEvent(UIEventType.Chii_Left, activePlayer, logicOwner.FromKaze);
+                                EventManager.Get().SendEvent(UIEventType.Chii_Left, logicOwner.ActivePlayer, logicOwner.FromKaze);
                             }
                             break;
                             case EResponse.Chii_Center:
                             {
                                 logicOwner.Handle_ChiiCenter();
 
-                                EventManager.Get().SendEvent(UIEventType.Chii_Center, activePlayer, logicOwner.FromKaze);
+                                EventManager.Get().SendEvent(UIEventType.Chii_Center, logicOwner.ActivePlayer, logicOwner.FromKaze);
                             }
                             break;
                             case EResponse.Chii_Right:
                             {
                                 logicOwner.Handle_ChiiRight();
 
-                                EventManager.Get().SendEvent(UIEventType.Chii_Right, activePlayer, logicOwner.FromKaze);
+                                EventManager.Get().SendEvent(UIEventType.Chii_Right, logicOwner.ActivePlayer, logicOwner.FromKaze);
                             }
                             break;
                         }
