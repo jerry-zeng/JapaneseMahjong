@@ -33,7 +33,7 @@ public abstract class Mahjong
     protected int m_kyoku;
     public int Kyoku
     {
-        get{ return m_kyoku; }
+        get{ return m_kyoku % 4; }
         protected set{ m_kyoku = value; }
     }
 

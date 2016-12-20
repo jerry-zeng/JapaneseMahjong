@@ -1,11 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
  
 /// <summary>
-/// Mahjong main.
-/// The game logic manager
+/// Mahjong main. The game logic manager
 /// </summary>
 
 public class MahjongMain : Mahjong 
@@ -74,7 +72,7 @@ public class MahjongMain : Mahjong
 
         for(int i = 0; i < m_playerList.Count; i++)
         {
-            m_playerList[i].Tenbou = GameSettings.TENBOU_INIT;
+            m_playerList[i].Tenbou = GameSettings.INIT_TENBOU;
         }
 
 
@@ -128,12 +126,13 @@ public class MahjongMain : Mahjong
         m_isChiihou = true;
         m_isTsumo = false;
         m_isRinshan = false;
+        m_isChanKan = false;
         m_isLast = false;
+
 
         // プレイヤーの自風を設定する。
         initPlayerKaze();
 
-        // プレイヤー配列を初期化する。
         for( int i = 0; i < m_playerList.Count; i++ )
             m_playerList[i].Init();
 
@@ -222,7 +221,7 @@ public class MahjongMain : Mahjong
 
     public bool IsLastKyoku()
     {
-        return (int)m_kyoku >= GameSettings.Kyoku_Max;
+        return m_kyoku >= GameSettings.Kyoku_Max;
     }
     public void GoToNextKyoku()
     {
@@ -236,7 +235,7 @@ public class MahjongMain : Mahjong
     }
     public void GameOver()
     {
-        Debug.LogWarning("Game Over!!!");
+        Utils.LogWarning("Game Over!!!");
         //PostUIEvent(UIEventType.End_Game);
     }
 
@@ -685,7 +684,7 @@ public class MahjongMain : Mahjong
                        info.Value == EResponse.Chii_Right )
                     {
                         validKaze.Add( info.Key );
-                    }                        
+                    }
                 }
 
                 if( validKaze.Count > 0 )
@@ -1229,7 +1228,7 @@ public class MahjongMain : Mahjong
 
 
 
-    #region Other Method
+    #region Test Method
     protected bool testHaipai = false;
 
     protected Hai getTestPickHai()

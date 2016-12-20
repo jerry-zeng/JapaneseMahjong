@@ -8,11 +8,11 @@ public static class GameSettings
     public static bool UseRedDora = true;
 
     // 局の最大値
-    public static int Kyoku_Max = 7; //3.
+    public static int Kyoku_Max = 8; //4.
 
     public static int PlayerCount = 4;
 
     // 持ち点の初期値
-    public static int TENBOU_INIT = 25000;
+    public static int INIT_TENBOU = 25000;
 
 }

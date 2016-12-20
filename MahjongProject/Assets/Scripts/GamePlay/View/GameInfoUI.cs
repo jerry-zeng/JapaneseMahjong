@@ -36,10 +36,7 @@ public class GameInfoUI : UIObject
     }
 
     public void SetKyoku( EKaze kaze, int kyoku ) {
-        if(kyoku > 0)
-            kyokuLab.text = kaze.ToString() + " " + kyoku.ToString() + "局";
-        else
-            kyokuLab.text = kaze.ToString();
+        kyokuLab.text = kaze.ToString() + " " + kyoku.ToString() + "局";
     }
 
     public void SetReachCount(int count) {
