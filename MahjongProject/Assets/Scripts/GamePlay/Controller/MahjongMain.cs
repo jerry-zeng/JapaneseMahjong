@@ -124,6 +124,7 @@ public class MahjongMain : Mahjong
 
         m_isTenhou = true;
         m_isChiihou = true;
+
         m_isTsumo = false;
         m_isRinshan = false;
         m_isChanKan = false;
@@ -409,8 +410,11 @@ public class MahjongMain : Mahjong
         if( tsumoNokori <= 0 ) {
             m_isLast = true;
         }
-        else if( tsumoNokori < 66 ) {
-            m_isChiihou = false;
+        else {
+            int chiiHouNokori = Yama.TSUMO_HAIS_MAX - (4*3+1)*GameSettings.PlayerCount - GameSettings.PlayerCount; //66
+            if( tsumoNokori < chiiHouNokori ) {
+                m_isChiihou = false;
+            }
         }
 
         if(testHaipai) m_tsumoHai = getTestPickHai();
@@ -455,6 +459,10 @@ public class MahjongMain : Mahjong
     // pick up Rinshan hai.
     public void PickRinshanHai()
     {
+        m_isChiihou = false;
+
+        m_isTsumo = true;
+
         m_tsumoHai = m_yama.PickRinshanTsumoHai();
         isRinshan = true;
 
@@ -762,13 +770,37 @@ public class MahjongMain : Mahjong
         m_isChiihou = false;
 
         int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
-        Hai kanHai = ActivePlayer.Action.TsumoKanHaiList[kanSelectIndex];
+        int ankanHaiID = ActivePlayer.Action.TsumoKanHaiList[kanSelectIndex].ID;
+
+        // check if all ankan hais from tehai or tehai + tsumo hai.
+        Hai[] jyunTehais = ActivePlayer.Tehai.getJyunTehai();
+
+        int count = 0, oneIndex = 0;
+        for( int i = 0; i < jyunTehais.Length; i++ )
+        {
+            if( jyunTehais[i].ID == ankanHaiID ){
+                count++;
+                oneIndex = i;
+            }
+        }
+
+        Hai kanHai = null;
+
+        if( count >= Tehai.MENTSU_LENGTH_4 )
+        {
+            kanHai = ActivePlayer.Tehai.removeJyunTehaiAt(oneIndex);
+            //ActivePlayer.Tehai.Sort();
+        }
+        else{
+            if(count != Tehai.MENTSU_LENGTH_3) Utils.LogError("Error!!!");
+            kanHai = m_tsumoHai;
+        }
 
         ActivePlayer.Tehai.setAnKan( kanHai );
         ActivePlayer.Tehai.Sort();
 
+        ActivePlayer.IsIppatsu = false;
 
-        m_isRinshan = true;
 
         //PickRinshanHai();
     }
@@ -777,31 +809,50 @@ public class MahjongMain : Mahjong
     {
         m_isChanKan = true;
 
+        int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
+        int kakanHaiID = ActivePlayer.Action.TsumoKanHaiList[kanSelectIndex].ID;
 
-        // ask chan kan(抢槓)
-        int index = ActivePlayer.Action.KanSelectIndex;
-        m_kakanHai = new Hai( ActivePlayer.Action.TsumoKanHaiList[index]);
 
-        m_isRinshan = true;
+        int kakanHaiIndex = ActivePlayer.Tehai.getHaiIndex( kakanHaiID );
+        if( kakanHaiIndex < 0 ) // the tsumo hai.
+        {
+            m_kakanHai = m_tsumoHai;
+        }
+        else
+        {
+            m_kakanHai = m_activePlayer.Tehai.removeJyunTehaiAt( kakanHaiIndex );
+
+            m_activePlayer.Tehai.addJyunTehai( m_tsumoHai );
+
+            m_activePlayer.Tehai.Sort();
+        }
+
+        ActivePlayer.Tehai.setKaKan(m_kakanHai);
+
+        //PickRinshanHai();
     }
 
     public void Handle_Reach()
     {
+        if( ActivePlayer.Tenbou < GameSettings.Reach_Cost )
+            throw new InvalidResponseException("Active player has not enough tenbou to reach!!!");
+
+        m_isTenhou = false;
         m_isRinshan = false;
+        m_isTsumo = false;
+
 
         m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
         m_activePlayer.IsReach = true;
+        m_activePlayer.IsIppatsu = true;
 
         if( m_isChiihou )
             m_activePlayer.IsDoubleReach = true;
 
         m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
 
-        m_activePlayer.reduceTenbou( 1000 );
-        m_activePlayer.IsReach = true;
+        m_activePlayer.reduceTenbou( GameSettings.Reach_Cost );
         m_reachbou++;
-
-        m_activePlayer.IsIppatsu = true;
 
         // cache.
         //Ask_Handle_SuteHai();
@@ -809,7 +860,9 @@ public class MahjongMain : Mahjong
 
     public void Handle_SuteHai()
     {
+        m_isTenhou = false;
         m_isRinshan = false;
+        m_isTsumo = false;
 
         // 捨牌のインデックスを取得する。
         m_sutehaiIndex = m_activePlayer.getSutehaiIndex();
@@ -834,6 +887,8 @@ public class MahjongMain : Mahjong
         if( !m_activePlayer.IsReach )
             m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
 
+        m_activePlayer.IsIppatsu = false;
+
         //PostUIEvent(UIEventType.SuteHai);
         //Ask_Handle_SuteHai();
     }
@@ -842,14 +897,13 @@ public class MahjongMain : Mahjong
     public void Handle_KaKan_Ron()
     {
         HandleMultiRon();
-        m_isChanKan = false;
     }
 
     public void Handle_KaKan_Nagashi()
     {
         m_isChanKan = false;
 
-        // if nobody cyan kan, then pick up rinshan hai
+        // if nobody chan kan, then pick up rinshan hai
         //PickRinshanHai();
     }
 
@@ -868,27 +922,64 @@ public class MahjongMain : Mahjong
 
     public void Handle_Pon()
     {
+        m_isTenhou = false;
+        m_isChiihou = false;
 
+        int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
+        ActivePlayer.Tehai.setPon( m_suteHai, relation );
+        ActivePlayer.Tehai.Sort();
+
+        getPlayer(m_kazeFrom).Hou.setNaki(true);
     }
 
     public void Handle_DaiMinKan()
     {
+        m_isTenhou = false;
+        m_isChiihou = false;
 
+        int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
+        ActivePlayer.Tehai.setDaiMinKan(m_suteHai, relation);
+        ActivePlayer.Tehai.Sort();
+
+        getPlayer(m_kazeFrom).Hou.setNaki(true);
+
+        //PickRinshanHai();
     }
 
     public void Handle_ChiiLeft()
     {
+        m_isTenhou = false;
+        m_isChiihou = false;
 
+        int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
+        ActivePlayer.Tehai.setChiiLeft(m_suteHai, relation);
+        ActivePlayer.Tehai.Sort();
+
+        getPlayer(m_kazeFrom).Hou.setNaki(true);
     }
 
     public void Handle_ChiiCenter()
     {
+        m_isTenhou = false;
+        m_isChiihou = false;
 
+        int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
+        ActivePlayer.Tehai.setChiiCenter(m_suteHai, relation);
+        ActivePlayer.Tehai.Sort();
+
+        getPlayer(m_kazeFrom).Hou.setNaki(true);
     }
 
     public void Handle_ChiiRight()
     {
+        m_isTenhou = false;
+        m_isChiihou = false;
 
+        int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
+        ActivePlayer.Tehai.setChiiRight(m_suteHai, relation);
+        ActivePlayer.Tehai.Sort();
+
+        getPlayer(m_kazeFrom).Hou.setNaki(true);
     }
 
     // for ERequest.Select_SuteHai

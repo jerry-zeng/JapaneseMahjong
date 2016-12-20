@@ -446,17 +446,17 @@ public class Tehai
     // ポン(碰)の可否をチェックする
     public bool validPon(Hai suteHai)
     {
-        if (_fuuros.Count >= FUURO_MAX)
+        if(_fuuros.Count >= FUURO_MAX)
             return false;
 
         int count = 1; // include the suteHai.
-        for (int i = 0; i < _jyunTehais.Count; i++)
+        for(int i = 0; i < _jyunTehais.Count; i++)
         {
             if(_jyunTehais[i].ID == suteHai.ID)
             {
                 count++;
 
-                if (count >= Tehai.MENTSU_LENGTH_3)
+                if(count >= Tehai.MENTSU_LENGTH_3)
                     return true;
             }
         }
@@ -476,7 +476,7 @@ public class Tehai
         int newPickIndex = 0;
 
         int count = 1;
-        for (int i = 0; i < _jyunTehais.Count; i++) 
+        for(int i = 0; i < _jyunTehais.Count; i++) 
         {
             if( _jyunTehais[i].ID == suteHai.ID)
             {
@@ -486,7 +486,7 @@ public class Tehai
                 removeJyunTehaiAt(i);
                 i--;
 
-                if (count >= Tehai.MENTSU_LENGTH_3)
+                if(count >= Tehai.MENTSU_LENGTH_3)
                     break;
             }
         }
@@ -578,7 +578,7 @@ public class Tehai
 
         int count = 1;
 
-        for (int i = 0; i < _jyunTehais.Count; i++)
+        for(int i = 0; i < _jyunTehais.Count; i++)
         {
             if( _jyunTehais[i].ID == suteHai.ID)
             {

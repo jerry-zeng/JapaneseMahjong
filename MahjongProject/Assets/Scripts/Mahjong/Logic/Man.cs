@@ -45,7 +45,9 @@ public class Man : Player
         }
 
         // check enable Reach
-        if( !MahjongAgent.isReach(JiKaze) && MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount ) 
+        if( !MahjongAgent.isReach(JiKaze) && 
+           MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount &&
+           Tenbou >= GameSettings.Reach_Cost ) 
         {
             List<int> haiIndexList;
             if( MahjongAgent.tryGetReachIndexs(Tehai, tsumoHai, out haiIndexList) )

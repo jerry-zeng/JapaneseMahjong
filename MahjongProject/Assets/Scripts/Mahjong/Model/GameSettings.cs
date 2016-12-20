@@ -14,5 +14,6 @@ public static class GameSettings
 
     // 持ち点の初期値
     public static int INIT_TENBOU = 25000;
+    public static int Reach_Cost = 1000;
 
 }

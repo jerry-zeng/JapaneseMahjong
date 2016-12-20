@@ -110,7 +110,9 @@ public class AI : Player
 
     protected bool thinkReach(Tehai tehai)
     {
-        if (MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount) 
+        if( !MahjongAgent.isReach(JiKaze) && 
+           MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount && 
+           Tenbou >= GameSettings.Reach_Cost ) 
         {
             for(int i = 0; i < MahjongMain.HaiTable.Length; i++) 
             {
