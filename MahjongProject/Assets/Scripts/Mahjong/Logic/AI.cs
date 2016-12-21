@@ -111,17 +111,9 @@ public class AI : Player
 
     protected bool thinkReach(Tehai tehai)
     {
-        if( !MahjongAgent.isReach(JiKaze) && 
-           MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount && 
-           Tenbou >= GameSettings.Reach_Cost ) 
+        if( CheckReachPreConditions() == true ) 
         {
-            for(int i = 0; i < MahjongMain.HaiTable.Length; i++) 
-            {
-                FormatWorker.setCounterFormat(tehai, MahjongMain.HaiTable[i]);
-
-                if(FormatWorker.calculateCombisCount( null ) > 0)
-                    return true;
-            }
+            return MahjongAgent.canTenpai(tehai);
         }
         return false;
     }

@@ -182,11 +182,12 @@ public class GameAgent
 
         Tehai tehai = new Tehai(a_tehai);
 
-        for (int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
+        for(int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
         {
             Hai addHai = new Hai(id);
 
             countFormat.setCounterFormat(tehai, addHai);
+
             if( countFormat.calculateCombisCount(combis) > 0 )
             {
                 hais.Add( addHai );
@@ -194,6 +195,18 @@ public class GameAgent
         }
 
         return hais.Count > 0;
+    }
+
+    public bool canTenpai(Tehai tehai)
+    {
+        for(int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
+        {
+            countFormat.setCounterFormat(tehai, new Hai(id));
+
+            if( countFormat.calculateCombisCount(combis) > 0 )
+                return true;
+        }
+        return false;
     }
     #endregion
 }

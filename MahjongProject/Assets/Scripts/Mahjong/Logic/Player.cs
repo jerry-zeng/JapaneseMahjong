@@ -126,16 +126,7 @@ public abstract class Player
         if( _reach == true )
             return true;
 
-        for( int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++ )
-        {
-            Hai addHai = new Hai(id);
-            FormatWorker.setCounterFormat(_tehai, addHai);
-
-            if( FormatWorker.calculateCombisCount(null) > 0 )
-                return true;
-        }
-
-        return false;
+        return MahjongAgent.canTenpai( _tehai );
     }
 
     // 振听.
@@ -175,6 +166,14 @@ public abstract class Player
         }
 
         return false;
+    }
+
+
+    public bool CheckReachPreConditions()
+    {
+        return !MahjongAgent.isReach(JiKaze) && 
+            MahjongAgent.getTsumoRemain() >= GameSettings.PlayerCount && 
+            Tenbou >= GameSettings.Reach_Cost;
     }
 
     #endregion

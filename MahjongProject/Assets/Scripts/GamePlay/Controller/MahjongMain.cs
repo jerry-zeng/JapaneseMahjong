@@ -8,31 +8,6 @@ using System.Collections.Generic;
 
 public class MahjongMain : Mahjong 
 {
-    #region table
-    public readonly static Hai[] HaiTable = new Hai[] 
-    {
-        new Hai(Hai.ID_WAN_1), new Hai(Hai.ID_WAN_2),
-        new Hai(Hai.ID_WAN_3), new Hai(Hai.ID_WAN_4),
-        new Hai(Hai.ID_WAN_5), new Hai(Hai.ID_WAN_6),
-        new Hai(Hai.ID_WAN_7), new Hai(Hai.ID_WAN_8),
-        new Hai(Hai.ID_WAN_9),
-        new Hai(Hai.ID_PIN_1), new Hai(Hai.ID_PIN_2),
-        new Hai(Hai.ID_PIN_3), new Hai(Hai.ID_PIN_4),
-        new Hai(Hai.ID_PIN_5), new Hai(Hai.ID_PIN_6),
-        new Hai(Hai.ID_PIN_7), new Hai(Hai.ID_PIN_8),
-        new Hai(Hai.ID_PIN_9),
-        new Hai(Hai.ID_SOU_1), new Hai(Hai.ID_SOU_2),
-        new Hai(Hai.ID_SOU_3), new Hai(Hai.ID_SOU_4),
-        new Hai(Hai.ID_SOU_5), new Hai(Hai.ID_SOU_6),
-        new Hai(Hai.ID_SOU_7), new Hai(Hai.ID_SOU_8),
-        new Hai(Hai.ID_SOU_9),
-        new Hai(Hai.ID_TON),  new Hai(Hai.ID_NAN),
-        new Hai(Hai.ID_SYA),  new Hai(Hai.ID_PE),
-        new Hai(Hai.ID_HAKU), new Hai(Hai.ID_HATSU),
-        new Hai(Hai.ID_CHUN) 
-    };
-    #endregion
-
 
     // Step: 1
     protected override void initialize()
