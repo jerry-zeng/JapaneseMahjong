@@ -199,7 +199,7 @@ public class Yaku
         };
         #endregion
 
-        this._kokushi = _yakuHandlers[0].isHantei() || _yakuHandlers[1].isHantei();
+        this._kokushi = _yakuHandlers[_yakuHandlers.Length-1].isHantei() || _yakuHandlers[_yakuHandlers.Length-2].isHantei();
 
         FilterYakuPiece();
     }
@@ -252,6 +252,21 @@ public class Yaku
         }
 
         return hanSuu;
+    }
+
+    public YakuHandler[] getHanteiYakus()
+    {
+        List<YakuHandler> yakus = new List<YakuHandler>();
+
+        for(int i = 0; i < _yakuHandlers.Length; i++)
+        {
+            if( _yakuHandlers[i].isHantei() )
+            {
+                yakus.Add( _yakuHandlers[i] );
+            }
+        }
+
+        return yakus.ToArray();
     }
 
     public string[] getYakuNames()
@@ -1551,9 +1566,6 @@ public class Yaku
     // 四暗刻 //
     public bool checkSuuankou()
     {
-        if( checkSuuankou_Tanki() == true )
-            return false;
-
         int anKanCount = 0;
 
         Fuuro[] fuuros = _tehai.getFuuros();
@@ -1592,9 +1604,6 @@ public class Yaku
     {
         //鳴きがある場合は成立しない
         if( _nakiFlag == true )
-            return false;
-
-        if( checkCyuurennpoutou_Jyunsei() == true )
             return false;
 
         //手牌が清一になっていない場合も成立しない
@@ -1637,10 +1646,6 @@ public class Yaku
         //鳴きがある場合は成立しない
         if( _nakiFlag == true )
             return false;
-
-        if( checkKokushi_13Men() == true )
-            return false;
-        
 
         //牌の数を調べるための配列 (0番地は使用しない）
         int[] checkId = { 

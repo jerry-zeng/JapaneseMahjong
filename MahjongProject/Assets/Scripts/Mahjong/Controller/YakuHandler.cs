@@ -476,7 +476,7 @@ public class CheckTsuisou_Chiitoitsu : YakuHandler {
 public class CheckSuuankou : YakuHandler {
     public CheckSuuankou(Yaku owner) {
         this.YakuID = 35;
-        hantei = owner.checkSuuankou();
+        hantei = owner.checkSuuankou() && !owner.checkSuuankou_Tanki();
         hanSuu = 13;
         yakuman = true;
     }
@@ -485,7 +485,7 @@ public class CheckSuuankou : YakuHandler {
 public class CheckCyuurennpoutou : YakuHandler {
     public CheckCyuurennpoutou(Yaku owner) {
         this.YakuID = 36;
-        hantei = owner.checkCyuurennpoutou();
+        hantei = owner.checkCyuurennpoutou() && !owner.checkCyuurennpoutou_Jyunsei();
         hanSuu = 13;
         yakuman = true;
     }
@@ -494,7 +494,7 @@ public class CheckCyuurennpoutou : YakuHandler {
 public class CheckKokushi : YakuHandler {
     public CheckKokushi(Yaku owner) {
         this.YakuID = 37;
-        hantei = owner.checkKokushi();
+        hantei = owner.checkKokushi() && !owner.checkKokushi_13Men();
         hanSuu = 13;
         yakuman = true;
     }

@@ -7,6 +7,7 @@ public class AgariInfo
     public int han;
     public int fu;
     public string[] yakuNames;
+    public YakuHandler[] hanteiYakus;
     public ScoreInfo scoreInfo;
 
     public int agariScore;

@@ -229,13 +229,12 @@ public sealed class AgariScoreManager
         {
             Yaku yaku = Yaku.NewYaku_Chiitoitsu(tehai, addHai, param);
 
-            string[] yakuNames = yaku.getYakuNames();
-            int hanSuu = yaku.getHan();
-
-            agariInfo.scoreInfo = GetScoreInfo(hanSuu, 25);
+            agariInfo.han = yaku.getHan();
             agariInfo.fu = 25;
-            agariInfo.han = hanSuu;
-            agariInfo.yakuNames = yakuNames;
+            agariInfo.hanteiYakus = yaku.getHanteiYakus();
+            agariInfo.yakuNames = yaku.getYakuNames();
+
+            agariInfo.scoreInfo = GetScoreInfo(agariInfo.han, agariInfo.fu);
 
             return agariInfo.scoreInfo.koRon;
         }
@@ -247,12 +246,12 @@ public sealed class AgariScoreManager
 
             if( yaku.isKokushi )
             {
-                int hanSuu = 13;
-
-                agariInfo.scoreInfo = GetScoreInfo(hanSuu, 20);
-                agariInfo.han = hanSuu;
-                agariInfo.fu = 0;
+                agariInfo.han = 13;
+                agariInfo.fu = 20;
+                agariInfo.hanteiYakus = yaku.getHanteiYakus();
                 agariInfo.yakuNames = yaku.getYakuNames();
+
+                agariInfo.scoreInfo = GetScoreInfo(agariInfo.han, agariInfo.fu);
 
                 return agariInfo.scoreInfo.koRon;
             }
@@ -283,10 +282,12 @@ public sealed class AgariScoreManager
 
             if( scoreArr[i] > maxAgariScore )
             {
-                agariInfo.scoreInfo = info;
-                agariInfo.fu = huSuuArr[i];
                 agariInfo.han = hanSuuArr[i];
+                agariInfo.fu = huSuuArr[i];
+                agariInfo.hanteiYakus = yaku.getHanteiYakus();
                 agariInfo.yakuNames = yaku.getYakuNames();
+
+                agariInfo.scoreInfo = info;
 
                 maxAgariScore = scoreArr[i];
             }

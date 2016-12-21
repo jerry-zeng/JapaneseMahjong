@@ -333,7 +333,7 @@ public abstract class Mahjong
             }
         }
         else{
-            if( m_isRenhou ){
+            if( m_isRenhou ){ // Not supported.
                 param.setYakuFlag(EYakuFlagType.RENHOU, true);
             }
         }
