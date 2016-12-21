@@ -185,7 +185,7 @@ public class Man : Player
                 }
             }
             else{
-                Utils.LogWarningFormat( "Player {0} is enable ron but furiten...", JiKaze.ToString() );
+                Utils.LogWarningFormat( "Player {0} is enable to ron but furiten...", JiKaze.ToString() );
             }
         }
 

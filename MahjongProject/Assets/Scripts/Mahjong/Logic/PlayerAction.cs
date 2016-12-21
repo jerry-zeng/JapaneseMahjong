@@ -53,11 +53,17 @@ public class PlayerAction
         _validChiiRight = false;
 
         IsValidChii = false;
-        AllSarashiHais = new List<Hai>();
+        _allSarashiHais.Clear();
+
+        _sarashiHaiLeft.Clear();
+        _sarashiHaiCenter.Clear();
+        _sarashiHaiRight.Clear();
 
         _validTsumoKan = false;
         _validDaiMinKan = false;
+        _tsumoKanHais.Clear();
 
+        _reachHaiIndexList.Clear();
         _menuList.Clear();
 
         _reachSelectIndex = 0;
@@ -126,7 +132,7 @@ public class PlayerAction
     }
 
     // all reach hai index
-    private List<int> _reachHaiIndexList;
+    private List<int> _reachHaiIndexList = new List<int>();
     public List<int> ReachHaiIndexList
     {
         get{ return _reachHaiIndexList; }
@@ -139,9 +145,12 @@ public class PlayerAction
     {
         get; protected set;
     }
+
+    private List<Hai> _allSarashiHais = new List<Hai>();
     public List<Hai> AllSarashiHais
     {
-        get; protected set;
+        get{ return _allSarashiHais; }
+        protected set{ _allSarashiHais = value; }
     }
 
     protected void SetAnySarashiHai(List<Hai> sarashiHai)
@@ -165,7 +174,7 @@ public class PlayerAction
         protected set{ _validChiiLeft = value; }
     }
 
-    private List<Hai> _sarashiHaiLeft;
+    private List<Hai> _sarashiHaiLeft = new List<Hai>();
     public List<Hai> SarashiHaiLeft
     {
         get{ return _sarashiHaiLeft; }
@@ -188,7 +197,7 @@ public class PlayerAction
         protected set{ _validChiiCenter = value; }
     }
 
-    private List<Hai> _sarashiHaiCenter;
+    private List<Hai> _sarashiHaiCenter = new List<Hai>();
     public List<Hai> SarashiHaiCenter
     {
         get{ return _sarashiHaiCenter; }
@@ -211,7 +220,7 @@ public class PlayerAction
         protected set{ _validChiiRight = value; }
     }
 
-    private List<Hai> _sarashiHaiRight;
+    private List<Hai> _sarashiHaiRight = new List<Hai>();
     public List<Hai> SarashiHaiRight
     {
         get{ return _sarashiHaiRight; }
@@ -236,7 +245,7 @@ public class PlayerAction
         protected set{ _validTsumoKan = value; }
     }
 
-    private List<Hai> _tsumoKanHais;
+    private List<Hai> _tsumoKanHais = new List<Hai>();
     public List<Hai> TsumoKanHaiList
     {
         get{ return _tsumoKanHais; }

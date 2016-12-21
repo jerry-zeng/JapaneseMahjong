@@ -18,8 +18,8 @@ public class AI : Player
     {
         if(inTest){
             _action.Reset();
-            //_action.SutehaiIndex = Utils.GetRandomNum(0, Tehai.getJyunTehaiCount());
-            _action.SutehaiIndex = Tehai.getJyunTehaiCount();
+            _action.SutehaiIndex = Utils.GetRandomNum(0, Tehai.getJyunTehaiCount());
+            //_action.SutehaiIndex = Tehai.getJyunTehaiCount();
             return DoResponse(EResponse.SuteHai);
         }
 

@@ -25,13 +25,13 @@ public class PlayerInputPanel : UIObject
         btn_Pon.SetTag( ResManager.getString("button_pon") );
         btn_Chii.index = 1;
         btn_Chii.SetOnClick( OnClick_Chii );
-        btn_Pon.SetTag( ResManager.getString("button_chii") );
+        btn_Chii.SetTag( ResManager.getString("button_chii") );
         btn_Kan.index = 2;
         btn_Kan.SetOnClick( OnClick_Kan );
-        btn_Pon.SetTag( ResManager.getString("button_kan") );
+        btn_Kan.SetTag( ResManager.getString("button_kan") );
         btn_Reach.index = 3;
         btn_Reach.SetOnClick( OnClick_Reach );
-        btn_Pon.SetTag( ResManager.getString("button_reach") );
+        btn_Reach.SetTag( ResManager.getString("button_reach") );
         btn_Agari.index = 4;
         btn_Agari.SetOnClick( OnClick_Agari );
         btn_Agari.SetTag( ResManager.getString("button_tsumo") );
@@ -85,12 +85,18 @@ public class PlayerInputPanel : UIObject
             {
                 if( PlayerAction.AllSarashiHais.Count > 2 )
                 {
+                    OwnerPlayer.Action.State = EActionState.Select_Chii;
+
                     // list chii hai selection.
                     List<int> enableIndexList = new List<int>();
+                    Hai[] jyunTehais = OwnerPlayer.Tehai.getJyunTehai();
+
                     for(int i = 0; i < PlayerAction.AllSarashiHais.Count; i++)
                     {
-                        int index = OwnerPlayer.Tehai.getHaiIndex( PlayerAction.AllSarashiHais[i].ID );
-                        enableIndexList.Add( index );
+                        for( int j = 0; j < jyunTehais.Length; j++){
+                            if( jyunTehais[j].ID == PlayerAction.AllSarashiHais[i].ID )
+                                enableIndexList.Add( j );
+                        }
                     }
 
                     playerUI.Tehai.EnableInput( enableIndexList );
@@ -141,18 +147,19 @@ public class PlayerInputPanel : UIObject
 
             if( PlayerAction.IsValidTsumoKan )
             {
-                if( PlayerAction.TsumoKanHaiList.Count > 1 ){
+                if( PlayerAction.TsumoKanHaiList.Count > 1 )
+                {
                     PlayerAction.State = EActionState.Select_Kan;
 
                     // list kan hai selection.
-                    List<int> haiIndexList = new List<int>();
+                    List<int> enableIndexList = new List<int>();
                     Hai[] jyunTehais = OwnerPlayer.Tehai.getJyunTehai();
 
                     for(int i = 0; i < PlayerAction.TsumoKanHaiList.Count; i++)
                     {
                         for( int j = 0; j < jyunTehais.Length; j++){
                             if( jyunTehais[j].ID == PlayerAction.TsumoKanHaiList[i].ID )
-                                haiIndexList.Add( j );
+                                enableIndexList.Add( j );
                         }
                     }
 
@@ -160,10 +167,10 @@ public class PlayerInputPanel : UIObject
                     for(int i = 0; i < PlayerAction.TsumoKanHaiList.Count; i++)
                     {
                         if( tsumoHai.ID == PlayerAction.TsumoKanHaiList[i].ID )
-                            haiIndexList.Add( OwnerPlayer.Tehai.getJyunTehaiCount() );
+                            enableIndexList.Add( OwnerPlayer.Tehai.getJyunTehaiCount() );
                     }
 
-                    playerUI.Tehai.EnableInput( haiIndexList );
+                    playerUI.Tehai.EnableInput( enableIndexList );
                     btn_Kan.SetEnable(false);
                 }
                 else{

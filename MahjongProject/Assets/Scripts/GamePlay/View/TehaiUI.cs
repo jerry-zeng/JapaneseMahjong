@@ -188,10 +188,14 @@ public class TehaiUI : UIObject
 
                     // check to enable select other chii type pai.
                     List<int> enableIndexList = new List<int>();
+                    Hai[] jyunTehais = OwnerPlayer.Tehai.getJyunTehai();
+
                     for(int i = 0; i < PlayerAction.AllSarashiHais.Count; i++)
                     {
-                        int chiiHaiIndex = OwnerPlayer.Tehai.getHaiIndex( PlayerAction.AllSarashiHais[i].ID );
-                        enableIndexList.Add( chiiHaiIndex );
+                        for( int j = 0; j < jyunTehais.Length; j++){
+                            if( jyunTehais[j].ID == PlayerAction.AllSarashiHais[i].ID )
+                                enableIndexList.Add( j );
+                        }
                     }
 
                     EnableInput( enableIndexList );
@@ -205,31 +209,40 @@ public class TehaiUI : UIObject
                     {
                         chiiPaiSelectList.Sort( MahjongPaiCompare );
 
-                        PlayerAction.SarashiHaiLeft.Sort( Tehai.Compare );
-                        if( chiiPaiSelectList[0].ID == PlayerAction.SarashiHaiLeft[0].ID &&
-                           chiiPaiSelectList[1].ID == PlayerAction.SarashiHaiLeft[1].ID)
+                        if( PlayerAction.SarashiHaiRight.Count >= 2 )
                         {
-                            PlayerAction.Response = EResponse.Chii_Left;
-                            PlayerAction.ChiiSelectType = PlayerAction.Chii_Select_Left;
-                            Debug.Log("Chii type is Chii_Left");
+                            PlayerAction.SarashiHaiRight.Sort( Tehai.Compare );
+                            if( chiiPaiSelectList[0].ID == PlayerAction.SarashiHaiRight[0].ID &&
+                               chiiPaiSelectList[1].ID == PlayerAction.SarashiHaiRight[1].ID)
+                            {
+                                PlayerAction.Response = EResponse.Chii_Right;
+                                PlayerAction.ChiiSelectType = PlayerAction.Chii_Select_Right;
+                                Debug.Log("Chii type is Chii_Right");
+                            }
                         }
 
-                        PlayerAction.SarashiHaiCenter.Sort( Tehai.Compare );
-                        if( chiiPaiSelectList[0].ID == PlayerAction.SarashiHaiCenter[0].ID &&
-                           chiiPaiSelectList[1].ID == PlayerAction.SarashiHaiCenter[1].ID)
+                        if( PlayerAction.SarashiHaiCenter.Count >= 2 )
                         {
-                            PlayerAction.Response = EResponse.Chii_Center;
-                            PlayerAction.ChiiSelectType = PlayerAction.Chii_Select_Center;
-                            Debug.Log("Chii type is Chii_Center");
+                            PlayerAction.SarashiHaiCenter.Sort( Tehai.Compare );
+                            if( chiiPaiSelectList[0].ID == PlayerAction.SarashiHaiCenter[0].ID &&
+                               chiiPaiSelectList[1].ID == PlayerAction.SarashiHaiCenter[1].ID)
+                            {
+                                PlayerAction.Response = EResponse.Chii_Center;
+                                PlayerAction.ChiiSelectType = PlayerAction.Chii_Select_Center;
+                                Debug.Log("Chii type is Chii_Center");
+                            }
                         }
 
-                        PlayerAction.SarashiHaiRight.Sort( Tehai.Compare );
-                        if( chiiPaiSelectList[0].ID == PlayerAction.SarashiHaiRight[0].ID &&
-                           chiiPaiSelectList[1].ID == PlayerAction.SarashiHaiRight[1].ID)
+                        if( PlayerAction.SarashiHaiLeft.Count >= 2 )
                         {
-                            PlayerAction.Response = EResponse.Chii_Right;
-                            PlayerAction.ChiiSelectType = PlayerAction.Chii_Select_Right;
-                            Debug.Log("Chii type is Chii_Right");
+                            PlayerAction.SarashiHaiLeft.Sort( Tehai.Compare );
+                            if( chiiPaiSelectList[0].ID == PlayerAction.SarashiHaiLeft[0].ID &&
+                               chiiPaiSelectList[1].ID == PlayerAction.SarashiHaiLeft[1].ID)
+                            {
+                                PlayerAction.Response = EResponse.Chii_Left;
+                                PlayerAction.ChiiSelectType = PlayerAction.Chii_Select_Left;
+                                Debug.Log("Chii type is Chii_Left");
+                            }
                         }
 
                         EventManager.Get().SendEvent(UIEventType.HideMenuList);
@@ -240,26 +253,39 @@ public class TehaiUI : UIObject
                     else // check to disable select other chii type pai.
                     {
                         List<int> enableIndexList = new List<int>();
+                        Hai[] jyunTehais = OwnerPlayer.Tehai.getJyunTehai();
 
                         int curSelectID = chiiPaiSelectList[0].ID;
-                        enableIndexList.Add( OwnerPlayer.Tehai.getHaiIndex( curSelectID ) );
+                        enableIndexList.Add( index );
 
-                        if( PlayerAction.SarashiHaiLeft.Exists(h => h.ID == curSelectID) )
+                        if( PlayerAction.SarashiHaiRight.Exists(h => h.ID == curSelectID) )
                         {
-                            Hai otherHai = PlayerAction.SarashiHaiLeft.Find(h => h.ID != curSelectID);
-                            enableIndexList.Add( OwnerPlayer.Tehai.getHaiIndex( otherHai.ID ) );
+                            Hai otherHai = PlayerAction.SarashiHaiRight.Find(h => h.ID != curSelectID);
+
+                            for( int i = 0; i < jyunTehais.Length; i++ ){
+                                if( jyunTehais[i].ID == otherHai.ID && !enableIndexList.Contains(i) )
+                                    enableIndexList.Add( i );
+                            }
                         }
 
                         if( PlayerAction.SarashiHaiCenter.Exists(h => h.ID == curSelectID) )
                         {
                             Hai otherHai = PlayerAction.SarashiHaiCenter.Find(h => h.ID != curSelectID);
-                            enableIndexList.Add( OwnerPlayer.Tehai.getHaiIndex( otherHai.ID ) );
+
+                            for( int i = 0; i < jyunTehais.Length; i++ ){
+                                if( jyunTehais[i].ID == otherHai.ID && !enableIndexList.Contains(i) )
+                                    enableIndexList.Add( i );
+                            }
                         }
 
-                        if( PlayerAction.SarashiHaiRight.Exists(h => h.ID == curSelectID) )
+                        if( PlayerAction.SarashiHaiLeft.Exists(h => h.ID == curSelectID) )
                         {
-                            Hai otherHai = PlayerAction.SarashiHaiRight.Find(h => h.ID != curSelectID);
-                            enableIndexList.Add( OwnerPlayer.Tehai.getHaiIndex( otherHai.ID ) );
+                            Hai otherHai = PlayerAction.SarashiHaiLeft.Find(h => h.ID != curSelectID);
+
+                            for( int i = 0; i < jyunTehais.Length; i++ ){
+                                if( jyunTehais[i].ID == otherHai.ID && !enableIndexList.Contains(i) )
+                                    enableIndexList.Add( i );
+                            }
                         }
 
                         EnableInput( enableIndexList );
