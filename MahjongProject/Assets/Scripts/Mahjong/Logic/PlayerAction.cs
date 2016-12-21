@@ -18,8 +18,9 @@ public enum EActionType
     Chii   = 1,
     Kan    = 2,
     Reach  = 3,
-    Agari  = 4,
-    Nagashi= 5,
+    Tsumo  = 4,
+    Ron    = 5,
+    Nagashi= 6,
 }
 
 

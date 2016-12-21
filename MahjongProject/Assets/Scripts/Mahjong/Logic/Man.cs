@@ -34,7 +34,7 @@ public class Man : Player
             if( isFuriten() == false )
             {
                 _action.IsValidTsumo = true;
-                _action.MenuList.Add( EActionType.Agari );
+                _action.MenuList.Add( EActionType.Tsumo );
 
                 if( MahjongAgent.isReach(JiKaze) )
                     return DisplayMenuList();
@@ -138,7 +138,7 @@ public class Man : Player
             if( isFuriten() == false ) 
             {
                 _action.IsValidRon = true;
-                _action.MenuList.Add( EActionType.Agari );
+                _action.MenuList.Add( EActionType.Ron );
 
                 if( MahjongAgent.isReach(JiKaze) ){
                     return DisplayMenuList();
@@ -174,7 +174,7 @@ public class Man : Player
             if( isFuriten() == false )
             {
                 _action.IsValidRon = true;
-                _action.MenuList.Add( EActionType.Agari );
+                _action.MenuList.Add( EActionType.Ron );
 
                 if( MahjongAgent.isReach(JiKaze) ){
                     //_action.MenuList.Add( EActionType.Nagashi );

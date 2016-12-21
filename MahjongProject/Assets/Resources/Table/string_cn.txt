@@ -73,7 +73,7 @@
   },
   {
     "key": "button_tsumo",
-    "value": "自摸和"
+    "value": "自摸"
   },
   {
     "key": "button_pon",

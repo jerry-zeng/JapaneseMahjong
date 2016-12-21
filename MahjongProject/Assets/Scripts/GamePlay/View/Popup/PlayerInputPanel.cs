@@ -22,16 +22,22 @@ public class PlayerInputPanel : UIObject
 
         btn_Pon.index = 0;
         btn_Pon.SetOnClick( OnClick_Pon );
+        btn_Pon.SetTag( ResManager.getString("button_pon") );
         btn_Chii.index = 1;
         btn_Chii.SetOnClick( OnClick_Chii );
+        btn_Pon.SetTag( ResManager.getString("button_chii") );
         btn_Kan.index = 2;
         btn_Kan.SetOnClick( OnClick_Kan );
+        btn_Pon.SetTag( ResManager.getString("button_kan") );
         btn_Reach.index = 3;
         btn_Reach.SetOnClick( OnClick_Reach );
+        btn_Pon.SetTag( ResManager.getString("button_reach") );
         btn_Agari.index = 4;
         btn_Agari.SetOnClick( OnClick_Agari );
+        btn_Agari.SetTag( ResManager.getString("button_tsumo") );
         btn_Nagashi.index = 5;
         btn_Nagashi.SetOnClick( Onclick_Nagashi );
+        btn_Nagashi.SetTag( ResManager.getString("button_pass") );
     }
 
     public void SetOwnerPlayerUI(PlayerUI ui)
@@ -47,8 +53,15 @@ public class PlayerInputPanel : UIObject
         btn_Chii.SetEnable( isMenuEnable(EActionType.Chii) );
         btn_Kan.SetEnable( isMenuEnable(EActionType.Kan) );
         btn_Reach.SetEnable( isMenuEnable(EActionType.Reach) );
-        btn_Reach.ResetTag();
-        btn_Agari.SetEnable( isMenuEnable(EActionType.Agari) );
+        btn_Reach.SetTag( ResManager.getString("button_reach") );
+
+        btn_Agari.SetEnable( isMenuEnable(EActionType.Ron) || isMenuEnable(EActionType.Tsumo) );
+
+        if( isMenuEnable(EActionType.Ron) )
+            btn_Agari.SetTag( ResManager.getString("button_ron") );
+        if( isMenuEnable(EActionType.Tsumo) )
+            btn_Agari.SetTag( ResManager.getString("button_tsumo") );
+
         btn_Nagashi.SetEnable( isMenuEnable(EActionType.Nagashi) );
     }
     public void HideMenu()
@@ -188,7 +201,7 @@ public class PlayerInputPanel : UIObject
 
                 playerUI.Tehai.EnableInput( true );
 
-                btn_Reach.ResetTag();
+                btn_Reach.SetTag( ResManager.getString("button_reach") );
             }
             else{
                 PlayerAction.State = EActionState.Select_Reach;
@@ -203,7 +216,7 @@ public class PlayerInputPanel : UIObject
 
     public void OnClick_Agari()
     {
-        if( isMenuEnable(EActionType.Agari) ){
+        if( isMenuEnable(EActionType.Ron) || isMenuEnable(EActionType.Tsumo) ){
             Debug.Log("+ OnClick_Agari()");
 
             if(PlayerAction.IsValidTsumo)
