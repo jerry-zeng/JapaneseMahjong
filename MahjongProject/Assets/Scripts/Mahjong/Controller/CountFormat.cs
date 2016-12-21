@@ -197,10 +197,13 @@ public class CountFormat
         for(int i = 0; i < countHai.Length; i++)
         {
             //0枚の牌があれば不成立
-            if(countHai[i] == 0)
+            if( countHai[i] == 0 )
                 return false;
 
-            if(countHai[i] == 2)
+            if( countHai[i] > 2 )
+                return false;
+
+            if( countHai[i] == 2 )
                 atama = true;
         }
 

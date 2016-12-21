@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using YakuHelper;
 
 public class AgariInfo 
 {
