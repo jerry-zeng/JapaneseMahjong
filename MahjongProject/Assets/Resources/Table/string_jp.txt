@@ -56,6 +56,10 @@
     "value": "x"
   },
   {
+    "key": "double",
+    "value": "ダブル"
+  },
+  {
     "key": "button_reach",
     "value": "リーチ"
   },
@@ -306,6 +310,10 @@
   {
     "key": "yaku_yakuhai",
     "value": "役牌"
+  },
+  {
+    "key": "yaku_jifonhai",
+    "value": "自風牌"
   },
   {
     "key": "yaku_lenfonhai",

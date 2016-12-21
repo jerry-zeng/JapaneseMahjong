@@ -227,9 +227,7 @@ public sealed class AgariScoreManager
         /// 1. check Chiitoitsu(七对子)
         if( formatWorker.isChiitoitsu() )
         {
-            HaiCombi combi = combisCount <= 0? new HaiCombi() : combis[0];
-            
-            Yaku yaku = new Yaku(tehai, addHai, combi, param, 0);
+            Yaku yaku = Yaku.NewYaku_Chiitoitsu(tehai, addHai, param);
 
             string[] yakuNames = yaku.getYakuNames();
             int hanSuu = yaku.getHan();
@@ -242,11 +240,10 @@ public sealed class AgariScoreManager
             return agariInfo.scoreInfo.koRon;
         }
 
-
         /// 2. check Kokushi(国士无双)
         if( formatWorker.isKokushi() )
         {
-            Yaku yaku = new Yaku(tehai, addHai, param);
+            Yaku yaku = Yaku.NewYaku_Kokushi(tehai, addHai, param);
 
             if( yaku.isKokushi )
             {
@@ -276,7 +273,7 @@ public sealed class AgariScoreManager
 
         for(int i = 0; i < combisCount; i++)
         {
-            Yaku yaku = new Yaku(tehai, addHai, combis[i], param);
+            Yaku yaku = Yaku.NewYaku_Common(tehai, addHai, combis[i], param);
             hanSuuArr[i] = yaku.calculateHanSuu();
             huSuuArr[i] = CalculateHu(tehai, addHai, combis[i], param, yaku);
 

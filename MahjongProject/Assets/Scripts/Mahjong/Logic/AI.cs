@@ -18,7 +18,8 @@ public class AI : Player
     {
         if(inTest){
             _action.Reset();
-            _action.SutehaiIndex = UnityEngine.Random.Range(0, Tehai.getJyunTehaiCount());
+            _action.SutehaiIndex = Utils.GetRandomNum(0, Tehai.getJyunTehaiCount());
+            //_action.SutehaiIndex = Tehai.getJyunTehaiCount()-1;
             return DoResponse(EResponse.SuteHai);
         }
 
@@ -76,7 +77,7 @@ public class AI : Player
     protected override EResponse OnSelect_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
         _action.Reset();
-        _action.SutehaiIndex = UnityEngine.Random.Range(0, Tehai.getJyunTehaiCount());
+        _action.SutehaiIndex = Utils.GetRandomNum(0, Tehai.getJyunTehaiCount());
         return DoResponse(EResponse.SuteHai);
     }
 

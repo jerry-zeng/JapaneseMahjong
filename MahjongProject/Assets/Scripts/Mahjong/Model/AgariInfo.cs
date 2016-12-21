@@ -15,18 +15,19 @@ public class AgariInfo
     {
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-
         sb.Append( scoreInfo.ToString() );
         sb.Append( "\n" );
-        sb.Append( "Han: " + han.ToString() );
-        sb.Append( "\n" );
-        sb.Append( "Fu: " + fu.ToString() );
-        sb.Append( "\n" );
+
         sb.Append( "Yaku Names: \n" );
 
         for(int i = 0; i < yakuNames.Length; i++)
             sb.Append(  yakuNames[i] + "\n" );
-        
+
+        sb.Append( "Han: " + han.ToString() );
+        sb.Append( "\n" );
+        sb.Append( "Fu: " + fu.ToString() );
+        sb.Append( "\n" );
+
         sb.Append( "AgariScore: " + agariScore.ToString() );
         sb.Append( "\n" );
 

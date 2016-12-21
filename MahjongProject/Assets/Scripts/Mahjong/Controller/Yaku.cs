@@ -10,16 +10,16 @@ using System.Collections.Generic;
 public class Yaku 
 {
     #region Constructor
-    private Tehai _tehai;
-    private Hai _addHai;
-    private HaiCombi _combi;
-    private AgariParam _agariParam;
+    protected Tehai _tehai;
+    protected Hai _addHai;
+    protected HaiCombi _combi;
+    protected AgariParam _agariParam;
 
-    private int _doraCount = 0;
-    private YakuHandler[] _yakuHandlers;
+    protected int _doraCount = 0;
+    protected YakuHandler[] _yakuHandlers;
 
-    private bool _nakiFlag = false;
-    private bool _kokushi = false;
+    protected bool _nakiFlag = false;
+    protected bool _kokushi = false;
 
     public bool isKokushi { get { return _kokushi; } }
     public bool isNaki { get { return _nakiFlag; } }
@@ -31,6 +31,23 @@ public class Yaku
     public AgariParam AgariParam{ get{ return _agariParam; } }
 
 
+    // Constructors
+    public static Yaku NewYaku_Common(Tehai tehai, Hai addHai, HaiCombi combi, AgariParam param)
+    {
+        return new Yaku(tehai, addHai, combi, param);
+    }
+
+    public static Yaku NewYaku_Chiitoitsu(Tehai tehai, Hai addHai, AgariParam param)
+    {
+        return new Yaku(tehai, addHai, param, 0);
+    }
+
+    public static Yaku NewYaku_Kokushi(Tehai tehai, Hai addHai, AgariParam param)
+    {
+        return new Yaku(tehai, addHai, param);
+    }
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Yaku"/> class.
     /// Common combi Yaku(常规牌型)
@@ -40,7 +57,7 @@ public class Yaku
     /// 2. CheckKokushi, CheckKokushi_13Men，这2种国士无双相关的役不在这里处理!
     /// </summary>
 
-    public Yaku(Tehai tehai, Hai addHai, HaiCombi combi, AgariParam param)
+    protected Yaku(Tehai tehai, Hai addHai, HaiCombi combi, AgariParam param)
     {
         this._tehai = tehai;
         this._addHai = addHai;
@@ -85,6 +102,7 @@ public class Yaku
             new CheckTenhou(this),
             new CheckTihou(this),
             new CheckRenhou(this),
+            new CheckSuuankou(this),//四暗刻
             new CheckChinroutou(this),
             new CheckRyuuisou(this),
             new CheckSuukantsu(this),
@@ -92,7 +110,6 @@ public class Yaku
             new CheckSyousuushi(this),
             new CheckTsuisou(this),
             //new CheckTsuisou_Chiitoitsu(this), // Mustn't handle here.
-            new CheckSuuankou(this),
             new CheckCyuurennpoutou(this),
             //new CheckKokushi(this), // Mustn't handle here.
 
@@ -115,14 +132,14 @@ public class Yaku
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Yaku"/> class.
-    /// For Chiitoitsu（七对子）
+    /// For Chiitoitsu（七对子）, 
+    /// The param "chiitoitsuSymbol" is just used as a distinguish between Chiitoitsu and Kokushi
     /// </summary>
 
-    public Yaku(Tehai tehai, Hai addHai, HaiCombi combi, AgariParam param, int a_status)
+    protected Yaku(Tehai tehai, Hai addHai, AgariParam param, int chiitoitsuSymbol)
     {
         this._tehai = tehai;
         this._addHai = addHai;
-        this._combi  = combi;
         this._agariParam = param;
         this._nakiFlag = tehai.isNaki();
 
@@ -144,11 +161,10 @@ public class Yaku
 
             new CheckTinisou(this),
 
-            new CheckTsuisou_Chiitoitsu(this), //七对子字一色.
-
             new CheckTenhou(this),
             new CheckTihou(this),
             new CheckRenhou(this),
+            new CheckTsuisou_Chiitoitsu(this), //七对子字一色.
 
             new CheckDora(this)
         };
@@ -164,7 +180,7 @@ public class Yaku
     /// For Kokushi（国士无双）
     /// </summary>
     
-    public Yaku(Tehai tehai, Hai addHai, AgariParam param)
+    protected Yaku(Tehai tehai, Hai addHai, AgariParam param)
     {
         this._tehai = tehai;
         this._addHai = addHai;
@@ -174,12 +190,12 @@ public class Yaku
         #region handlers
         _yakuHandlers = new YakuHandler[]
         {
-            new CheckKokushi(this),
-            new CheckKokushi_13Men(this), //国士无双十三面.
-
             new CheckTenhou(this),
             new CheckTihou(this),
-            new CheckRenhou(this)
+            new CheckRenhou(this),
+
+            new CheckKokushi(this),
+            new CheckKokushi_13Men(this), //国士无双十三面.
         };
         #endregion
 
@@ -250,7 +266,10 @@ public class Yaku
             if( _yakuHandlers[i].isHantei() )
             {
                 if( _yakuHandlers[i].isYakuman() ) {
-                    current = _yakuHandlers[i].getYakuName() + "  " + ResManager.getString("yakuman");
+                    if( _yakuHandlers[i].isDoubleYakuman() )
+                        current = _yakuHandlers[i].getYakuName() + "  " + ResManager.getString("double") + ResManager.getString("yakuman");
+                    else
+                        current = _yakuHandlers[i].getYakuName() + "  " + ResManager.getString("yakuman");
                 }
                 else{
                     hanSuu = _yakuHandlers[i].getHanSuu();
@@ -278,7 +297,7 @@ public class Yaku
     #region Yaku Hai
 
     //役牌ができているかどうかの判定に使う補助メソッド
-    static bool checkTsuuHai(Tehai tehai, HaiCombi combi, int yakuHaiID)
+    protected static bool checkTsuuHai(Tehai tehai, HaiCombi combi, int yakuHaiID)
     {
         //純手牌をチェック
         for(int i = 0; i < combi.kouCount; i++)
@@ -724,7 +743,7 @@ public class Yaku
 
 
     //三色ができているかどうかの判定に使う補助メソッド
-    static void checkSansyoku(int id, bool[][] sansyokuFlag)
+    protected static void checkSansyoku(int id, bool[][] sansyokuFlag)
     {
         //萬子、筒子、索子をチェック
         int[] checkId = { Hai.ID_WAN_1, Hai.ID_PIN_1, Hai.ID_SOU_1 };
