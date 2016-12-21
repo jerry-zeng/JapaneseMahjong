@@ -123,7 +123,8 @@ public class MahjongMain : Mahjong
         m_renchan = false;
 
         m_isTenhou = true;
-        m_isChiihou = true;
+        m_isTihou = true;
+        m_isRenhou = false;
 
         m_isTsumo = false;
         m_isRinshan = false;
@@ -411,7 +412,7 @@ public class MahjongMain : Mahjong
         else {
             int chiiHouNokori = Yama.TSUMO_HAIS_MAX - (4*3+1)*GameSettings.PlayerCount - GameSettings.PlayerCount; //66
             if( tsumoNokori < chiiHouNokori ) {
-                m_isChiihou = false;
+                m_isTihou = false;
             }
         }
 
@@ -457,7 +458,7 @@ public class MahjongMain : Mahjong
     // pick up Rinshan hai.
     public void PickRinshanHai()
     {
-        m_isChiihou = false;
+        m_isTihou = false;
 
         m_isTsumo = true;
 
@@ -769,7 +770,7 @@ public class MahjongMain : Mahjong
     public void Handle_AnKan()
     {
         m_isTenhou = false;
-        m_isChiihou = false;
+        m_isTihou = false;
 
         int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
         int ankanHaiID = ActivePlayer.Action.TsumoKanHaiList[kanSelectIndex].ID;
@@ -812,6 +813,9 @@ public class MahjongMain : Mahjong
 
     public void Handle_KaKan()
     {
+        m_isTenhou = false;
+        m_isTihou = false;
+
         m_isChanKan = true;
 
         int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
@@ -856,7 +860,7 @@ public class MahjongMain : Mahjong
         m_activePlayer.IsReach = true;
         m_activePlayer.IsIppatsu = true;
 
-        if( m_isChiihou )
+        if( m_isTihou )
             m_activePlayer.IsDoubleReach = true;
 
         m_activePlayer.reduceTenbou( GameSettings.Reach_Cost );
@@ -971,7 +975,7 @@ public class MahjongMain : Mahjong
     public void Handle_Pon()
     {
         m_isTenhou = false;
-        m_isChiihou = false;
+        m_isTihou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setPon( m_suteHai, relation );
@@ -983,7 +987,7 @@ public class MahjongMain : Mahjong
     public void Handle_DaiMinKan()
     {
         m_isTenhou = false;
-        m_isChiihou = false;
+        m_isTihou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setDaiMinKan(m_suteHai, relation);
@@ -997,7 +1001,7 @@ public class MahjongMain : Mahjong
     public void Handle_ChiiLeft()
     {
         m_isTenhou = false;
-        m_isChiihou = false;
+        m_isTihou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setChiiLeft(m_suteHai, relation);
@@ -1009,7 +1013,7 @@ public class MahjongMain : Mahjong
     public void Handle_ChiiCenter()
     {
         m_isTenhou = false;
-        m_isChiihou = false;
+        m_isTihou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setChiiCenter(m_suteHai, relation);
@@ -1021,7 +1025,7 @@ public class MahjongMain : Mahjong
     public void Handle_ChiiRight()
     {
         m_isTenhou = false;
-        m_isChiihou = false;
+        m_isTihou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setChiiRight(m_suteHai, relation);
@@ -1266,17 +1270,17 @@ public class MahjongMain : Mahjong
     public void HandleTsumo()
     {
         AgariParam param = new AgariParam(this);
-        int score = 0;
-        int playerIndex = 0;
 
         param.setOmoteDoraHais( getOmotoDoras() );
         if( m_activePlayer.IsReach )
             param.setUraDoraHais( getUraDoras() );
 
-        AgariScoreManager.GetAgariScore( m_activePlayer.Tehai, m_tsumoHai, param, ref m_combis, ref m_agariInfo );
+        int score = GetAgariScore(ActivePlayer.Tehai, TsumoHai, param);
+
         Utils.Log( AgariInfo.ToString() );
 
-        playerIndex = getPlayerIndex( m_kazeFrom );
+
+        int playerIndex = getPlayerIndex( m_kazeFrom );
 
         if( m_oyaIndex == playerIndex ) 
         {
@@ -1342,13 +1346,13 @@ public class MahjongMain : Mahjong
     public void HandleRon()
     {
         AgariParam param = new AgariParam(this);
-        int score = 0;
 
         param.setOmoteDoraHais( getOmotoDoras() );
         if( m_activePlayer.IsReach )
             param.setUraDoraHais( getUraDoras() );
 
-        AgariScoreManager.GetAgariScore( m_activePlayer.Tehai, m_suteHai, param, ref m_combis, ref m_agariInfo );
+        int score = GetAgariScore(ActivePlayer.Tehai, SuteHai, param);
+
         Utils.Log( AgariInfo.ToString() );
 
         if( m_oyaIndex == getPlayerIndex( m_kazeFrom ) ) {
@@ -1399,7 +1403,7 @@ public class MahjongMain : Mahjong
 
     protected Hai getTestPickHai()
     {
-        //return new Hai(33);
+        //return new Hai(32);
         return m_tsumoHai;
     }
     protected Hai getTestRinshanHai()

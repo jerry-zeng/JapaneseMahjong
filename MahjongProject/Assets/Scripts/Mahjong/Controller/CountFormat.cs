@@ -110,8 +110,8 @@ public class CountFormat
         }
     }
 
-    // TODO: is the parameter 'combis' neccessary? and is it ref or in parameter?
-    public int calculateCombisCount(HaiCombi[] combis)
+
+    public int calculateCombisCount( HaiCombi[] outCombis )
     {
         _combiHelper.initialize( getTotalCounterLength() );
         searchCombi(0);
@@ -126,13 +126,14 @@ public class CountFormat
             else 
             {
                 _kokushi = checkKokushi();
+
                 if( _kokushi )
                     return 1;
             }
         }
 
-        if(combis != null)
-            combis = _combiHelper.combis.ToArray();
+        if(outCombis != null)
+            outCombis = _combiHelper.combis.ToArray();
 
         return _combiHelper.combis.Count;
     }
@@ -149,12 +150,12 @@ public class CountFormat
     {
         int count = 0;
 
-        for (int i = 0; i < _counterArr.Count; i++) 
+        for(int i = 0; i < _counterArr.Count; i++) 
         {
-            if (_counterArr[i].count == 2) {
+            if(_counterArr[i].count == 2) {
                 count++;
             }
-            else {
+            else{
                 return false;
             }
         }
@@ -177,7 +178,7 @@ public class CountFormat
             Hai.ID_WAN_1, Hai.ID_WAN_9, Hai.ID_PIN_1, Hai.ID_PIN_9, Hai.ID_SOU_1, Hai.ID_SOU_9,
             Hai.ID_TON, Hai.ID_NAN, Hai.ID_SYA, Hai.ID_PE, Hai.ID_HAKU, Hai.ID_HATSU, Hai.ID_CHUN
         };
-        int[] countHai = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        int[] countHai = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; //length = 13.
 
         //手牌のIDを検索する
         for(int i = 0; i < _counterArr.Count; i++)
@@ -216,6 +217,7 @@ public class CountFormat
 
         return totalCountLength;
     }
+
 
     void searchCombi(int startIndex)
     {

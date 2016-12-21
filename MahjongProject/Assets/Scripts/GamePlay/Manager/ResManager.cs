@@ -4,17 +4,15 @@ using System.Collections.Generic;
 
 public class ResManager 
 {
-    public static bool UseJapanese = false;
-
     private static Dictionary<string, string> StringTable;
 
-    public static void LoadStringTable()
+    public static void LoadStringTable(bool useJapanese = false)
     {
         if( StringTable == null ){
             StringTable = new Dictionary<string, string>();
 
             string fileName = "string_cn";
-            if(UseJapanese) fileName = "string_jp";
+            if(useJapanese) fileName = "string_jp";
 
             TextAsset ta = Resources.Load<TextAsset>("Table/" + fileName);
 
@@ -31,6 +29,17 @@ public class ResManager
 
             for( int i = 0; i < valueList.Count-1; i += 2 )
                 StringTable.Add( valueList[i], valueList[i+1] );
+
+            //PrintStringTable();
+        }
+    }
+
+    static void PrintStringTable()
+    {
+        Debug.Log("---------------- String Table -------------");
+        foreach( var kvs in StringTable )
+        {
+            Debug.Log( kvs.Value );
         }
     }
 

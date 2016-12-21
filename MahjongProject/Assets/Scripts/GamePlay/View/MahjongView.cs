@@ -102,6 +102,8 @@ public class MahjongView : UIObject, IObserver
         ResManager.SetPoolRoot( mahjongPoolRoot );
 
         isInit = true;
+
+        ResManager.LoadStringTable();
     }
 
 

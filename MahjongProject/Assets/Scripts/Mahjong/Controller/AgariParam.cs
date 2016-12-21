@@ -38,12 +38,12 @@ public class AgariParam
     }
 
 
-    public void setYakuFlag(int yakuNum, bool flg) {
-        _yakuFlag[yakuNum] = flg;
+    public void setYakuFlag(EYakuFlagType yakuNum, bool flg) {
+        _yakuFlag[(int)yakuNum] = flg;
     }
 
-    public bool getYakuFlag(int yakuNum) {
-        return _yakuFlag[yakuNum];
+    public bool getYakuFlag(EYakuFlagType yakuFlag) {
+        return _yakuFlag[(int)yakuFlag];
     }
 
     // 表ドラ

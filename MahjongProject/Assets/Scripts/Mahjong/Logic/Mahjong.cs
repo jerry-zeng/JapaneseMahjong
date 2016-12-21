@@ -168,18 +168,25 @@ public abstract class Mahjong
         protected set{ m_agariInfo = value; }
     }
 
-    protected bool m_isTenhou = false;  //天胡
+    protected bool m_isTenhou = false;  //天和
     public bool isTenHou
     {
         get{ return m_isTenhou; }
         set{ m_isTenhou = value; }
     }
 
-    protected bool m_isChiihou = false; //地胡
-    public bool isChiiHou
+    protected bool m_isTihou = false; //地和
+    public bool isTiHou
     {
-        get{ return m_isChiihou; }
-        set{ m_isChiihou = value; }
+        get{ return m_isTihou; }
+        set{ m_isTihou = value; }
+    }
+
+    protected bool m_isRenhou = false; //人和
+    public bool isRenHou
+    {
+        get{ return m_isRenhou; }
+        set{ m_isRenhou = value; }
     }
 
     protected bool m_isTsumo = false;
@@ -301,56 +308,64 @@ public abstract class Mahjong
     }
 
 
-    public int getAgariScore(Tehai tehai, Hai addHai)
+    public int GetAgariScore(Tehai tehai, Hai addHai, AgariParam param = null)
     {
-        AgariParam param = new AgariParam(this);
+        if(param == null)
+            param = new AgariParam(this);
 
         if( m_activePlayer.IsReach ) {
             if( m_activePlayer.IsDoubleReach ) {
-                param.setYakuFlag((int)EYakuFlagType.DOUBLE_REACH, true);
+                param.setYakuFlag(EYakuFlagType.DOUBLE_REACH, true);
             }
             else {
-                param.setYakuFlag((int)EYakuFlagType.REACH, true);
+                param.setYakuFlag(EYakuFlagType.REACH, true);
             }
         }
 
         if( m_isTsumo ) {
-            param.setYakuFlag((int)EYakuFlagType.TSUMO, true);
+            param.setYakuFlag(EYakuFlagType.TSUMO, true);
+
             if( m_isTenhou ) {
-                param.setYakuFlag((int)EYakuFlagType.TENHOU, true);
+                param.setYakuFlag(EYakuFlagType.TENHOU, true);
             }
-            else if( m_isChiihou ) {
-                param.setYakuFlag((int)EYakuFlagType.TIHOU, true);
+            else if( m_isTihou ) {
+                param.setYakuFlag(EYakuFlagType.TIHOU, true);
+            }
+        }
+        else{
+            if( m_isRenhou ){
+                param.setYakuFlag(EYakuFlagType.RENHOU, true);
             }
         }
 
         if( m_isTsumo && m_isRinshan ) {
-            param.setYakuFlag((int)EYakuFlagType.RINSYAN, true);
+            param.setYakuFlag(EYakuFlagType.RINSYAN, true);
         }
 
         if( m_isChanKan ){
-            param.setYakuFlag((int)EYakuFlagType.CHANKAN, true);
+            param.setYakuFlag(EYakuFlagType.CHANKAN, true);
         }
 
         if( m_isLast ) {
             if( m_isTsumo ) {
-                param.setYakuFlag((int)EYakuFlagType.HAITEI, true);
+                param.setYakuFlag(EYakuFlagType.HAITEI, true);
             }
             else {
-                param.setYakuFlag((int)EYakuFlagType.HOUTEI, true);
+                param.setYakuFlag(EYakuFlagType.HOUTEI, true);
             }
         }
 
         if( m_activePlayer.IsIppatsu ) {
-            param.setYakuFlag((int)EYakuFlagType.IPPATU, true);
+            param.setYakuFlag(EYakuFlagType.IPPATU, true);
         }
 
         if( GameSettings.UseKuitan ) {
-            param.setYakuFlag((int)EYakuFlagType.KUITAN, true);
+            param.setYakuFlag(EYakuFlagType.KUITAN, true);
         }
 
         return AgariScoreManager.GetAgariScore(tehai, addHai, param, ref m_combis, ref m_agariInfo);
     }
+
     #endregion virtual methods.
 
 

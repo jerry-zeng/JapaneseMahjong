@@ -57,7 +57,7 @@ public class GameAgent
 
     // あがり点を取得する
     public int getAgariScore(Tehai tehai, Hai addHai) {
-        return _game.getAgariScore(tehai, addHai);
+        return _game.GetAgariScore(tehai, addHai);
     }
 
     // リーチを取得する
@@ -123,14 +123,14 @@ public class GameAgent
         return _game.AgariInfo;
     }
 
-    #region Logic
-    private static HaiCombi[] combis = new HaiCombi[10]
+    protected HaiCombi[] combis
     {
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),
-        new HaiCombi(),new HaiCombi(),new HaiCombi(),new HaiCombi(),
-    };
-    private static CountFormat countFormat = new CountFormat();
+        get{ return _game.Combis; }
+    }
+
+    #region Logic
+    protected static CountFormat countFormat = new CountFormat();
+
 
     // 打哪些牌(indexs)可以立直.
     public bool tryGetReachIndexs(Tehai a_tehai, Hai tsumoHai, out List<int> haiIndexList)

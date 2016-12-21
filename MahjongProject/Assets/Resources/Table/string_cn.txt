@@ -1,33 +1,5 @@
 [
   {
-    "key": "app_name",
-    "value": "Andjong"
-  },
-  {
-    "key": "main_title",
-    "value": "Andjong"
-  },
-  {
-    "key": "new_game_label",
-    "value": "新游戏"
-  },
-  {
-    "key": "about_label",
-    "value": "关于"
-  },
-  {
-    "key": "settings_label",
-    "value": "设置"
-  },
-  {
-    "key": "exit_label",
-    "value": "退出"
-  },
-  {
-    "key": "game_title",
-    "value": "游戏"
-  },
-  {
     "key": "kyoku_ton_1",
     "value": "东一局"
   },
@@ -77,15 +49,11 @@
   },
   {
     "key": "space",
-    "value": "\" \""
+    "value": " "
   },
   {
     "key": "multi",
     "value": "x"
-  },
-  {
-    "key": "button_menu",
-    "value": "Menu"
   },
   {
     "key": "button_reach",
@@ -112,6 +80,10 @@
     "value": "杠"
   },
   {
+    "key": "button_pass",
+    "value": "不要"
+  },
+  {
     "key": "han",
     "value": "翻"
   },
@@ -124,24 +96,28 @@
     "value": "点"
   },
   {
-    "key": "yakuman",
-    "value": "役满"
-  },
-  {
-    "key": "sanbaiman",
-    "value": "三倍满"
-  },
-  {
-    "key": "baiman",
-    "value": "倍满"
+    "key": "mangan",
+    "value": "满贯"
   },
   {
     "key": "haneman",
     "value": "跳满"
   },
   {
-    "key": "mangan",
-    "value": "满贯"
+    "key": "baiman",
+    "value": "倍满"
+  },
+  {
+    "key": "ryanbaiman",
+    "value": "二倍满"
+  },
+  {
+    "key": "sanbaiman",
+    "value": "三倍满"
+  },
+  {
+    "key": "yakuman",
+    "value": "役满"
   },
   {
     "key": "info_reach",
@@ -165,7 +141,7 @@
   },
   {
     "key": "yaku_tanyao",
-    "value": "断么九"
+    "value": "断幺九"
   },
   {
     "key": "yaku_pinfu",
@@ -184,44 +160,8 @@
     "value": "一发"
   },
   {
-    "key": "yaku_tumo",
-    "value": "门前清自摸和"
-  },
-  {
-    "key": "yaku_doubleton",
-    "value": "东风东"
-  },
-  {
-    "key": "yaku_ton",
-    "value": "东"
-  },
-  {
-    "key": "yaku_doublenan",
-    "value": "南风南"
-  },
-  {
-    "key": "yaku_nan",
-    "value": "南"
-  },
-  {
-    "key": "yaku_sya",
-    "value": "西"
-  },
-  {
-    "key": "yaku_pei",
-    "value": "北"
-  },
-  {
-    "key": "yaku_haku",
-    "value": "白"
-  },
-  {
-    "key": "yaku_hatu",
-    "value": "发"
-  },
-  {
-    "key": "yaku_cyun",
-    "value": "中"
+    "key": "yaku_tsumo",
+    "value": "门清自摸"
   },
   {
     "key": "yaku_haitei",
@@ -233,10 +173,10 @@
   },
   {
     "key": "yaku_rinsyan",
-    "value": "岭上开花"
+    "value": "杠上开花"
   },
   {
-    "key": "yaku_cyankan",
+    "key": "yaku_chankan",
     "value": "抢杠"
   },
   {
@@ -244,12 +184,12 @@
     "value": "双立直"
   },
   {
-    "key": "yaku_teetoitu",
+    "key": "yaku_chiitoitu",
     "value": "七对子"
   },
   {
     "key": "yaku_cyanta",
-    "value": "混全带么九"
+    "value": "混全带幺九"
   },
   {
     "key": "yaku_ikkituukan",
@@ -272,7 +212,7 @@
     "value": "三暗刻"
   },
   {
-    "key": "yaku_sankantu",
+    "key": "yaku_sankantsu",
     "value": "三杠子"
   },
   {
@@ -280,12 +220,12 @@
     "value": "二杯口"
   },
   {
-    "key": "yaku_honitu",
+    "key": "yaku_honisou",
     "value": "混一色"
   },
   {
-    "key": "yaku_juncyan",
-    "value": "纯全带么九"
+    "key": "yaku_jyuncyan",
+    "value": "纯全带幺九"
   },
   {
     "key": "yaku_syousangen",
@@ -296,7 +236,7 @@
     "value": "混老头"
   },
   {
-    "key": "yaku_tinitu",
+    "key": "yaku_tinisou",
     "value": "清一色"
   },
   {
@@ -304,8 +244,20 @@
     "value": "四暗刻"
   },
   {
-    "key": "yaku_suukantu",
+    "key": "yaku_suukantsu",
     "value": "四杠子"
+  },
+  {
+    "key": "yaku_chinroutou",
+    "value": "清老头"
+  },
+  {
+    "key": "yaku_ryuuisou",
+    "value": "绿一色"
+  },
+  {
+    "key": "yaku_tsuisou",
+    "value": "字一色"
   },
   {
     "key": "yaku_daisangen",
@@ -320,18 +272,6 @@
     "value": "大四喜"
   },
   {
-    "key": "yaku_tuuisou",
-    "value": "字一色"
-  },
-  {
-    "key": "yaku_chinroutou",
-    "value": "清老头"
-  },
-  {
-    "key": "yaku_ryuuisou",
-    "value": "绿一色"
-  },
-  {
     "key": "yaku_cyuurennpoutou",
     "value": "九莲宝灯"
   },
@@ -340,12 +280,36 @@
     "value": "国士无双"
   },
   {
+    "key": "yaku_suuankou_tanki",
+    "value": "四暗刻单骑"
+  },
+  {
+    "key": "yaku_cyuurennpoutou_jyunsei",
+    "value": "纯正九莲宝灯"
+  },
+  {
+    "key": "yaku_kokushi_13men",
+    "value": "国士无双十三面"
+  },
+  {
     "key": "yaku_tenhou",
     "value": "天和"
   },
   {
     "key": "yaku_tihou",
     "value": "地和"
+  },
+  {
+    "key": "yaku_renhou",
+    "value": "人和"
+  },
+  {
+    "key": "yaku_yakuhai",
+    "value": "役牌"
+  },
+  {
+    "key": "yaku_lenfonhai",
+    "value": "连风牌"
   },
   {
     "key": "yaku_dora",

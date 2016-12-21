@@ -1,8 +1,11 @@
-﻿
+﻿using System.Collections;
+using System.Collections.Generic;
+
 /// <summary>
-/// 上がりの組み合わせのクラスです。
-/// 胡牌的组合: 包括刻子、顺子、槓,
-/// 頭(atama)是第一个牌
+/// 上がりの組み合わせのクラスです
+/// 
+/// 胡牌的组合: 包括刻子(槓、碰)、顺子,
+/// 頭(atama)是剩余那个牌
 /// </summary>
 
 public class HaiCombi 

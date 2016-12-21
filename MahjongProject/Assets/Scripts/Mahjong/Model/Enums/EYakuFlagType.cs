@@ -7,34 +7,34 @@ public enum EYakuFlagType
 {
     // 立直
     REACH = 0,
-    // 一発
-    IPPATU,
-    // ツモ 
-    TSUMO,
-    // 海底 
-    HAITEI,
-    // 河底 
-    HOUTEI,
-    // 嶺上開放 
-    RINSYAN,
-    // 搶槓 
-    CHANKAN,
     // ダブル立直 
-    DOUBLE_REACH,
+    DOUBLE_REACH = 1,
+    // 一発
+    IPPATU = 2,
+    // ツモ 
+    TSUMO = 3,
+    // 嶺上開放 
+    RINSYAN = 4,
+    // 搶槓 
+    CHANKAN = 5,
+    // 海底 
+    HAITEI = 6,
+    // 河底 
+    HOUTEI = 7,
     // 天和 
-    TENHOU,
+    TENHOU = 8,
     // 地和 
-    TIHOU,
+    TIHOU = 9,
     // 人和  
-    RENHOU,
-    // 十三不塔 
-    TIISANPUTOU,
+    RENHOU = 10,
     // 流し満貫 
-    NAGASHIMANGAN,
-    // 八連荘 
-    PARENCHAN,
+    NAGASHIMANGAN = 11,
     // 喰いタン 
-    KUITAN,
+    KUITAN = 12,
+    // 十三不塔 
+    //TIISANPUTOU,
+    // 八連荘 
+    //PARENCHAN,
 
     // 役の数 
     Count
