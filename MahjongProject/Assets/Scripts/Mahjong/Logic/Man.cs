@@ -72,10 +72,44 @@ public class Man : Player
         }
         else
         {
-            // TODO: enable AnKan after reach if the ankan MENTSU is not related to any MENTSU
-            // such as: 23444 4 is disable, while 22444 4 is enable.
+            // if player machi hais won't change after setting AnKan, enable to to it.
 
-            //if( Tehai.validAnKan(tsumoHai) )
+            if( Tehai.validAnKan(tsumoHai) )
+            {
+                List<Hai> machiHais;
+                if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
+                {
+                    Tehai tehaiCopy = new Tehai( Tehai );
+                    tehaiCopy.setAnKan( tsumoHai );
+                    tehaiCopy.Sort();
+
+                    List<Hai> newMachiHais;
+
+                    if( MahjongAgent.tryGetMachiHais(tehaiCopy, out newMachiHais) )
+                    {
+                        if( machiHais.Count == newMachiHais.Count ){
+                            machiHais.Sort( Tehai.Compare );
+                            newMachiHais.Sort( Tehai.Compare );
+
+                            bool enableAnkan = true;
+
+                            for( int i = 0; i < machiHais.Count; i++ )
+                            {
+                                if( machiHais[i].ID != newMachiHais[i].ID ){
+                                    enableAnkan = false;
+                                    break;
+                                }
+                            }
+
+                            if( enableAnkan == true )
+                            {
+                                _action.setValidTsumoKan(true, new List<Hai>(){ tsumoHai });
+                                _action.MenuList.Add( EActionType.Kan );
+                            }
+                        }
+                    }
+                }
+            }
 
             // can Ron or Ankan, sute hai automatically.
             if( _action.MenuList.Count == 0) {
