@@ -12,10 +12,6 @@ public class AgariParam
     // 場風の設定
     private EKaze _baKaze = EKaze.Ton;
 
-
-    // 役成立フラグの配列
-    private bool[] _yakuFlag = new bool[(int)EYakuFlagType.Count];
-
     // 表ドラ
     private Hai[] _omoteDoraHais = null;
 
@@ -23,18 +19,16 @@ public class AgariParam
     private Hai[] _uraDoraHais = null;
 
 
-    public AgariParam(Mahjong game)
-    {     
-        _jiKaze = game.getJiKaze();
-        _baKaze = game.getBaKaze();
+    // 役成立フラグの配列
+    private bool[] _yakuFlag = null;
 
-        for(int i = 0; i < _yakuFlag.Length; i++){
+
+    public AgariParam()
+    {
+        _yakuFlag = new bool[(int)EYakuFlagType.Count];
+
+        for(int i = 0; i < _yakuFlag.Length; i++)
             _yakuFlag[i] = false;
-        }
-
-        /// as dora hais will change, set them on Tsumo or Ron.
-        //_omoteDoraHais = game.getOmotoDoras();
-        //_uraDoraHais = game.getUraDoras();
     }
 
 
@@ -44,6 +38,21 @@ public class AgariParam
 
     public bool getYakuFlag(EYakuFlagType yakuFlag) {
         return _yakuFlag[(int)yakuFlag];
+    }
+
+
+    public void setJikaze(EKaze jikaze) {
+        _jiKaze = jikaze;
+    }
+    public EKaze getJikaze() {
+        return _jiKaze;
+    }
+
+    public void setBakaze(EKaze bakaze) {
+        _baKaze = bakaze;
+    }
+    public EKaze getBakaze() {
+        return _baKaze;
     }
 
     // 表ドラ
@@ -60,20 +69,5 @@ public class AgariParam
     }
     public Hai[] getUraDoraHais() {
         return _uraDoraHais;
-    }
-
-
-    public void setJikaze(EKaze jikaze) {
-        _jiKaze = jikaze;
-    }
-    public EKaze getJikaze() {
-        return _jiKaze;
-    }
-
-    public void setBakaze(EKaze bakaze) {
-        _baKaze = bakaze;
-    }
-    public EKaze getBakaze() {
-        return _baKaze;
     }
 }

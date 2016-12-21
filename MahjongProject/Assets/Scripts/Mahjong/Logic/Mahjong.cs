@@ -290,28 +290,13 @@ public abstract class Mahjong
     }
 
 
-    // 手牌をコピーする
-    public void copyTehai(Tehai tehai, EKaze kaze)
-    {
-        if( m_activePlayer.JiKaze == kaze ) {
-            Tehai.copy(tehai, m_activePlayer.Tehai, true);
-        }
-        else {
-            Tehai.copy(tehai, getPlayer(kaze).Tehai, false);
-        }
-    }
-
-    // 河をコピーする
-    public void copyHou(Hou hou, EKaze kaze)
-    {
-        Hou.copy(hou, getPlayer(kaze).Hou);
-    }
-
-
     public int GetAgariScore(Tehai tehai, Hai addHai, AgariParam param = null)
     {
-        if(param == null)
-            param = new AgariParam(this);
+        if(param == null){
+            param = new AgariParam();
+            param.setJikaze( ActivePlayer.JiKaze );
+        }
+        param.setBakaze( getBaKaze() );
 
         if( m_activePlayer.IsReach ) {
             if( m_activePlayer.IsDoubleReach ) {

@@ -26,40 +26,6 @@ public class GameAgent
     }
 
 
-    public Sai[] getSais() {
-        return _game.Sais;
-    }
-
-    // 表ドラ、槓ドラの配列を取得する
-    public Hai[] getDoraHais() {
-        return _game.getOmotoDoras();
-    }
-
-    public void copyTehai(Tehai tehai, EKaze kaze) {
-        _game.copyTehai(tehai, kaze);
-    }
-
-    // 河をコピーする
-    public void copyHou(Hou hou, EKaze kaze) {
-        _game.copyHou(hou, kaze);
-    }
-
-    // ツモ牌を取得する
-    protected Hai getTsumoHai() {
-        Hai tsumoHai = _game.TsumoHai;
-        return tsumoHai == null? null : new Hai(tsumoHai);
-    }
-
-    // 捨牌を取得する
-    protected Hai getSuteHai() {
-        return new Hai(_game.SuteHai);
-    }
-
-    // あがり点を取得する
-    public int getAgariScore(Tehai tehai, Hai addHai) {
-        return _game.GetAgariScore(tehai, addHai);
-    }
-
     // リーチを取得する
     public bool isReach(EKaze kaze) {
         return _game.getPlayer(kaze).IsReach;
@@ -83,6 +49,15 @@ public class GameAgent
     // リーチ棒の数を取得する
     public int getReachbou() {
         return _game.ReachBou;
+    }
+
+    public Hai getSuteHai(){
+        Hai suteHai = _game.SuteHai;
+        return suteHai == null? suteHai : new Hai(suteHai);
+    }
+    public Hai getTsumoHai(){
+        Hai suteHai = _game.TsumoHai;
+        return suteHai == null? suteHai : new Hai(suteHai);
     }
 
     public void PostUiEvent(UIEventType eventType, params object[] args)
@@ -110,9 +85,6 @@ public class GameAgent
         return _game.getManKaze();
     }
 
-    public PlayerAction getPlayerAction() {
-        return _game.getPlayerAction();
-    }
 
     // 起(親)家のプレイヤーインデックスを取得する
     public int getChiichaIndex() {
@@ -123,17 +95,24 @@ public class GameAgent
         return _game.AgariInfo;
     }
 
-    protected HaiCombi[] combis
+    public HaiCombi[] combis
     {
         get{ return _game.Combis; }
     }
+
+
+    // あがり点を取得する
+    public int getAgariScore(Tehai tehai, Hai addHai) {
+        return _game.GetAgariScore(tehai, addHai);
+    }
+
 
     #region Logic
     protected static CountFormat countFormat = new CountFormat();
 
 
-    // 打哪些牌(indexs)可以立直.
-    public bool tryGetReachIndexs(Tehai a_tehai, Hai tsumoHai, out List<int> haiIndexList)
+    // 打哪些牌可以立直.
+    public bool tryGetReachHaiIndex(Tehai a_tehai, Hai tsumoHai, out List<int> haiIndexList)
     {
         haiIndexList = new List<int>();
 
@@ -141,46 +120,40 @@ public class GameAgent
         if( a_tehai.isNaki() )
             return false;
 
-        Tehai tehai = new Tehai( a_tehai );
+        Tehai tehai_copy = new Tehai( a_tehai );
 
         // As _jyunTehais won't sort automatically on new hais added, 
         // so we can add tsumo hai directly to simplify the checks.
 
-        tehai.addJyunTehai(tsumoHai);
+        tehai_copy.addJyunTehai( tsumoHai );
 
-        Hai[] jyunTehai = tehai.getJyunTehai();
+        Hai[] jyunTehai = tehai_copy.getJyunTehai();
 
         for( int i = 0; i < jyunTehai.Length; i++ )
         {
-            Hai haiTemp = new Hai( jyunTehai[i] );
-
-            tehai.removeJyunTehai(jyunTehai[i]);
+            Hai haiTemp = tehai_copy.removeJyunTehaiAt(i);
 
             for( int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++ )
             {
-                Hai addHai = new Hai(id);
+                countFormat.setCounterFormat(tehai_copy, new Hai(id));
 
-                countFormat.setCounterFormat(tehai, addHai);
-
-                if( countFormat.calculateCombisCount(combis) > 0 )
+                if( countFormat.calculateCombisCount( combis ) > 0 )
                 {
-                    haiIndexList.Add(i);
+                    haiIndexList.Add( i );
                     break;
                 }
             }
 
-            tehai.addJyunTehai(haiTemp);
+            tehai_copy.insertJyunTehai(i, haiTemp);
         }
 
         return haiIndexList.Count > 0;
     }
 
     // hais为听牌列表.
-    public bool tryGetMachiHais(Tehai a_tehai, out List<Hai> hais)
+    public bool tryGetMachiHais(Tehai tehai, out List<Hai> hais)
     {
         hais = new List<Hai>();
-
-        Tehai tehai = new Tehai(a_tehai);
 
         for(int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
         {
@@ -188,7 +161,7 @@ public class GameAgent
 
             countFormat.setCounterFormat(tehai, addHai);
 
-            if( countFormat.calculateCombisCount(combis) > 0 )
+            if( countFormat.calculateCombisCount( combis ) > 0 )
             {
                 hais.Add( addHai );
             }
@@ -197,13 +170,14 @@ public class GameAgent
         return hais.Count > 0;
     }
 
+    // 是否可以听牌，只需要检查一个牌.
     public bool canTenpai(Tehai tehai)
     {
         for(int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)
         {
             countFormat.setCounterFormat(tehai, new Hai(id));
 
-            if( countFormat.calculateCombisCount(combis) > 0 )
+            if( countFormat.calculateCombisCount( combis ) > 0 )
                 return true;
         }
         return false;

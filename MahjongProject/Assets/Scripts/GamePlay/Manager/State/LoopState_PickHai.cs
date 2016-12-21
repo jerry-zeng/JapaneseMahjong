@@ -18,6 +18,10 @@ public class LoopState_PickHai : GameStateBase
             //logicOwner.ActivePlayer.Tehai.addJyunTehai( tsumoHai );//
 
             int lastPickIndex = logicOwner.Yama.getPreTsumoHaiIndex();
+            if( lastPickIndex < 0 ){
+                Debug.LogError("Error!!!");
+                return;
+            }
 
             EventManager.Get().SendEvent(UIEventType.PickTsumoHai, logicOwner.ActivePlayer, lastPickIndex, tsumoHai );
 

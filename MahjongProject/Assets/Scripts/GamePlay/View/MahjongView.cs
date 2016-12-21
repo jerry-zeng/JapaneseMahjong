@@ -264,7 +264,7 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI playerUI = playerUIDict_Kaze[activePlayer.JiKaze];
                 playerUI.PickHai( newHai, true, !activePlayer.IsAI );
 
-                SetManInputEnable( !activePlayer.IsAI );
+                SetManInputEnable( !activePlayer.IsAI && !activePlayer.IsReach );
             }
             break;
 
@@ -286,7 +286,7 @@ public class MahjongView : UIObject, IObserver
                 int omoteDoraPlayerIndex = findPlayerForYamahaiIndex(newDoraHaiIndex);
                 playerUIDict[omoteDoraPlayerIndex].ShowYamaHai(newDoraHaiIndex);
 
-                SetManInputEnable( !activePlayer.IsAI );
+                SetManInputEnable( !activePlayer.IsAI && !activePlayer.IsReach );
             }
             break;
 

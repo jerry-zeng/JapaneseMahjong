@@ -125,11 +125,11 @@ public class PlayerAction
     }
 
     // all reach hai index
-    private List<int> _reachIndexList;
+    private List<int> _reachHaiIndexList;
     public List<int> ReachHaiIndexList
     {
-        get{ return _reachIndexList; }
-        set{ _reachIndexList = value; }
+        get{ return _reachHaiIndexList; }
+        set{ _reachHaiIndexList = value; }
     }
 
 

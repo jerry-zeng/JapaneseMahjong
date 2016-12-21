@@ -83,15 +83,15 @@ public class CountFormat
 
             _counterArr.Add( new HaiCounterInfo(jyunTehaiNumKind, 1) );
             if( set == false && (jyunTehaiNumKind == addHaiNumKind) )
-            {                
+            {
                 _counterArr[_counterArr.Count-1].count++;
                 set = true;
             }
 
             while (++i < jyunTehais.Length) 
             {
-                if (jyunTehaiNumKind == jyunTehais[i].NumKind) {
-                    _counterArr[_counterArr.Count-1].count++;
+                if(jyunTehaiNumKind == jyunTehais[i].NumKind) {
+                    _counterArr[_counterArr.Count-1].count ++;
                 }
                 else {
                     break;

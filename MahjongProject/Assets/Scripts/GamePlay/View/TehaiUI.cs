@@ -315,7 +315,7 @@ public class TehaiUI : UIObject
         {
             index = indexList[i];
 
-            if( index >= 0 && index < indexList.Count )
+            if( index >= 0 && index < tehaiList.Count )
                 tehaiList[index].EnableInput(true);
         }
     }

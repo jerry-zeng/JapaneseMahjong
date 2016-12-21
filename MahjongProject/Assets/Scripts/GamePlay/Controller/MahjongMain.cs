@@ -1244,7 +1244,8 @@ public class MahjongMain : Mahjong
     // some one has tsumo.
     public void HandleTsumo()
     {
-        AgariParam param = new AgariParam(this);
+        AgariParam param = new AgariParam();
+        param.setJikaze( ActivePlayer.JiKaze );
 
         param.setOmoteDoraHais( getOmotoDoras() );
         if( m_activePlayer.IsReach )
@@ -1320,7 +1321,8 @@ public class MahjongMain : Mahjong
     // some one has ron.
     public void HandleRon()
     {
-        AgariParam param = new AgariParam(this);
+        AgariParam param = new AgariParam();
+        param.setJikaze( ActivePlayer.JiKaze );
 
         param.setOmoteDoraHais( getOmotoDoras() );
         if( m_activePlayer.IsReach )
@@ -1378,7 +1380,10 @@ public class MahjongMain : Mahjong
 
     protected Hai getTestPickHai()
     {
-        return Utils.GetRandomNum(0,3) < 1? new Hai(33) : m_tsumoHai;
+        if( getTsumoRemainCount() <= 0 )
+            return m_tsumoHai;
+        
+        return Utils.GetRandomNum(0,3) < 1? new Hai(18) : m_tsumoHai;
         //return new Hai(8);
         //return m_tsumoHai;
     }
@@ -1409,7 +1414,7 @@ public class MahjongMain : Mahjong
         //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 27, 27, 27, 30, 30};          //一气通贯.
         //int[] haiIds = {0, 1, 2, 9, 10, 11, 18, 19, 20, 33, 33, 33, 27, 27};     //三色同顺 混全.
         //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 1, 2, 3, 27, 27};          //三色同刻 三暗刻.
-        //int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};             //三槓.
+        int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};             //三槓.
         //int[] haiIds = {31, 31, 31, 32, 32, 32, 33, 33, 27, 27, 27, 6, 7, 8};    //小三元.
         //int[] haiIds = {0, 0, 1, 2, 3, 4, 5, 6, 27, 27, 27, 28, 28, 28};         //清一色.
         //int[] haiIds = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 8, 8};               //清一色 纯全 二杯口(一色四连顺).
@@ -1418,7 +1423,7 @@ public class MahjongMain : Mahjong
 
         //int[] haiIds = {10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16}; //连七对(大车轮).
         //int[] haiIds = {0, 0, 8, 8, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};     //混老头 七对子.
-        int[] haiIds = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33}; //字一色 七对子.
+        //int[] haiIds = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33}; //字一色 七对子.
         //int[] haiIds = {19, 19, 20, 20, 21, 21, 23, 23, 23, 23, 25, 25, 25, 25}; //绿一色.
         //int[] haiIds = {0, 0, 0, 8, 8, 8, 9, 9, 9, 17, 17, 17, 18, 18};          //清老头.
         //int[] haiIds = {29, 29, 30, 30, 30, 31, 31, 31, 32, 32, 32, 33, 33, 33}; //字一色 大三元

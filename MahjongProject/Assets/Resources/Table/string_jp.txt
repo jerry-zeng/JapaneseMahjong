@@ -60,6 +60,10 @@
     "value": "ダブル"
   },
   {
+    "key": "button_cancel",
+    "value": "キャンセル"
+  },
+  {
     "key": "button_reach",
     "value": "リーチ"
   },
@@ -165,7 +169,7 @@
   },
   {
     "key": "yaku_tsumo",
-    "value": "門前清自摸和"
+    "value": "門前自摸"
   },
   {
     "key": "yaku_haitei",

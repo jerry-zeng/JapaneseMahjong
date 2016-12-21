@@ -53,7 +53,7 @@ public abstract class Player
         set{ _tenbou = value; }
     }
 
-    // リーチ
+    // リーチ(can't set by self!!!)
     protected bool _reach;
     public bool IsReach
     {
@@ -177,6 +177,7 @@ public abstract class Player
     }
 
     #endregion
+
 
     protected GameAgent MahjongAgent
     {

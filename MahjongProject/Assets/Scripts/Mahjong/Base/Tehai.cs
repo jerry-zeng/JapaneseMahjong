@@ -500,7 +500,7 @@ public class Tehai
     // Any tsumo 槓の可否をチェックする
     public bool validAnyTsumoKan(Hai addHai, List<Hai> kanHais)
     {
-        if( _fuuros.Count >= FUURO_MAX )
+        if( _fuuros.Count > FUURO_MAX ) // the 4th can kakan.
             return false;
 
         addJyunTehai(addHai);
@@ -522,6 +522,11 @@ public class Tehai
             }
         }
 
+        if( _fuuros.Count >= FUURO_MAX ){
+            removeJyunTehai(addHai);
+            Sort();
+            return kanHais.Count > 0;
+        }
 
         // 暗槓のチェック
         checkHai = _jyunTehais[0];
@@ -602,7 +607,7 @@ public class Tehai
     // 加槓の可否をチェックする
     public bool validKaKan(Hai tsumoHai)
     {
-        if( _fuuros.Count >= FUURO_MAX )
+        if( _fuuros.Count > FUURO_MAX )
             return false;
 
         for (int i = 0; i < _fuuros.Count; i++)

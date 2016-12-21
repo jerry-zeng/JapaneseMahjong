@@ -60,6 +60,10 @@
     "value": "双倍"
   },
   {
+    "key": "button_cancel",
+    "value": "取消"
+  },
+  {
     "key": "button_reach",
     "value": "立直"
   },

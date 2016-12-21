@@ -47,11 +47,11 @@ public class Man : Player
         // check enable Reach
         if( CheckReachPreConditions() == true ) 
         {
-            List<int> haiIndexList;
-            if( MahjongAgent.tryGetReachIndexs(Tehai, tsumoHai, out haiIndexList) )
+            List<int> reachHaiIndexList;
+            if( MahjongAgent.tryGetReachHaiIndex(Tehai, tsumoHai, out reachHaiIndexList) )
             {
                 _action.IsValidReach = true;
-                _action.ReachHaiIndexList = haiIndexList;
+                _action.ReachHaiIndexList = reachHaiIndexList;
                 _action.MenuList.Add( EActionType.Reach );
             }
         }
@@ -112,7 +112,7 @@ public class Man : Player
             // can Ron or Ankan, sute hai automatically.
             if( _action.MenuList.Count == 0) {
                 _action.Reset();
-                _action.SutehaiIndex = Tehai.getJyunTehaiCount()-1;
+                _action.SutehaiIndex = Tehai.getJyunTehaiCount(); // sute the tsumo hai on Reach
 
                 return DoResponse(EResponse.SuteHai);
             }
@@ -139,9 +139,14 @@ public class Man : Player
             {
                 _action.IsValidRon = true;
                 _action.MenuList.Add( EActionType.Agari );
-                _action.MenuList.Add( EActionType.Nagashi );
 
-                return DisplayMenuList();
+                if( MahjongAgent.isReach(JiKaze) ){
+                    return DisplayMenuList();
+                }
+                else{
+                    _action.MenuList.Add( EActionType.Nagashi );
+                    return DisplayMenuList();
+                }
             }
             else{
                 Utils.LogWarningFormat( "Player {0} is enable ron but furiten...", JiKaze.ToString() );
@@ -186,6 +191,10 @@ public class Man : Player
 
         if( MahjongAgent.getTsumoRemain() <= 0 )
             return DoResponse(EResponse.Nagashi);
+
+        if( MahjongAgent.isReach(JiKaze) )
+            return DoResponse(EResponse.Nagashi);
+        
 
         // check menu Kan
         if( Tehai.validDaiMinKan(suteHai) ) {

@@ -133,10 +133,21 @@ public class PlayerInputPanel : UIObject
 
                     // list kan hai selection.
                     List<int> haiIndexList = new List<int>();
+                    Hai[] jyunTehais = OwnerPlayer.Tehai.getJyunTehai();
+
                     for(int i = 0; i < PlayerAction.TsumoKanHaiList.Count; i++)
                     {
-                        int index = OwnerPlayer.Tehai.getHaiIndex( PlayerAction.TsumoKanHaiList[i].ID );
-                        haiIndexList.Add( index );
+                        for( int j = 0; j < jyunTehais.Length; j++){
+                            if( jyunTehais[j].ID == PlayerAction.TsumoKanHaiList[i].ID )
+                                haiIndexList.Add( j );
+                        }
+                    }
+
+                    Hai tsumoHai = GameAgent.Instance.getTsumoHai();
+                    for(int i = 0; i < PlayerAction.TsumoKanHaiList.Count; i++)
+                    {
+                        if( tsumoHai.ID == PlayerAction.TsumoKanHaiList[i].ID )
+                            haiIndexList.Add( OwnerPlayer.Tehai.getJyunTehaiCount() );
                     }
 
                     playerUI.Tehai.EnableInput( haiIndexList );
@@ -175,7 +186,7 @@ public class PlayerInputPanel : UIObject
             {
                 PlayerAction.State = EActionState.Select_Sutehai; // set state to Select_SuteHai
 
-                playerUI.Tehai.EnableInput();
+                playerUI.Tehai.EnableInput( true );
 
                 btn_Reach.ResetTag();
             }
@@ -185,7 +196,7 @@ public class PlayerInputPanel : UIObject
                 // list reach hai selection
                 playerUI.Tehai.EnableInput( PlayerAction.ReachHaiIndexList );
 
-                btn_Reach.SetTag("Cancel");
+                btn_Reach.SetTag( ResManager.getString("button_cancel") );
             }
         }
     }
