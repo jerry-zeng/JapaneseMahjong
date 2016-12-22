@@ -69,7 +69,7 @@
   },
   {
     "key": "button_ron",
-    "value": "荣和"
+    "value": "和"
   },
   {
     "key": "button_tsumo",

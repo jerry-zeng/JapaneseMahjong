@@ -211,7 +211,7 @@ public class MahjongView : UIObject, IObserver
                     PlayerUI ui = playerUIDict[i];
 
                     ui.SetTehai( player.Tehai.getJyunTehai() );
-                    ui.SetAllHaisVisiable( !player.IsAI );
+                    ui.SetTehaiVisiable( !player.IsAI );
 
                     playerUIDict_Kaze[player.JiKaze] = ui;
                 }
@@ -300,7 +300,10 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.SuteHai(sutehaiIndex);
                 ui.SetTedashi(isTedashi);
-                ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
+
+                // needn't sort hais if sute the last one.
+                if( sutehaiIndex < activePlayer.Tehai.getJyunTehaiCount() )
+                    ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
 
                 SetManInputEnable(false);
             }
@@ -317,7 +320,10 @@ public class MahjongView : UIObject, IObserver
                 ui.SuteHai(sutehaiIndex);
                 ui.SetTedashi(isTedashi);
                 ui.Reach();
-                ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
+
+                // needn't sort hais if sute the last one.
+                if( sutehaiIndex < activePlayer.Tehai.getJyunTehaiCount() )
+                    ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
 
                 ui.Info.SetReach(true);
                 ui.Info.SetTenbou( activePlayer.Tenbou );
@@ -405,29 +411,49 @@ public class MahjongView : UIObject, IObserver
             {
                 List<EKaze> ronPlayers = (List<EKaze>)args[0];
                 //EKaze fromKaze = (EKaze)args[1];
+                Hai ronHai = (Hai)args[2];
 
                 for( int i = 0; i < ronPlayers.Count; i++ )
+                {
                     Debug.LogWarning("Ron!!!");
+
+                    PlayerUI playerUI = playerUIDict_Kaze[ronPlayers[i]];
+                    playerUI.PickHai( ronHai, true, false );
+                    playerUI.SetTehaiVisiable(true);
+                }
             }
             break;
 
             case UIEventType.Tsumo_Agari:
             {
-                //Player activePlayer = (Player)args[0];
+                Player activePlayer = (Player)args[0];
+
                 Debug.LogWarning("Tsumo!!!");
+
+                PlayerUI playerUI = playerUIDict_Kaze[ activePlayer.JiKaze ];
+                playerUI.SetTehaiVisiable(true);
             }
             break;
 
             case UIEventType.RyuuKyoku:
             {
-                List<int> tenpaiPlayers = (List<int>)args[0];
+                ERyuuKyokuReason reason = (ERyuuKyokuReason)args[0];
 
-                string tenpaiIndex = "";
-                for(int i = 0; i < tenpaiPlayers.Count; i++)
-                    tenpaiIndex += tenpaiPlayers[i].ToString() + ",";
+                string msg = "";
 
-                string msg = string.Format( "{0}人听牌{1}", tenpaiPlayers.Count.ToString(), 
-                                           (tenpaiIndex.Length > 0? (": " + tenpaiIndex.Substring(0, tenpaiIndex.Length-1)) : "" ) );
+                if( reason == ERyuuKyokuReason.NoTsumoHai )
+                {
+                    List<int> tenpaiPlayers = (List<int>)args[1];
+
+                    string tenpaiIndex = "";
+                    for(int i = 0; i < tenpaiPlayers.Count; i++)
+                        tenpaiIndex += tenpaiPlayers[i].ToString() + ",";
+
+                    msg = string.Format( "{0}人听牌{1}", tenpaiPlayers.Count.ToString(), 
+                                    (tenpaiIndex.Length > 0? (": " + tenpaiIndex.Substring(0, tenpaiIndex.Length-1)) : "" ) );
+                    
+                }
+
                 ryuuKyokuPanel.Show( msg, null );
             }
             break;

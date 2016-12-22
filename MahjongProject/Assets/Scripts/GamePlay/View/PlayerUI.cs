@@ -115,7 +115,7 @@ public class PlayerUI : UIObject
     public void SortTehai(Hai[] hais, float delay, bool setLastNew = false){
         tehai.SortTehai(hais, delay, setLastNew);
     }
-    public void SetAllHaisVisiable( bool visiable ) {
+    public void SetTehaiVisiable( bool visiable ) {
         tehai.SetAllHaisVisiable(visiable);
     }
     public void EnableInput(bool isEnable){
@@ -123,6 +123,9 @@ public class PlayerUI : UIObject
             tehai.EnableInput();
         else
             tehai.DisableInput();
+    }
+    public void SetTehaiStateColor(bool state){
+        tehai.SetEnableStateColor(state);
     }
 
     // 河. 打牌.

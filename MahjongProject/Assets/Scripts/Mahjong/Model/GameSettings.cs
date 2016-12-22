@@ -7,6 +7,9 @@ public static class GameSettings
     // 红Dora.
     public static bool UseRedDora = true;
 
+    // if allow furiten
+    public static bool AllowFuriten = true;
+
     // 局の最大値
     public static int Kyoku_Max = 8; //4.
 

@@ -12,7 +12,7 @@ public class LoopState_HandleRyuuKyoKu : GameStateBase
 
         List<int> tenpaiPlayers = logicOwner.GetTenpaiPlayerIndex();
 
-        EventManager.Get().SendEvent(UIEventType.RyuuKyoku, tenpaiPlayers);
+        EventManager.Get().SendEvent(UIEventType.RyuuKyoku, ERyuuKyokuReason.NoTsumoHai, tenpaiPlayers);
 
         /*
         if( logicOwner.HasRyuukyokuMan() ) {

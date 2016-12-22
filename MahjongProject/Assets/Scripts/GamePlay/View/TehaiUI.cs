@@ -152,6 +152,7 @@ public class TehaiUI : UIObject
                 PlayerAction.Response = EResponse.Reach;
                 PlayerAction.ReachSelectIndex = PlayerAction.ReachHaiIndexList.FindIndex(i => i == index);
 
+                SetEnableStateColor(true);
                 EventManager.Get().SendEvent(UIEventType.HideMenuList);
                 OwnerPlayer.OnPlayerInputFinished();
             }
@@ -172,6 +173,7 @@ public class TehaiUI : UIObject
 
                 PlayerAction.KanSelectIndex = PlayerAction.TsumoKanHaiList.FindIndex(h=> h.ID == kanHai.ID);
 
+                SetEnableStateColor(true);
                 EventManager.Get().SendEvent(UIEventType.HideMenuList);
                 OwnerPlayer.OnPlayerInputFinished();
             }
@@ -344,5 +346,11 @@ public class TehaiUI : UIObject
             if( index >= 0 && index < tehaiList.Count )
                 tehaiList[index].EnableInput(true);
         }
+    }
+
+    public void SetEnableStateColor(bool state)
+    {
+        for(int i = 0; i < tehaiList.Count; i++)
+            tehaiList[i].SetEnableStateColor( state );
     }
 }

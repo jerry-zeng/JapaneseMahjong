@@ -99,7 +99,7 @@ public class MahjongMain : Mahjong
 
         m_isTenhou = true;
         m_isTihou = true;
-        m_isRenhou = false;
+        m_isRenhou = true;
 
         m_isTsumo = false;
         m_isRinshan = false;
@@ -433,8 +433,6 @@ public class MahjongMain : Mahjong
     // pick up Rinshan hai.
     public void PickRinshanHai()
     {
-        m_isTihou = false;
-
         m_isTsumo = true;
 
         m_tsumoHai = m_yama.PickRinshanTsumoHai();
@@ -488,8 +486,7 @@ public class MahjongMain : Mahjong
     }
     protected void Handle_TsumoHai_Response_Internel()
     {
-        PlayerAction action = getPlayerAction();
-        EResponse response = action.Response;
+        EResponse response = ActivePlayer.Action.Response;
 
         switch( response )
         {
@@ -746,6 +743,7 @@ public class MahjongMain : Mahjong
     {
         m_isTenhou = false;
         m_isTihou = false;
+        m_isRenhou = false;
 
         int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
         int ankanHaiID = ActivePlayer.Action.TsumoKanHaiList[kanSelectIndex].ID;
@@ -788,9 +786,6 @@ public class MahjongMain : Mahjong
 
     public void Handle_KaKan()
     {
-        m_isTenhou = false;
-        m_isTihou = false;
-
         m_isChanKan = true;
 
         int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
@@ -873,6 +868,9 @@ public class MahjongMain : Mahjong
 
         m_activePlayer.SuteHaisCount = m_suteHaiList.Count;
 
+        if(m_suteHaiList.Count >= GameSettings.PlayerCount)
+            m_isRenhou = false;
+
         //PostUIEvent(UIEventType.Reach);
         //Ask_Handle_SuteHai();
     }
@@ -915,6 +913,9 @@ public class MahjongMain : Mahjong
 
         m_activePlayer.IsIppatsu = false;
 
+        if(m_suteHaiList.Count >= GameSettings.PlayerCount)
+            m_isRenhou = false;
+
         //PostUIEvent(UIEventType.SuteHai);
         //Ask_Handle_SuteHai();
     }
@@ -951,6 +952,7 @@ public class MahjongMain : Mahjong
     {
         m_isTenhou = false;
         m_isTihou = false;
+        m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setPon( m_suteHai, relation );
@@ -963,6 +965,7 @@ public class MahjongMain : Mahjong
     {
         m_isTenhou = false;
         m_isTihou = false;
+        m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setDaiMinKan(m_suteHai, relation);
@@ -977,6 +980,7 @@ public class MahjongMain : Mahjong
     {
         m_isTenhou = false;
         m_isTihou = false;
+        m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setChiiLeft(m_suteHai, relation);
@@ -989,6 +993,7 @@ public class MahjongMain : Mahjong
     {
         m_isTenhou = false;
         m_isTihou = false;
+        m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setChiiCenter(m_suteHai, relation);
@@ -1001,6 +1006,7 @@ public class MahjongMain : Mahjong
     {
         m_isTenhou = false;
         m_isTihou = false;
+        m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
         ActivePlayer.Tehai.setChiiRight(m_suteHai, relation);
@@ -1244,14 +1250,13 @@ public class MahjongMain : Mahjong
     // some one has tsumo.
     public void HandleTsumo()
     {
-        AgariParam param = new AgariParam();
-        param.setJikaze( ActivePlayer.JiKaze );
+        AgariParam.ResetDoraHais(); // should reset params or create a new.
 
-        param.setOmoteDoraHais( getOmotoDoras() );
+        AgariParam.setOmoteDoraHais( getOmotoDoras() );
         if( m_activePlayer.IsReach )
-            param.setUraDoraHais( getUraDoras() );
+            AgariParam.setUraDoraHais( getUraDoras() );
 
-        int score = GetAgariScore(ActivePlayer.Tehai, TsumoHai, param);
+        int score = GetAgariScore(ActivePlayer.Tehai, TsumoHai, ActivePlayer.JiKaze, AgariParam);
 
         Utils.Log( AgariInfo.ToString() );
 
@@ -1313,22 +1318,29 @@ public class MahjongMain : Mahjong
     {
         foreach( var info in m_playerRespDict )
         {
-            if( info.Value == EResponse.Ron_Agari )
+            if( info.Value == EResponse.Ron_Agari ){
                 HandleRon();
+            }
         }
     }
 
     // some one has ron.
     public void HandleRon()
     {
-        AgariParam param = new AgariParam();
-        param.setJikaze( ActivePlayer.JiKaze );
+        if( m_isRenhou == true )
+        {
+            int playerIndex = getPlayerIndex( ActivePlayer.JiKaze );
 
-        param.setOmoteDoraHais( getOmotoDoras() );
+            m_isRenhou = playerIndex != OyaIndex; // Oya player can't renhou.
+        }
+
+        AgariParam.ResetDoraHais(); // should reset params or create a new.
+
+        AgariParam.setOmoteDoraHais( getOmotoDoras() );
         if( m_activePlayer.IsReach )
-            param.setUraDoraHais( getUraDoras() );
+            AgariParam.setUraDoraHais( getUraDoras() );
 
-        int score = GetAgariScore(ActivePlayer.Tehai, SuteHai, param);
+        int score = GetAgariScore(ActivePlayer.Tehai, SuteHai, ActivePlayer.JiKaze, AgariParam);
 
         Utils.Log( AgariInfo.ToString() );
 
@@ -1395,7 +1407,7 @@ public class MahjongMain : Mahjong
 
     protected Hai getTestRinshanHai()
     {
-        //return new Hai(0);
+        //return new Hai(1);
         return m_tsumoHai;
     }
     protected Hai getTestPickHai()
@@ -1403,16 +1415,14 @@ public class MahjongMain : Mahjong
         if( getTsumoRemainCount() <= 0 )
             return m_tsumoHai;
 
-        return Utils.GetRandomNum(0,3) < 1? new Hai(1) : m_tsumoHai;
-        //return new Hai(8);
-        //return m_tsumoHai;
+        return Utils.GetRandomNum(0,3) < 1? new Hai(32) : m_tsumoHai;
     }
 
     protected int[] getTestHaiIds() 
     {
-        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 6, 6, 7, 8, 9, 9, 9};
+        //int[] haiIds = {0, 0, 0, 0, 1, 1, 1, 2, 3, 4, 5, 8, 8, 8};               //暗槓，加槓，大明槓
         //int[] haiIds = {0, 1, 2, 10, 11, 12, 13, 14, 15, 31, 31, 33, 33, 33};    //普通牌.
-        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 27, 27, 30};          //一气通贯.
+        //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 27, 27, 30};            //一气通贯.
         //int[] haiIds = {0, 1, 2, 9, 10, 11, 18, 19, 20, 33, 33, 33, 27, 27};     //三色同顺 混全.
         //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 1, 2, 3, 27, 27};          //三色同刻 三暗刻.
         //int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};             //三槓.
@@ -1420,9 +1430,9 @@ public class MahjongMain : Mahjong
         //int[] haiIds = {0, 0, 1, 2, 3, 4, 5, 6, 27, 27, 27, 28, 28, 28};         //清一色.
         //int[] haiIds = {0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 8, 8, 0};               //清一色 纯全 二杯口(一色四连顺).
         //int[] haiIds = {0, 0, 1, 1, 2, 2, 6, 6, 7, 7, 8, 8, 8, 8};               //清一色 纯全 二杯口.
-        //int[] haiIds = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};         //七对子.
+        int[] haiIds = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};         //七对子.
 
-        int[] haiIds = {10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16}; //连七对(大车轮).
+        //int[] haiIds = {10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16}; //连七对(大车轮).
         //int[] haiIds = {0, 0, 8, 8, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};     //混老头 七对子.
         //int[] haiIds = {27, 27, 28, 28, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33}; //字一色 七对子.
         //int[] haiIds = {19, 19, 20, 20, 21, 21, 23, 23, 23, 23, 25, 25, 25, 25}; //绿一色.

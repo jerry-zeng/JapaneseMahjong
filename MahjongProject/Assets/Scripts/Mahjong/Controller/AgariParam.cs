@@ -31,6 +31,17 @@ public class AgariParam
             _yakuFlag[i] = false;
     }
 
+    public void ResetYakuFlags()
+    {
+        for(int i = 0; i < _yakuFlag.Length; i++)
+            _yakuFlag[i] = false;
+    }
+    public void ResetDoraHais()
+    {
+        _omoteDoraHais = null;
+        _uraDoraHais = null;
+    }
+
 
     public void setYakuFlag(EYakuFlagType yakuNum, bool flg) {
         _yakuFlag[(int)yakuNum] = flg;

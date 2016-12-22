@@ -28,10 +28,11 @@ public class Man : Player
         Hai tsumoHai = haiToHandle;
 
         // check enable Tsumo
-        int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
+        int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai, JiKaze);
         if( agariScore > 0 )
         {
-            if( isFuriten() == false )
+            bool hasFuriten = isFuriten();
+            if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
             {
                 _action.IsValidTsumo = true;
                 _action.MenuList.Add( EActionType.Tsumo );
@@ -132,10 +133,11 @@ public class Man : Player
 
         Hai kanHai = haiToHandle;
 
-        int agariScore = MahjongAgent.getAgariScore(Tehai, kanHai);
+        int agariScore = MahjongAgent.getAgariScore(Tehai, kanHai, JiKaze);
         if( agariScore > 0 ) 
         {
-            if( isFuriten() == false ) 
+            bool hasFuriten = isFuriten();
+            if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
             {
                 _action.IsValidRon = true;
                 _action.MenuList.Add( EActionType.Ron );
@@ -168,10 +170,11 @@ public class Man : Player
         Hai suteHai = haiToHandle;
 
         // check Ron
-        int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai);
+        int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai, JiKaze);
         if( agariScore > 0 ) // Ron
         {
-            if( isFuriten() == false )
+            bool hasFuriten = isFuriten();
+            if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
             {
                 _action.IsValidRon = true;
                 _action.MenuList.Add( EActionType.Ron );

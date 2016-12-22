@@ -26,7 +26,7 @@ public class AI : Player
         Hai tsumoHai = haiToHandle;
 
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
-        int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai);
+        int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai, JiKaze);
         if( agariScore > 0 )
             return DoResponse(EResponse.Tsumo_Agari);
 
@@ -58,9 +58,10 @@ public class AI : Player
             return DoResponse(EResponse.Nagashi);
         }
 
-        if( isFuriten() == false )
+        bool hasFuriten = isFuriten();
+        if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
         {
-            int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle);
+            int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle, JiKaze);
             if(agariScore > 0)
                 return DoResponse(EResponse.Ron_Agari);
         }

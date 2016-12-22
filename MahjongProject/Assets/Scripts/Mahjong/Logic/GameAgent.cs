@@ -99,16 +99,22 @@ public class GameAgent
     {
         get{ return _game.Combis; }
     }
-
-
-    // あがり点を取得する
-    public int getAgariScore(Tehai tehai, Hai addHai) {
-        return _game.GetAgariScore(tehai, addHai);
+    public CountFormat countFormat
+    {
+        get{ return _game.CountFormater; }
     }
 
 
+    // あがり点を取得する
+    public int getAgariScore(Tehai tehai, Hai addHai, EKaze jikaze)
+    {
+        return _game.GetAgariScore(tehai, addHai, jikaze);
+    }
+
     #region Logic
-    protected static CountFormat countFormat = new CountFormat();
+
+
+    protected List<Hai> _reachHaiList = new List<Hai>( Tehai.JYUN_TEHAI_LENGTH_MAX );
 
 
     // 打哪些牌可以立直.
@@ -120,12 +126,15 @@ public class GameAgent
         if( a_tehai.isNaki() )
             return false;
 
-        Tehai tehai_copy = new Tehai( a_tehai );
+        /// find all reach-enabled hais in a_tehai, also the tsumoHai.
+        _reachHaiList.Clear();
+
 
         // As _jyunTehais won't sort automatically on new hais added, 
         // so we can add tsumo hai directly to simplify the checks.
-
+        Tehai tehai_copy = new Tehai( a_tehai );
         tehai_copy.addJyunTehai( tsumoHai );
+        tehai_copy.Sort();
 
         Hai[] jyunTehai = tehai_copy.getJyunTehai();
 
@@ -139,7 +148,7 @@ public class GameAgent
 
                 if( countFormat.calculateCombisCount( combis ) > 0 )
                 {
-                    haiIndexList.Add( i );
+                    _reachHaiList.Add( new Hai(haiTemp) );
                     break;
                 }
             }
@@ -147,7 +156,29 @@ public class GameAgent
             tehai_copy.insertJyunTehai(i, haiTemp);
         }
 
-        return haiIndexList.Count > 0;
+
+        /// transfer to index list.
+        if( _reachHaiList.Count > 0 )
+        {
+            jyunTehai = a_tehai.getJyunTehai();
+
+            for( int i = 0; i < _reachHaiList.Count; i++ )
+            {
+                for( int j = 0; j < jyunTehai.Length; j++ )
+                {
+                    if( jyunTehai[j].ID == _reachHaiList[i].ID && !haiIndexList.Contains(j))
+                        haiIndexList.Add( j );
+                }
+
+                if( tsumoHai.ID == _reachHaiList[i].ID && !haiIndexList.Contains(jyunTehai.Length) )
+                    haiIndexList.Add( jyunTehai.Length );
+            }
+            haiIndexList.Sort();
+
+            return true;
+        }
+
+        return false;
     }
 
     // hais为听牌列表.
@@ -170,7 +201,7 @@ public class GameAgent
         return hais.Count > 0;
     }
 
-    // 是否可以听牌，只需要检查一个牌.
+    // 是否可以听牌，只需要检查一个成立的牌.
     public bool canTenpai(Tehai tehai)
     {
         for(int id = Hai.ID_MIN; id <= Hai.ID_MAX; id++)

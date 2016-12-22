@@ -149,6 +149,14 @@ public abstract class Mahjong
         set{ m_kakanHai = value; }
     }
 
+
+    protected AgariParam m_agariParam = new AgariParam();
+    public AgariParam AgariParam
+    {
+        get{ return m_agariParam; }
+        protected set{ m_agariParam = value; }
+    }
+
     protected HaiCombi[] m_combis = new HaiCombi[10]
     {
         new HaiCombi(),new HaiCombi(),new HaiCombi(),
@@ -161,12 +169,20 @@ public abstract class Mahjong
         protected set{ m_combis = value; }
     }
 
+    protected CountFormat m_countFormat = new CountFormat();
+    public CountFormat CountFormater
+    {
+        get{ return m_countFormat; }
+        protected set{ m_countFormat = value; }
+    }
+
     protected AgariInfo m_agariInfo = new AgariInfo();
     public AgariInfo AgariInfo
     {
         get{ return m_agariInfo; }
         protected set{ m_agariInfo = value; }
     }
+
 
     protected bool m_isTenhou = false;  //天和
     public bool isTenHou
@@ -243,11 +259,6 @@ public abstract class Mahjong
         return m_playerList.FindIndex( (p) => p.JiKaze == kaze );
     }
 
-    public PlayerAction getPlayerAction()
-    {
-        return m_activePlayer.Action;
-    }
-
     // 表ドラ、槓ドラの配列を取得する
     public Hai[] getOmotoDoras()
     {
@@ -276,8 +287,8 @@ public abstract class Mahjong
         return m_playerList[0].JiKaze;
     }
 
-    // 自風を取得する
-    public EKaze getJiKaze() 
+    // 自風を取得する(should get from player themselves)
+    protected EKaze getJiKaze() 
     {
         return ActivePlayer.JiKaze;
         //return m_playerList[m_oyaIndex].JiKaze;
@@ -290,13 +301,17 @@ public abstract class Mahjong
     }
 
 
-    public int GetAgariScore(Tehai tehai, Hai addHai, AgariParam param = null)
+    public int GetAgariScore(Tehai tehai, Hai addHai, EKaze jikaze, AgariParam param = null)
     {
-        if(param == null){
-            param = new AgariParam();
-            param.setJikaze( ActivePlayer.JiKaze );
+        if(param == null) {
+            param = AgariParam;
+            param.ResetDoraHais();
         }
+
         param.setBakaze( getBaKaze() );
+        param.setJikaze( jikaze );
+
+        param.ResetYakuFlags(); // should reset params or create a new.
 
         if( m_activePlayer.IsReach ) {
             if( m_activePlayer.IsDoubleReach ) {
@@ -317,10 +332,8 @@ public abstract class Mahjong
                 param.setYakuFlag(EYakuFlagType.TIHOU, true);
             }
         }
-        else{
-            if( m_isRenhou ){ // Not supported.
-                param.setYakuFlag(EYakuFlagType.RENHOU, true);
-            }
+        else if( m_isRenhou ){
+            param.setYakuFlag(EYakuFlagType.RENHOU, true);
         }
 
         if( m_isTsumo && m_isRinshan ) {
