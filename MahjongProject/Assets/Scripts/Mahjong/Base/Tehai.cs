@@ -9,7 +9,17 @@ public class Tehai
 {
     public static int Compare( Hai x, Hai y )
     {
-        return x.ID - y.ID;
+        if( x.ID == y.ID ){
+            if( x.IsRed && !y.IsRed )
+                return -1;
+            else if( !x.IsRed && y.IsRed )
+                return 1;
+            else
+                return 0;
+        }
+        else{
+            return x.ID - y.ID;
+        }
     }
 
 
