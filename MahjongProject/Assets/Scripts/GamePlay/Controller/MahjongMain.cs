@@ -66,8 +66,10 @@ public class MahjongMain : Mahjong
     // Step: 3
     public void SetRandomChiicha()
     {
-        //m_oyaIndex = (m_sais[0].Num + m_sais[1].Num - 1) % m_playerList.Count;
-        m_oyaIndex = 0;
+        m_oyaIndex = (m_sais[0].Num + m_sais[1].Num - 1) % m_playerList.Count;
+
+        if(debugMode) m_oyaIndex = 0;
+
         m_chiichaIndex = m_oyaIndex;
     }
 
@@ -171,7 +173,7 @@ public class MahjongMain : Mahjong
         }
 
 
-        if(testHaipai == true)
+        if(debugMode == true)
             StartTest();
     }
 
@@ -391,7 +393,7 @@ public class MahjongMain : Mahjong
             }
         }
 
-        if(testHaipai) m_tsumoHai = getTestPickHai();
+        if(debugMode) m_tsumoHai = getTestPickHai();
 
         //Handle_TsumoHai_Internel();
     }
@@ -438,7 +440,7 @@ public class MahjongMain : Mahjong
         m_tsumoHai = m_yama.PickRinshanTsumoHai();
         isRinshan = true;
 
-        if(testHaipai) m_tsumoHai = getTestRinshanHai();
+        if(debugMode) m_tsumoHai = getTestRinshanHai();
 
         //Handle_RinshanHai_Internel();
     }
@@ -1388,12 +1390,12 @@ public class MahjongMain : Mahjong
 
 
     #region Test Method
-    protected bool testHaipai = false;
+    protected bool debugMode = false;
 
     protected void StartTest()
     {
-        // remove all the hais of player 0.
-        int iPlayer = 0;
+        // remove all the hais of Oya player.
+        int iPlayer = OyaIndex;
         while( m_playerList[iPlayer].Tehai.getJyunTehai().Length > 0 )
             m_playerList[iPlayer].Tehai.removeJyunTehaiAt(0);
 

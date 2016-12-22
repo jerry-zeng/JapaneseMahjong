@@ -72,7 +72,6 @@ public class Man : Player
         else
         {
             // if player machi hais won't change after setting AnKan, enable to to it.
-
             if( Tehai.validAnKan(tsumoHai) )
             {
                 List<Hai> machiHais;
@@ -112,7 +111,6 @@ public class Man : Player
 
             // can Ron or Ankan, sute hai automatically.
             if( _action.MenuList.Count == 0) {
-                _action.Reset();
                 _action.SutehaiIndex = Tehai.getJyunTehaiCount(); // sute the tsumo hai on Reach
 
                 return DoResponse(EResponse.SuteHai);

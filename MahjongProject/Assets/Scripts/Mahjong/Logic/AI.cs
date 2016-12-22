@@ -16,8 +16,9 @@ public class AI : Player
 
     protected override EResponse OnHandle_TsumoHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
+        _action.Reset();
+
         if(inTest){
-            _action.Reset();
             _action.SutehaiIndex = Utils.GetRandomNum(0, Tehai.getJyunTehaiCount());
             //_action.SutehaiIndex = Tehai.getJyunTehaiCount();
             return DoResponse(EResponse.SuteHai);
@@ -28,42 +29,125 @@ public class AI : Player
         // ツモあがりの場合は、イベント(ツモあがり)を返す。
         int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai, JiKaze);
         if( agariScore > 0 )
-            return DoResponse(EResponse.Tsumo_Agari);
+        {
+            bool hasFuriten = isFuriten();
+            if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
+            {
+                return DoResponse(EResponse.Tsumo_Agari);
+            }
+            else{
+                Utils.LogWarningFormat( "AI {0} is enable tsumo but furiten...", JiKaze.ToString() );
+            }
+        }
 
-        // リーチの場合は、ツモ切りする。
-        if( MahjongAgent.isReach(JiKaze) ){
-            _action.SutehaiIndex = PlayerAction.Sutehai_Index_Max;
+        // リーチの場合は、ツモ切りする
+        if( MahjongAgent.isReach(JiKaze) )
+        {
+            _action.SutehaiIndex = Tehai.getJyunTehaiCount();
+
             return DoResponse(EResponse.SuteHai);
         }
 
-        thinkSutehai(tsumoHai);
-
-        // 捨牌を決めたので手牌を更新します。
-        if( _action.SutehaiIndex != PlayerAction.Sutehai_Index_Max )
+        // check enable Reach
+        if( CheckReachPreConditions() == true ) 
         {
-            Tehai.removeJyunTehaiAt(_action.SutehaiIndex);
-            Tehai.addJyunTehai(tsumoHai);
+            List<int> reachHaiIndexList;
+            if( MahjongAgent.tryGetReachHaiIndex(Tehai, tsumoHai, out reachHaiIndexList) )
+            {
+                _action.IsValidReach = true;
+                _action.ReachHaiIndexList = reachHaiIndexList;
+
+                thinkReach();
+
+                return DoResponse(EResponse.Reach);
+            }
         }
 
-        // リーチする場合はイベント（リーチ）を返します。
-        if( thinkReach(Tehai) )
-            return DoResponse(EResponse.Reach);
+        // 制限事項。リーチ後のカンをさせない
+        if( !MahjongAgent.isReach(JiKaze) ) 
+        {
+            // TODO: tsumo kans
+            List<Hai> kanHais = new List<Hai>();
+            if( Tehai.validAnyTsumoKan(tsumoHai, kanHais) )
+            {
+                _action.setValidTsumoKan(true, kanHais);
+
+
+            }
+        }
+        else
+        {
+            // if player machi hais won't change after setting AnKan, enable to to it.
+            if( Tehai.validAnKan(tsumoHai) )
+            {
+                List<Hai> machiHais;
+                if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
+                {
+                    Tehai tehaiCopy = new Tehai( Tehai );
+                    tehaiCopy.setAnKan( tsumoHai );
+                    tehaiCopy.Sort();
+
+                    List<Hai> newMachiHais;
+
+                    if( MahjongAgent.tryGetMachiHais(tehaiCopy, out newMachiHais) )
+                    {
+                        if( machiHais.Count == newMachiHais.Count ){
+                            machiHais.Sort( Tehai.Compare );
+                            newMachiHais.Sort( Tehai.Compare );
+
+                            bool enableAnkan = true;
+
+                            for( int i = 0; i < machiHais.Count; i++ )
+                            {
+                                if( machiHais[i].ID != newMachiHais[i].ID ){
+                                    enableAnkan = false;
+                                    break;
+                                }
+                            }
+
+                            if( enableAnkan == true )
+                            {
+                                _action.setValidTsumoKan(true, new List<Hai>(){ tsumoHai });
+                                return DoResponse(EResponse.Ankan);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // can Ron or Ankan, sute hai automatically.
+            _action.SutehaiIndex = Tehai.getJyunTehaiCount(); // sute the tsumo hai on Reach
+
+            return DoResponse(EResponse.SuteHai);
+        }
+
+
+        thinkSutehai( tsumoHai );
 
         return DoResponse(EResponse.SuteHai);
     }
 
     protected override EResponse OnHandle_KakanHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
+        _action.Reset();
+
         if(inTest){
             return DoResponse(EResponse.Nagashi);
         }
 
-        bool hasFuriten = isFuriten();
-        if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
+        Hai kanHai = haiToHandle;
+
+        int agariScore = MahjongAgent.getAgariScore(Tehai, kanHai, JiKaze);
+        if( agariScore > 0 )
         {
-            int agariScore = MahjongAgent.getAgariScore(Tehai, haiToHandle, JiKaze);
-            if(agariScore > 0)
+            bool hasFuriten = isFuriten();
+            if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
+            {
                 return DoResponse(EResponse.Ron_Agari);
+            }
+            else{
+                Utils.LogWarningFormat( "AI {0} is enable ron but furiten...", JiKaze.ToString() );
+            }
         }
 
         return DoResponse(EResponse.Nagashi);
@@ -71,6 +155,33 @@ public class AI : Player
 
     protected override EResponse OnHandle_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
+        _action.Reset();
+
+        Hai suteHai = haiToHandle;
+
+        // check Ron
+        int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai, JiKaze);
+        if( agariScore > 0 ) // Ron
+        {
+            bool hasFuriten = isFuriten();
+            if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
+            {
+                return DoResponse(EResponse.Ron_Agari);
+            }
+            else{
+                Utils.LogWarningFormat( "AI {0} is enable to ron but furiten...", JiKaze.ToString() );
+            }
+        }
+
+        if( MahjongAgent.getTsumoRemain() <= 0 )
+            return DoResponse(EResponse.Nagashi);
+
+        if( MahjongAgent.isReach(JiKaze) )
+            return DoResponse(EResponse.Nagashi);
+
+        // TODO: Chii, Pon, Kan check
+
+
         return DoResponse(EResponse.Nagashi);
     }
 
@@ -78,45 +189,84 @@ public class AI : Player
     protected override EResponse OnSelect_SuteHai(EKaze fromPlayerKaze, Hai haiToHandle)
     {
         _action.Reset();
-        _action.SutehaiIndex = Utils.GetRandomNum(0, Tehai.getJyunTehaiCount());
+
+        thinkSelectSuteHai();
+
         return DoResponse(EResponse.SuteHai);
     }
 
 
+
     protected void thinkSutehai(Hai addHai)
     {
-        _action.SutehaiIndex = PlayerAction.Sutehai_Index_Max;
-        FormatWorker.setCounterFormat(Tehai, null);
+        _action.SutehaiIndex = Tehai.getJyunTehaiCount();
+
+        Tehai tehaiCopy = new Tehai( Tehai );
+
+        FormatWorker.setCounterFormat(tehaiCopy, null);
         int maxScore = getCountFormatScore(FormatWorker);
 
-        Hai[] jyunTehai = Tehai.getJyunTehai();
-
-        Hai[] jyunTehaiCopy = new Hai[jyunTehai.Length];
-        Tehai.copyJyunTehai(jyunTehaiCopy, jyunTehai);
-
-        for( int i = 0; i < jyunTehai.Length; i++ )
+        for( int i = 0; i < tehaiCopy.getJyunTehaiCount(); i++ )
         {
-            Hai hai = Tehai.removeJyunTehaiAt(i);
+            Hai hai = tehaiCopy.removeJyunTehaiAt(i);
 
-            FormatWorker.setCounterFormat(Tehai, addHai);
-            int score = getCountFormatScore(FormatWorker);
+            FormatWorker.setCounterFormat(tehaiCopy, addHai);
 
-            if( score > maxScore ){
+            int score = getCountFormatScore( FormatWorker );
+            if( score > maxScore )
+            {
                 maxScore = score;
                 _action.SutehaiIndex = i;
             }
 
-            Tehai.insertJyunTehai(i, hai);
+            tehaiCopy.insertJyunTehai(i, hai);
         }
     }
 
-    protected bool thinkReach(Tehai tehai)
+
+    protected void thinkSelectSuteHai()
     {
-        if( CheckReachPreConditions() == true ) 
+        thinkSutehai(null);
+
+        if( _action.SutehaiIndex == Tehai.getJyunTehaiCount() )
         {
-            return MahjongAgent.canTenpai(tehai);
+            _action.SutehaiIndex = Utils.GetRandomNum(0, Tehai.getJyunTehaiCount());
         }
-        return false;
+    }
+
+    protected void thinkReach()
+    {
+        _action.ReachSelectIndex = 0;
+
+        List<int> reachHaiIndex = _action.ReachHaiIndexList;
+
+        Tehai tehaiCopy = new Tehai( Tehai );
+        int maxScore = 0;
+
+        for( int i = 0; i < reachHaiIndex.Count; i++ )
+        {
+            Hai hai = tehaiCopy.removeJyunTehaiAt(i);
+
+            List<Hai> machiiHais;
+            if( MahjongAgent.tryGetMachiHais(tehaiCopy, out machiiHais) )
+            {
+                for( int m = 0; m < machiiHais.Count; m++ )
+                {
+                    Hai addHai = machiiHais[m];
+
+                    FormatWorker.setCounterFormat(tehaiCopy, addHai);
+
+                    int score = MahjongAgent.getAgariScore( tehaiCopy, addHai, JiKaze );
+                    if( score > maxScore )
+                    {
+                        maxScore = score;
+                        _action.ReachSelectIndex = i;
+                    }
+                }
+            }
+
+            tehaiCopy.insertJyunTehai(i, hai);
+        }
     }
 
 
@@ -127,26 +277,24 @@ public class AI : Player
         int score = 0;
         HaiCounterInfo[] countArr = countFormat.getCounterArray();
 
-        for (int i = 0; i < countArr.Length; i++) 
+        for( int i = 0; i < countArr.Length; i++ ) 
         {
-            if((countArr[i].numKind & Hai.KIND_SHUU) != 0)
+            if( (countArr[i].numKind & Hai.KIND_SHUU) != 0)
                 score += countArr[i].count * HYOUKA_SHUU;
 
-            if(countArr[i].count == 2)
+            if( countArr[i].count == 2 )
                 score += 4;
 
-            if(countArr[i].count >= 3)
+            if( countArr[i].count >= 3 )
                 score += 8;
 
-            if((countArr[i].numKind & Hai.KIND_SHUU) > 0)
+            if( (countArr[i].numKind & Hai.KIND_SHUU) > 0 )
             {
-                if ((countArr[i].numKind + 1) == countArr[i + 1].numKind) {
+                if( (i + 1) < countArr.Length && (countArr[i].numKind + 1) == countArr[i + 1].numKind )
                     score += 4;
-                }
 
-                if ((countArr[i].numKind + 2) == countArr[i + 2].numKind) {
+                if( (i + 2) < countArr.Length && (countArr[i].numKind + 2) == countArr[i + 2].numKind )
                     score += 4;
-                }
             }
         }
 

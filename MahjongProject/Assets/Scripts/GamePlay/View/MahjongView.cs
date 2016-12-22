@@ -421,6 +421,9 @@ public class MahjongView : UIObject, IObserver
                     playerUI.PickHai( ronHai, true, false );
                     playerUI.SetTehaiVisiable(true);
                 }
+
+                // show out all players' tehai
+                ShowAllPlayerTehai();
             }
             break;
 
@@ -432,6 +435,9 @@ public class MahjongView : UIObject, IObserver
 
                 PlayerUI playerUI = playerUIDict_Kaze[ activePlayer.JiKaze ];
                 playerUI.SetTehaiVisiable(true);
+
+                // show out all players' tehai
+                ShowAllPlayerTehai();
             }
             break;
 
@@ -455,6 +461,8 @@ public class MahjongView : UIObject, IObserver
                 }
 
                 ryuuKyokuPanel.Show( msg, null );
+
+                ShowAllPlayerTehai();
             }
             break;
         }
@@ -465,6 +473,14 @@ public class MahjongView : UIObject, IObserver
         playerUIDict_Kaze[Model.getManKaze()].EnableInput(isEnable);
     }
 
+
+    void ShowAllPlayerTehai()
+    {
+        foreach( var ui in playerUIDict )
+        {
+            ui.Value.SetTehaiVisiable(true);
+        }
+    }
 
     // sais panel objects.
     UIEventType lastSaifuriTarget;

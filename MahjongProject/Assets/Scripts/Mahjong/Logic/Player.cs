@@ -266,5 +266,5 @@ public abstract class Player
 
     public abstract bool IsAI { get; }
 
-    protected bool inTest = true;
+    protected bool inTest = false;
 }
