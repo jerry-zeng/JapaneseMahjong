@@ -241,10 +241,17 @@ public class AgariPanel : MonoBehaviour
             
             int han = agariInfo.han;
             int fu = agariInfo.fu;
+            int point = isOya? agariInfo.scoreInfo.oyaRon : agariInfo.scoreInfo.oyaRon;
+
             int level = 0;
 
             if( han < 5 ){
-                level = 0;
+                if( point >= 12000 )
+                    level = 1;
+                else if( !isOya && point >= 8000 )
+                    level = 1;
+                else
+                    level = 0;
             }
             else if( han < 6 ){ //5     满贯.
                 level = 1;
@@ -263,8 +270,6 @@ public class AgariPanel : MonoBehaviour
             }
 
             SetHan( han, fu, level );
-
-            int point = isOya? agariInfo.scoreInfo.oyaRon : agariInfo.scoreInfo.oyaRon;
             SetPoint( point );
         }
 
