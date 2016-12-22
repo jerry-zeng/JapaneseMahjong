@@ -50,94 +50,79 @@ namespace YakuHelper
             return YakuHandler.GetYakuNameKey(this.YakuID);
         }
 
-        public string getYakuName(){
-            return YakuHandler.GetYakuName(this.YakuID);
-        }
-
-
         #region Yaku Name
-        public struct YakuName 
+        public struct YakuNameKey 
         {
             public int ID;
             public string Key;
 
-            public YakuName(int id, string key) {
+            public YakuNameKey(int id, string key) {
                 this.ID = id;
                 this.Key = key;
             }
         }
 
-        static YakuName[] Yaku_IdNameKeys = new YakuName[] 
+        static YakuNameKey[] Yaku_IdNameKeys = new YakuNameKey[] 
         {
-            new YakuName( 1, "yaku_reach"),
-            new YakuName( 2, "yaku_doublereach"),
-            new YakuName( 3, "yaku_ippatu"),
-            new YakuName( 4, "yaku_tsumo"),
+            new YakuNameKey( 1, "yaku_reach"),
+            new YakuNameKey( 2, "yaku_doublereach"),
+            new YakuNameKey( 3, "yaku_ippatu"),
+            new YakuNameKey( 4, "yaku_tsumo"),
 
-            new YakuName( 5, "yaku_haitei"),
-            new YakuName( 6, "yaku_houtei"),
-            new YakuName( 7, "yaku_rinsyan"),
-            new YakuName( 8, "yaku_chankan"),
-            new YakuName( 9, "yaku_tanyao"),
-            new YakuName(10, "yaku_pinfu"),
-            new YakuName(11, "yaku_ipeikou"),
+            new YakuNameKey( 5, "yaku_haitei"),
+            new YakuNameKey( 6, "yaku_houtei"),
+            new YakuNameKey( 7, "yaku_rinsyan"),
+            new YakuNameKey( 8, "yaku_chankan"),
+            new YakuNameKey( 9, "yaku_tanyao"),
+            new YakuNameKey(10, "yaku_pinfu"),
+            new YakuNameKey(11, "yaku_ipeikou"),
 
-            new YakuName(12, "yaku_chiitoitu"),
-            new YakuName(13, "yaku_cyanta"),
-            new YakuName(14, "yaku_ikkituukan"),
-            new YakuName(15, "yaku_sansyokudoujyun"),
-            new YakuName(16, "yaku_sansyokudoukou"),
-            new YakuName(17, "yaku_toitoi"),
-            new YakuName(18, "yaku_sanankou"),
-            new YakuName(19, "yaku_sankantsu"),
-            new YakuName(20, "yaku_honroutou"),
-            new YakuName(21, "yaku_syousangen"),
+            new YakuNameKey(12, "yaku_chiitoitu"),
+            new YakuNameKey(13, "yaku_cyanta"),
+            new YakuNameKey(14, "yaku_ikkituukan"),
+            new YakuNameKey(15, "yaku_sansyokudoujyun"),
+            new YakuNameKey(16, "yaku_sansyokudoukou"),
+            new YakuNameKey(17, "yaku_toitoi"),
+            new YakuNameKey(18, "yaku_sanankou"),
+            new YakuNameKey(19, "yaku_sankantsu"),
+            new YakuNameKey(20, "yaku_honroutou"),
+            new YakuNameKey(21, "yaku_syousangen"),
 
-            new YakuName(22, "yaku_ryanpeikou"),
-            new YakuName(23, "yaku_honisou"),
-            new YakuName(24, "yaku_jyuncyan"),
+            new YakuNameKey(22, "yaku_ryanpeikou"),
+            new YakuNameKey(23, "yaku_honisou"),
+            new YakuNameKey(24, "yaku_jyuncyan"),
 
-            new YakuName(25, "yaku_tinisou"),
+            new YakuNameKey(25, "yaku_tinisou"),
 
-            new YakuName(26, "yaku_tenhou"),
-            new YakuName(27, "yaku_tihou"),
-            new YakuName(28, "yaku_renhou"),
-            new YakuName(29, "yaku_chinroutou"),
-            new YakuName(30, "yaku_ryuuisou"),
-            new YakuName(31, "yaku_suukantsu"),
-            new YakuName(32, "yaku_daisangen"),
-            new YakuName(33, "yaku_syousuushi"),
-            new YakuName(34, "yaku_tsuisou"),
-            new YakuName(35, "yaku_suuankou"),
-            new YakuName(36, "yaku_cyuurennpoutou"),
-            new YakuName(37, "yaku_kokushi"),
+            new YakuNameKey(26, "yaku_tenhou"),
+            new YakuNameKey(27, "yaku_tihou"),
+            new YakuNameKey(28, "yaku_renhou"),
+            new YakuNameKey(29, "yaku_chinroutou"),
+            new YakuNameKey(30, "yaku_ryuuisou"),
+            new YakuNameKey(31, "yaku_suukantsu"),
+            new YakuNameKey(32, "yaku_daisangen"),
+            new YakuNameKey(33, "yaku_syousuushi"),
+            new YakuNameKey(34, "yaku_tsuisou"),
+            new YakuNameKey(35, "yaku_suuankou"),
+            new YakuNameKey(36, "yaku_cyuurennpoutou"),
+            new YakuNameKey(37, "yaku_kokushi"),
 
-            new YakuName(38, "yaku_daisuushi"),
-            new YakuName(39, "yaku_suuankou_tanki"),
-            new YakuName(40, "yaku_cyuurennpoutou_jyunsei"),
-            new YakuName(41, "yaku_kokushi_13men"),
+            new YakuNameKey(38, "yaku_daisuushi"),
+            new YakuNameKey(39, "yaku_suuankou_tanki"),
+            new YakuNameKey(40, "yaku_cyuurennpoutou_jyunsei"),
+            new YakuNameKey(41, "yaku_kokushi_13men"),
 
-            new YakuName(42, "yaku_lenfonhai"),
-            new YakuName(43, "yaku_yakuhai"),
-            new YakuName(44, "yaku_dora"),
+            new YakuNameKey(42, "yaku_lenfonhai"),
+            new YakuNameKey(43, "yaku_yakuhai"),
+            new YakuNameKey(44, "yaku_dora"),
 
-            new YakuName(45, "yaku_nagashimangan"), // handler is in AgariScoreManager.
+            new YakuNameKey(45, "yaku_nagashimangan"), // handler is in AgariScoreManager.
         };
 
-
-        public static string getNagashiManganYakuName()
-        {
-            return GetYakuName(45);
-        }
 
         public static string GetYakuNameKey(int yakuID)
         {
             return Yaku_IdNameKeys[ yakuID-1 ].Key;
-        }
-
-        public static string GetYakuName(int yakuID)
-        {
-            return ResManager.getString( GetYakuNameKey(yakuID) );
         }
         #endregion
     }
@@ -647,10 +632,15 @@ namespace YakuHelper
             this.YakuID = 44;
             hantei = owner.checkDora();
             hanSuu = 1;
-            yakuman = false;
         }
     }
 
-    // nagashimangan.
-    // YakuID = 45.
+    // 流局满贯(不能在Yaku里面判断！).
+    public class CheckNagashimangan : YakuHandler {
+        public CheckNagashimangan(Yaku owner) {
+            this.YakuID = 45;
+            hantei = true;
+            hanSuu = 5;
+        }
+    }
 }

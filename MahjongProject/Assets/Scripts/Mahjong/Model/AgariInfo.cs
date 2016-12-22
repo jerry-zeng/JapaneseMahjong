@@ -1,16 +1,47 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using YakuHelper;
 
 public class AgariInfo 
 {
     public int han;
     public int fu;
-    public string[] yakuNames;
     public YakuHandler[] hanteiYakus;
     public ScoreInfo scoreInfo;
 
     public int agariScore;
+
+
+    public string[] getYakuNames()
+    {
+        List<string> yakuNames = new List<string>();
+
+        int hanSuu = 0;
+        string current = "";
+
+        for(int i = 0; i < hanteiYakus.Length; i++)
+        {
+            string yakuName = ResManager.getString( hanteiYakus[i].getYakuNameKey() );
+
+            if( hanteiYakus[i].isYakuman() ) {
+                if( hanteiYakus[i].isDoubleYakuman() )
+                    current = yakuName + "  " + ResManager.getString("double") + ResManager.getString("yakuman");
+                else
+                    current = yakuName + "  " + ResManager.getString("yakuman");
+            }
+            else{
+                hanSuu = hanteiYakus[i].getHanSuu();
+
+                current = yakuName + "  " + hanSuu.ToString() + ResManager.getString("han");
+            }
+
+            yakuNames.Add(current);
+        }
+
+        return yakuNames.ToArray();
+    }
+
 
     public override string ToString()
     {
@@ -21,6 +52,7 @@ public class AgariInfo
 
         sb.Append( "Yaku Names: \n" );
 
+        string[] yakuNames = getYakuNames();
         for(int i = 0; i < yakuNames.Length; i++)
             sb.Append(  yakuNames[i] + "\n" );
 

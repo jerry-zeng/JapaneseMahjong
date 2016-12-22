@@ -1,6 +1,7 @@
 ﻿//#define Disable_Agari
 using System.Collections.Generic;
 
+
 /// <summary>
 /// Agari(あがり) = 胡牌.
 /// </summary>
@@ -64,10 +65,14 @@ public sealed class AgariScoreManager
     // 流局满贯 //
     public static void SetNagashiMangan(AgariInfo agariInfo)
     {
-        agariInfo.scoreInfo = GetScoreInfo(5, 30);
         agariInfo.han = 5;
         agariInfo.fu = 30;
-        agariInfo.yakuNames = new string[]{ Yaku.getNagashiManganYakuName() };
+        agariInfo.scoreInfo = GetScoreInfo(5, 30);
+
+        agariInfo.hanteiYakus = new YakuHelper.YakuHandler[]
+        { 
+            new YakuHelper.CheckNagashimangan(null) 
+        };
     }
 
     // 符を計算します
@@ -232,7 +237,6 @@ public sealed class AgariScoreManager
             agariInfo.han = yaku.getHan();
             agariInfo.fu = 25;
             agariInfo.hanteiYakus = yaku.getHanteiYakus();
-            agariInfo.yakuNames = yaku.getYakuNames();
 
             agariInfo.scoreInfo = GetScoreInfo(agariInfo.han, agariInfo.fu);
 
@@ -249,7 +253,6 @@ public sealed class AgariScoreManager
                 agariInfo.han = 13;
                 agariInfo.fu = 20;
                 agariInfo.hanteiYakus = yaku.getHanteiYakus();
-                agariInfo.yakuNames = yaku.getYakuNames();
 
                 agariInfo.scoreInfo = GetScoreInfo(agariInfo.han, agariInfo.fu);
 
@@ -285,7 +288,6 @@ public sealed class AgariScoreManager
                 agariInfo.han = hanSuuArr[i];
                 agariInfo.fu = huSuuArr[i];
                 agariInfo.hanteiYakus = yaku.getHanteiYakus();
-                agariInfo.yakuNames = yaku.getYakuNames();
 
                 agariInfo.scoreInfo = info;
 

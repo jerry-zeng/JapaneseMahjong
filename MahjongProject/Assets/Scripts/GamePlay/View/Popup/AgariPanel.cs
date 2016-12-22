@@ -142,13 +142,12 @@ public class AgariPanel : MonoBehaviour
         gameObject.SetActive(true);
 
         MahjongMain logic = GameManager.Instance.MahjongMain;
+        Player player = GameManager.Instance.MahjongMain.ActivePlayer;
 
         Hai addHai = logic.isTsumo? logic.TsumoHai : logic.SuteHai;
 
         int doraCount = logic.getOmotoDoras().Length;
         ShowOmoteDora( doraCount );
-
-        Player player = GameManager.Instance.MahjongMain.ActivePlayer;
 
         if( player.IsReach == true )
             ShowUraDora( doraCount );
@@ -165,7 +164,7 @@ public class AgariPanel : MonoBehaviour
         Fuuro[] fuuros = player.Tehai.getFuuros();
         fuuro.UpdateFuuro( fuuros );
 
-        StartCoroutine( ShowYakuOneByOne( logic.AgariInfo ) );
+        StartCoroutine( ShowYakuOneByOne(logic.AgariInfo) );
     }
 
     IEnumerator ShowYakuOneByOne( AgariInfo agariInfo )
@@ -202,7 +201,6 @@ public class AgariPanel : MonoBehaviour
     void ShowTotalScrote( AgariInfo agariInfo )
     {
         int yakumanCount = 0;
-        int totalHan = 0;
 
         var yakuArr = agariInfo.hanteiYakus;
 
@@ -216,52 +214,47 @@ public class AgariPanel : MonoBehaviour
             else if( yaku.isYakuman() ){
                 yakumanCount += 1;
             }
-            else{
-                totalHan += yaku.getHanSuu();
-            }
         }
 
         MahjongMain logic = GameManager.Instance.MahjongMain;
         int index = logic.getPlayerIndex( logic.ActivePlayer.JiKaze );
         bool isOya = index == logic.OyaIndex;
 
-        int point = 0;
 
         if( yakumanCount > 0 ){
             SetYakuman();
 
-            point = yakumanCount * (isOya? 48000 : 32000);
-            SetPoint( point );
+            int yakumanScore = isOya? agariInfo.scoreInfo.oyaRon : agariInfo.scoreInfo.oyaRon;
+            SetPoint( yakumanScore * yakumanCount );
         }
         else{
+            
+            int han = agariInfo.han;
+            int fu = agariInfo.fu;
             int level = 0;
 
-            if( totalHan < 5 ){
+            if( han < 5 ){
                 level = 0;
-                point = 2000;
             }
-            else if( totalHan < 6 ){ //5     满贯.
+            else if( han < 6 ){ //5     满贯.
                 level = 1;
-                point = isOya? 12000: 8000;
             }
-            else if( totalHan < 8 ){ //6-7   跳满
+            else if( han < 8 ){ //6-7   跳满
                 level = 2;
-                point = isOya? 18000: 12000;
             }
-            else if( totalHan < 11 ){ //9-10 倍满.
+            else if( han < 11 ){ //9-10 倍满.
                 level = 3;
-                point = isOya? 24000: 18000;
             }
-            else if( totalHan < 13 ){ //11-12 三倍满.
+            else if( han < 13 ){ //11-12 三倍满.
                 level = 4;
-                point = isOya? 36000: 24000;
             }
             else{                     //13 役满.
                 level = 5;
-                point = isOya? 48000: 32000;
             }
 
-            SetHan( totalHan, 20, level );
+            SetHan( han, fu, level );
+
+            int point = isOya? agariInfo.scoreInfo.oyaRon : agariInfo.scoreInfo.oyaRon;
             SetPoint( point );
         }
     }

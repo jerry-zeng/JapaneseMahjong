@@ -269,49 +269,6 @@ public class Yaku
         return yakus.ToArray();
     }
 
-    public string[] getYakuNameKeys()
-    {
-        List<string> yakuNameKeys = new List<string>();
-
-        for(int i = 0; i < _yakuHandlers.Length; i++)
-        {
-            if( _yakuHandlers[i].isHantei() )
-            {
-                yakuNameKeys.Add( _yakuHandlers[i].getYakuName() );
-            }
-        }
-
-        return yakuNameKeys.ToArray();
-    }
-
-    public string[] getYakuNames()
-    {
-        List<string> yakuNames = new List<string>();
-
-        int hanSuu = 0;
-        string current = "";
-
-        for(int i = 0; i < _yakuHandlers.Length; i++)
-        {
-            if( _yakuHandlers[i].isHantei() )
-            {
-                if( _yakuHandlers[i].isYakuman() ) {
-                    if( _yakuHandlers[i].isDoubleYakuman() )
-                        current = _yakuHandlers[i].getYakuName() + "  " + ResManager.getString("double") + ResManager.getString("yakuman");
-                    else
-                        current = _yakuHandlers[i].getYakuName() + "  " + ResManager.getString("yakuman");
-                }
-                else{
-                    hanSuu = _yakuHandlers[i].getHanSuu();
-                    current = _yakuHandlers[i].getYakuName() + "  " + hanSuu.ToString() + ResManager.getString("han");
-                }
-                yakuNames.Add(current);
-            }
-        }
-
-        return yakuNames.ToArray();
-    }
-
     public bool isYakuMan()
     {
         for(int i = 0; i < _yakuHandlers.Length; i++)
@@ -2031,13 +1988,9 @@ public class Yaku
     }
     #endregion
 
-    public static string getNagashiManganYakuName()
-    {
-        return YakuHandler.getNagashiManganYakuName();
-    }
 
-    public static string GetYakuName(int yakuID)
+    public static string GetYakuNameKey(int yakuID)
     {
-        return YakuHandler.GetYakuName(yakuID);
+        return YakuHandler.GetYakuNameKey(yakuID);
     }
 }
