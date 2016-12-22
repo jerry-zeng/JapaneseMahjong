@@ -346,10 +346,10 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 431338}
   - {fileID: 431340}
   - {fileID: 411630}
   - {fileID: 411616}
-  - {fileID: 431338}
   m_Father: {fileID: 411628}
   m_RootOrder: 0
 --- !u!4 &411616
@@ -359,11 +359,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 111616}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -160, z: 0}
+  m_LocalPosition: {x: 0, y: -155, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411614}
-  m_RootOrder: 2
+  m_RootOrder: 3
 --- !u!4 &411618
 Transform:
   m_ObjectHideFlags: 1
@@ -454,7 +454,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411614}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!4 &431336
 Transform:
   m_ObjectHideFlags: 1
@@ -474,13 +474,13 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 131338}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -101, y: -120, z: 0}
+  m_LocalPosition: {x: -100, y: -120, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 411620}
   - {fileID: 431336}
   m_Father: {fileID: 411614}
-  m_RootOrder: 3
+  m_RootOrder: 0
 --- !u!4 &431340
 Transform:
   m_ObjectHideFlags: 1
@@ -488,11 +488,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 131340}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -70, y: -120, z: 0}
+  m_LocalPosition: {x: -60, y: -120, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 411614}
-  m_RootOrder: 0
+  m_RootOrder: 1
 --- !u!114 &11411604
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -808,7 +808,7 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
-  mText: C
+  mText: O
   mFontSize: 30
   mFontStyle: 1
   mAlignment: 0
@@ -981,36 +981,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leftAnchor:
-    target: {fileID: 431340}
-    relative: 1
+    target: {fileID: 0}
+    relative: 0
     absolute: -12
   rightAnchor:
-    target: {fileID: 431340}
+    target: {fileID: 0}
     relative: 1
     absolute: 128
   bottomAnchor:
-    target: {fileID: 431340}
+    target: {fileID: 0}
     relative: 0
     absolute: 0
   topAnchor:
-    target: {fileID: 431340}
+    target: {fileID: 0}
     relative: 1
     absolute: 0
   updateAnchors: 1
   mColor: {r: 0.737931, g: 1, b: 0, a: 1}
   mPivot: 4
   mWidth: 140
-  mHeight: 50
+  mHeight: 40
   mDepth: 2
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 2.8
+  aspectRatio: 3.5
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
   mText: 25000
-  mFontSize: 40
+  mFontSize: 30
   mFontStyle: 1
   mAlignment: 0
   mEncoding: 1
@@ -1050,11 +1050,11 @@ MonoBehaviour:
   leftAnchor:
     target: {fileID: 431340}
     relative: 0
-    absolute: -51
+    absolute: -60
   rightAnchor:
     target: {fileID: 431340}
     relative: 0
-    absolute: -11
+    absolute: -20
   bottomAnchor:
     target: {fileID: 431340}
     relative: 0
@@ -1067,12 +1067,12 @@ MonoBehaviour:
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
   mWidth: 40
-  mHeight: 40
+  mHeight: 30
   mDepth: 0
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1
+  aspectRatio: 1.3333334
 --- !u!114 &11431338
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1156,8 +1156,8 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0, g: 0.25517225, b: 1, a: 1}
   mPivot: 3
-  mWidth: 50
-  mHeight: 50
+  mWidth: 40
+  mHeight: 40
   mDepth: 1
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -1166,8 +1166,8 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
-  mText: S
-  mFontSize: 40
+  mText: "\u897F"
+  mFontSize: 30
   mFontStyle: 1
   mAlignment: 0
   mEncoding: 1

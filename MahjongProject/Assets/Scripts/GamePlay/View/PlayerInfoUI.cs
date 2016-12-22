@@ -30,7 +30,7 @@ public class PlayerInfoUI : UIObject
     }
 
     public void SetKaze(EKaze kaze) {
-        lab_kaze.text = kaze.ToString();
+        lab_kaze.text = ResManager.getString( "kaze_" + kaze.ToString().ToLower() );
     }
 
     public void SetOyaKaze(bool isOya) {

@@ -1395,7 +1395,7 @@ public class MahjongMain : Mahjong
     protected void StartTest()
     {
         // remove all the hais of Oya player.
-        int iPlayer = OyaIndex;
+        int iPlayer = m_oyaIndex;
         while( m_playerList[iPlayer].Tehai.getJyunTehai().Length > 0 )
             m_playerList[iPlayer].Tehai.removeJyunTehaiAt(0);
 
@@ -1409,7 +1409,7 @@ public class MahjongMain : Mahjong
 
     protected Hai getTestRinshanHai()
     {
-        //return new Hai(1);
+        //return new Hai(18);
         return m_tsumoHai;
     }
     protected Hai getTestPickHai()
@@ -1417,7 +1417,7 @@ public class MahjongMain : Mahjong
         if( getTsumoRemainCount() <= 0 )
             return m_tsumoHai;
 
-        return Utils.GetRandomNum(0,3) < 1? new Hai(32) : m_tsumoHai;
+        return Utils.GetRandomNum(0,3) < 1? new Hai(8) : m_tsumoHai;
     }
 
     protected int[] getTestHaiIds() 
@@ -1431,8 +1431,8 @@ public class MahjongMain : Mahjong
         //int[] haiIds = {31, 31, 31, 32, 32, 32, 33, 33, 27, 27, 27, 6, 7, 8};    //小三元.
         //int[] haiIds = {0, 0, 1, 2, 3, 4, 5, 6, 27, 27, 27, 28, 28, 28};         //清一色.
         //int[] haiIds = {0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 8, 8, 0};               //清一色 纯全 二杯口(一色四连顺).
-        //int[] haiIds = {0, 0, 1, 1, 2, 2, 6, 6, 7, 7, 8, 8, 8, 8};               //清一色 纯全 二杯口.
-        int[] haiIds = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};         //七对子.
+        int[] haiIds = {0, 0, 1, 1, 2, 2, 6, 6, 7, 7, 8, 8, 8, 8};               //清一色 纯全 二杯口.
+        //int[] haiIds = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};         //七对子.
 
         //int[] haiIds = {10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16}; //连七对(大车轮).
         //int[] haiIds = {0, 0, 8, 8, 29, 29, 30, 30, 31, 31, 32, 32, 33, 33};     //混老头 七对子.

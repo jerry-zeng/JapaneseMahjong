@@ -27,10 +27,11 @@ public class MahjongView : UIObject, IObserver
     private Dictionary<EKaze, PlayerUI> playerUIDict_Kaze = new Dictionary<EKaze, PlayerUI>();
     private GameInfoUI gameInfo;
 
+    public Transform mahjongPoolRoot;
     public PlayerInputPanel playerInputPanel;
     public SaifuriPanel saifuriPanel;
     public RyuuKyokuPanel ryuuKyokuPanel;
-    public Transform mahjongPoolRoot;
+    public AgariPanel agariPanel;
 
 
     private MahjongMain Model
@@ -321,12 +322,15 @@ public class MahjongView : UIObject, IObserver
                 ui.SetTedashi(isTedashi);
                 ui.Reach();
 
+                ui.Speak( EActionType.Reach );
+
                 // needn't sort hais if sute the last one.
                 if( sutehaiIndex < activePlayer.Tehai.getJyunTehaiCount() )
                     ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
 
                 ui.Info.SetReach(true);
                 ui.Info.SetTenbou( activePlayer.Tenbou );
+                gameInfo.SetReachCount( Model.ReachBou );
 
                 SetManInputEnable(false);
             }
@@ -341,6 +345,8 @@ public class MahjongView : UIObject, IObserver
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
 
+                ui.Speak( EActionType.Kan );
+
                 SetManInputEnable(!activePlayer.IsAI);
             }
             break;
@@ -352,6 +358,8 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+
+                ui.Speak( EActionType.Kan );
 
                 SetManInputEnable(!activePlayer.IsAI);
             }
@@ -365,6 +373,8 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+
+                ui.Speak( EActionType.Kan );
 
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
                 fromUI.SetNaki();
@@ -381,6 +391,8 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
+
+                ui.Speak( EActionType.Pon );
 
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
                 fromUI.SetNaki();
@@ -400,6 +412,8 @@ public class MahjongView : UIObject, IObserver
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
 
+                ui.Speak( EActionType.Chii );
+
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
                 fromUI.SetNaki();
 
@@ -410,17 +424,20 @@ public class MahjongView : UIObject, IObserver
             case UIEventType.Ron_Agari:
             {
                 List<EKaze> ronPlayers = (List<EKaze>)args[0];
-                //EKaze fromKaze = (EKaze)args[1];
+                EKaze fromKaze = (EKaze)args[1];
                 Hai ronHai = (Hai)args[2];
 
                 for( int i = 0; i < ronPlayers.Count; i++ )
                 {
-                    Debug.LogWarning("Ron!!!");
+                    PlayerUI ui = playerUIDict_Kaze[ronPlayers[i]];
+                    ui.PickHai( ronHai, true, false );
+                    ui.SetTehaiVisiable(true);
 
-                    PlayerUI playerUI = playerUIDict_Kaze[ronPlayers[i]];
-                    playerUI.PickHai( ronHai, true, false );
-                    playerUI.SetTehaiVisiable(true);
+                    ui.Speak( EActionType.Ron );
                 }
+
+                PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
+                fromUI.SetNaki();
 
                 // show out all players' tehai
                 ShowAllPlayerTehai();
@@ -431,13 +448,19 @@ public class MahjongView : UIObject, IObserver
             {
                 Player activePlayer = (Player)args[0];
 
-                Debug.LogWarning("Tsumo!!!");
+                PlayerUI ui = playerUIDict_Kaze[ activePlayer.JiKaze ];
+                ui.SetTehaiVisiable(true);
 
-                PlayerUI playerUI = playerUIDict_Kaze[ activePlayer.JiKaze ];
-                playerUI.SetTehaiVisiable(true);
+                ui.Speak( EActionType.Tsumo );
 
                 // show out all players' tehai
                 ShowAllPlayerTehai();
+            }
+            break;
+
+            case UIEventType.Display_Agari_Panel:
+            {
+                agariPanel.Show();
             }
             break;
 
@@ -460,9 +483,9 @@ public class MahjongView : UIObject, IObserver
                     
                 }
 
-                ryuuKyokuPanel.Show( msg, null );
-
                 ShowAllPlayerTehai();
+
+                ryuuKyokuPanel.Show( msg, null );
             }
             break;
         }

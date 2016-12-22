@@ -65,17 +65,14 @@ public enum UIEventType
     SetYama_BeforeHaipai,
     SetUI_AfterHaipai,
 
-    // 理牌待ち 
-    UI_Wait_Rihai,
-    // 進行待ち 
-    UI_Wait_Progress,
-    // プレイヤーアクションの入力 
-    UI_Input_Player_Action,
+    Display_Agari_Panel,
 
     // 流局 
     RyuuKyoku,
+
     // 局の終了 
     End_Kyoku,
+
     // ゲームの終了 
     End_Game,
 

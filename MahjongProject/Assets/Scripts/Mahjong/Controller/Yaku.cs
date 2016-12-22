@@ -269,6 +269,21 @@ public class Yaku
         return yakus.ToArray();
     }
 
+    public string[] getYakuNameKeys()
+    {
+        List<string> yakuNameKeys = new List<string>();
+
+        for(int i = 0; i < _yakuHandlers.Length; i++)
+        {
+            if( _yakuHandlers[i].isHantei() )
+            {
+                yakuNameKeys.Add( _yakuHandlers[i].getYakuName() );
+            }
+        }
+
+        return yakuNameKeys.ToArray();
+    }
+
     public string[] getYakuNames()
     {
         List<string> yakuNames = new List<string>();

@@ -46,6 +46,10 @@ namespace YakuHelper
             return doubleYakuman;
         }
 
+        public string getYakuNameKey(){
+            return YakuHandler.GetYakuNameKey(this.YakuID);
+        }
+
         public string getYakuName(){
             return YakuHandler.GetYakuName(this.YakuID);
         }
@@ -63,7 +67,7 @@ namespace YakuHelper
             }
         }
 
-        static YakuName[] Yaku_IdNames = new YakuName[] 
+        static YakuName[] Yaku_IdNameKeys = new YakuName[] 
         {
             new YakuName( 1, "yaku_reach"),
             new YakuName( 2, "yaku_doublereach"),
@@ -120,15 +124,20 @@ namespace YakuHelper
             new YakuName(45, "yaku_nagashimangan"), // handler is in AgariScoreManager.
         };
 
+
         public static string getNagashiManganYakuName()
         {
             return GetYakuName(45);
         }
 
+        public static string GetYakuNameKey(int yakuID)
+        {
+            return Yaku_IdNameKeys[ yakuID-1 ].Key;
+        }
+
         public static string GetYakuName(int yakuID)
         {
-            string key = Yaku_IdNames[ yakuID-1 ].Key;
-            return ResManager.getString( key );
+            return ResManager.getString( GetYakuNameKey(yakuID) );
         }
         #endregion
     }

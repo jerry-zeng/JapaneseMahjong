@@ -196,6 +196,12 @@ public class Yama
 
         return omoteDoraHais;
     }
+    public Hai[] getAllOmoteDoraHais()
+    {
+        Hai[] allHais = new Hai[_omoteDoraHais.Length];
+        System.Array.Copy( _omoteDoraHais, allHais, allHais.Length );
+        return allHais;
+    }
 
     // 裏ドラの配列を取得する
     public Hai[] getUraDoraHais()
@@ -207,6 +213,12 @@ public class Yama
             uraDoraHais[i] = new Hai(this._uraDoraHais[i]);
 
         return uraDoraHais;
+    }
+    public Hai[] getAllUraDoraHais()
+    {
+        Hai[] allHais = new Hai[_uraDoraHais.Length];
+        System.Array.Copy( _uraDoraHais, allHais, allHais.Length );
+        return allHais;
     }
 
     public Hai[] getAllDoraHais()

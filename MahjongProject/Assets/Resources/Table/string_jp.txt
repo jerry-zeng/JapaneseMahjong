@@ -116,10 +116,6 @@
     "value": "倍満"
   },
   {
-    "key": "ryanbaiman",
-    "value": "二倍满"
-  },
-  {
     "key": "sanbaiman",
     "value": "三倍満"
   },

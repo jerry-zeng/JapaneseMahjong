@@ -98,6 +98,12 @@ public class PlayerUI : UIObject
     }
 
 
+    public void Speak( EActionType type )
+    {
+        Debug.LogWarning( type.ToString() + "!!!" );
+    }
+
+
     // 手牌.
     public void SetTehai(Hai[] hais, bool setLastNew = false) {
         tehai.SetTehai(hais);
