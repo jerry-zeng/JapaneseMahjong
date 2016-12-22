@@ -20,9 +20,10 @@ public class AgariPanel : MonoBehaviour
     public UILabel lab_point;
     public UILabel lab_level;
 
-    public float haiOffset = 2f;
+    public Transform tenbouInfoRoot;
+    public List<UIPlayerTenbouChangeInfo> playerTenbouList = new List<UIPlayerTenbouChangeInfo>();
 
-
+    private const float haiOffset = 2f;
     private const int DoraHaisColumn = 5;
 
     private List<MahjongPai> _omoteDoraHais = new List<MahjongPai>();
@@ -104,6 +105,11 @@ public class AgariPanel : MonoBehaviour
         list.Clear();
     }
 
+    void SetTenbouInfo( bool state )
+    {
+        tenbouInfoRoot.gameObject.SetActive( state );
+    }
+
 
     public void ShowOmoteDora(int count)
     {
@@ -138,6 +144,7 @@ public class AgariPanel : MonoBehaviour
     {
         InitDoraHais();
         InitYakuInfo();
+        SetTenbouInfo(false);
 
         gameObject.SetActive(true);
 
@@ -155,14 +162,17 @@ public class AgariPanel : MonoBehaviour
         tehai.BindPlayer(player);
         fuuro.BindPlayer(player);
 
+        Fuuro[] fuuros = player.Tehai.getFuuros();
+        fuuro.UpdateFuuro( fuuros );
+
         Hai[] hais = player.Tehai.getJyunTehai();
         tehai.SetTehai( hais, false );
-
         tehai.AddPai( addHai, true, true );
         tehai.SetAllHaisVisiable( true );
 
-        Fuuro[] fuuros = player.Tehai.getFuuros();
-        fuuro.UpdateFuuro( fuuros );
+        float tehaiPosOffsetX = 0; // move to left if Fuuro has too many DaiMinKan or AnKan.
+
+        tehai.transform.localPosition -= new Vector3(tehaiPosOffsetX, 0f, 0f);
 
         StartCoroutine( ShowYakuOneByOne(logic.AgariInfo) );
     }
@@ -257,6 +267,8 @@ public class AgariPanel : MonoBehaviour
             int point = isOya? agariInfo.scoreInfo.oyaRon : agariInfo.scoreInfo.oyaRon;
             SetPoint( point );
         }
+
+        StartCoroutine( ShowTenbouInfo() );
     }
 
     void SetHan( int han, int fu, int level )
@@ -303,7 +315,6 @@ public class AgariPanel : MonoBehaviour
         }
     }
 
-
     UIYakuItem CreateYakuItem( string yakuNameKey, int han )
     {
         GameObject item = Instantiate( yakuItemPrefab ) as GameObject;
@@ -323,4 +334,14 @@ public class AgariPanel : MonoBehaviour
         return comp;
     }
 
+
+    IEnumerator ShowTenbouInfo()
+    {
+        yield return new WaitForSeconds(1f);
+
+        SetTenbouInfo(true);
+
+        // TODO: display the tenbou change infos.
+
+    }
 }

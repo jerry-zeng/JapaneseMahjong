@@ -57,11 +57,11 @@
   },
   {
     "key": "omotedora",
-    "value": "表宝牌"
+    "value": "表ドラ"
   },
   {
     "key": "uradora",
-    "value": "里宝牌"
+    "value": "裏ドラ"
   },
   {
     "key": "double",
@@ -329,7 +329,7 @@
   },
   {
     "key": "yaku_dora",
-    "value": "宝牌"
+    "value": "ドラ"
   },
   {
     "key": "yaku_nagashimangan",
