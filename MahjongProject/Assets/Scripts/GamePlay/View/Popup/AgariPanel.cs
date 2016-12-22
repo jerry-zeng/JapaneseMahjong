@@ -18,11 +18,10 @@ public class AgariPanel : MonoBehaviour
 
     public UILabel lab_han;
     public UILabel lab_point;
+    public UILabel lab_level;
 
     public float haiOffset = 2f;
 
-    public string YakuLevelColorStr = "0600B3";
-    public string YakuHanColorStr = "000000";
 
     private const int DoraHaisColumn = 5;
 
@@ -43,6 +42,8 @@ public class AgariPanel : MonoBehaviour
 
         lab_han.text = "";
         lab_point.text = "";
+        lab_level.text = "";
+        lab_level.alpha = 0f;
     }
 
 
@@ -147,11 +148,11 @@ public class AgariPanel : MonoBehaviour
         int doraCount = logic.getOmotoDoras().Length;
         ShowOmoteDora( doraCount );
 
-        if( logic.isTsumo == true )
+        Player player = GameManager.Instance.MahjongMain.ActivePlayer;
+
+        if( player.IsReach == true )
             ShowUraDora( doraCount );
 
-
-        Player player = GameManager.Instance.MahjongMain.ActivePlayer;
         tehai.BindPlayer(player);
         fuuro.BindPlayer(player);
 
@@ -169,7 +170,7 @@ public class AgariPanel : MonoBehaviour
 
     IEnumerator ShowYakuOneByOne( AgariInfo agariInfo )
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.0f);
 
         var yakuArr = agariInfo.hanteiYakus;
 
@@ -267,19 +268,26 @@ public class AgariPanel : MonoBehaviour
 
     void SetHan( int han, int fu, int level )
     {
-        string levelName = ResManager.getString( GetYakuLevelNameKey(level) );
+        if( level != 0 ){
+            lab_level.alpha = 1f;
+            lab_level.text = ResManager.getString( GetYakuLevelNameKey(level) );
+        }
+        else{
+            lab_level.text = "";
+            lab_level.alpha = 0f;
+        }
 
-        lab_han.color = Color.white;
-        lab_han.text = string.Format("[{0}]{1}{2}  {3}{4}[-]  [{5}]{6}[-]", 
-                                     YakuHanColorStr, fu, ResManager.getString("fu"),
-                                     han, ResManager.getString("han"),
-                                     YakuLevelColorStr, levelName);
+        lab_han.text = string.Format("{0}{1}    {2}{3}", 
+                                     fu, ResManager.getString("fu"),
+                                     han, ResManager.getString("han"));
     }
 
     void SetYakuman()
     {
-        lab_han.color = Color.white;
-        lab_han.text = string.Format("[{0}]{1}[-]", YakuLevelColorStr, ResManager.getString("yakuman"));
+        lab_han.text = "";
+
+        lab_level.alpha = 1f;
+        lab_level.text = ResManager.getString( GetYakuLevelNameKey(5) );
     }
 
     void SetPoint( int point )

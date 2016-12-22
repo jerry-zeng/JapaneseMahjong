@@ -29,6 +29,8 @@ public class LoopState_AgariRon : GameStateBase
         logicOwner.ResetActivePlayer( ronPlayers[0] );
         logicOwner.HandleRon();
 
+        yield return new WaitForSeconds(0.5f);
+
         EventManager.Get().SendEvent(UIEventType.Display_Agari_Panel);
     }
 

@@ -12,23 +12,15 @@ public class PlayerInputButton : UIButton
         get{
             if(lab_tag == null){
                 lab_tag = GetComponentInChildren<UILabel>();
-                cacheTagName = TagLabel.text;
             }
             return lab_tag;
         }
     }
 
-    protected string cacheTagName;
-
 
     public void SetTag( string tag )
     {
         TagLabel.text = tag;
-    }
-
-    public void ResetTag()
-    {
-        TagLabel.text = cacheTagName;
     }
 
     public void SetEnable(bool state)

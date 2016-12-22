@@ -56,6 +56,14 @@
     "value": "x"
   },
   {
+    "key": "omotedora",
+    "value": "表ドラ"
+  },
+  {
+    "key": "uradora",
+    "value": "裏ドラ"
+  },
+  {
     "key": "double",
     "value": "ダブル"
   },

@@ -21,6 +21,8 @@ public class LoopState_AgariTsumo : GameStateBase
 
         Debug.LogWarning("## Tsumo player is in kaze " + logicOwner.ActivePlayer.JiKaze.ToString());
 
+        yield return new WaitForSeconds(0.5f);
+
         EventManager.Get().SendEvent(UIEventType.Display_Agari_Panel);
     }
 }

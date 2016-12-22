@@ -88,7 +88,7 @@ public class ResManager
         }
         else{
             if( mahjongPaiPrefab == null )
-                mahjongPaiPrefab = Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/MahjongPai");
+                mahjongPaiPrefab = Resources.Load<GameObject>("Prefabs/Mahjong/MahjongPai");
             return Object.Instantiate(mahjongPaiPrefab) as GameObject;
         }
     }
@@ -114,7 +114,7 @@ public class ResManager
 
     public static GameObject CreatePlayerUIObject()
     {
-        return Object.Instantiate(Resources.Load<GameObject>("GameObject/Prefabs/Mahjong/PlayerUI")) as GameObject;
+        return Object.Instantiate(Resources.Load<GameObject>("Prefabs/Mahjong/PlayerUI")) as GameObject;
     }
 
     public static string getMahjongSpriteName(int kind, int num) {

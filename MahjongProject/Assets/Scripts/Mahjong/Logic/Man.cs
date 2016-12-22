@@ -102,7 +102,11 @@ public class Man : Player
                             if( enableAnkan == true )
                             {
                                 _action.setValidTsumoKan(true, new List<Hai>(){ tsumoHai });
+
                                 _action.MenuList.Add( EActionType.Kan );
+                                _action.MenuList.Add( EActionType.Nagashi );
+
+                                _action.State = EActionState.Select_Kan;
                             }
                         }
                     }

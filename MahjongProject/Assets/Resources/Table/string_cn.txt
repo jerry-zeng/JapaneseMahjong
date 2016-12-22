@@ -56,6 +56,14 @@
     "value": "x"
   },
   {
+    "key": "omotedora",
+    "value": "表宝牌"
+  },
+  {
+    "key": "uradora",
+    "value": "里宝牌"
+  },
+  {
     "key": "double",
     "value": "双倍"
   },
@@ -89,7 +97,7 @@
   },
   {
     "key": "button_pass",
-    "value": "不要"
+    "value": "过"
   },
   {
     "key": "han",
@@ -321,7 +329,7 @@
   },
   {
     "key": "yaku_dora",
-    "value": "悬赏牌"
+    "value": "宝牌"
   },
   {
     "key": "yaku_nagashimangan",
