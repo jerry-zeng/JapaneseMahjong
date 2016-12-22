@@ -479,7 +479,7 @@ public class MahjongView : UIObject, IObserver
                         tenpaiIndex += tenpaiPlayers[i].ToString() + ",";
 
                     msg = string.Format( "{0}人听牌{1}", tenpaiPlayers.Count.ToString(), 
-                                    (tenpaiIndex.Length > 0? (": " + tenpaiIndex.Substring(0, tenpaiIndex.Length-1)) : "" ) );
+                                    (tenpaiIndex.Length > 0? (" : " + tenpaiIndex.Substring(0, tenpaiIndex.Length-1)) : "" ) );
                     
                 }
 

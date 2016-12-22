@@ -36,7 +36,8 @@ public class GameInfoUI : UIObject
     }
 
     public void SetKyoku( EKaze kaze, int kyoku ) {
-        kyokuLab.text = kaze.ToString() + " " + kyoku.ToString() + "局";
+        string kazeStr = ResManager.getString( "kaze_" + kaze.ToString().ToLower() );
+        kyokuLab.text = kazeStr + " " + kyoku.ToString() + "局";
     }
 
     public void SetReachCount(int count) {
@@ -47,7 +48,7 @@ public class GameInfoUI : UIObject
     }
 
     public void SetHonba(int honba) {
-        Debug.Log( honba + " 本场");
+        Debug.Log( honba + "本场");
     }
 
     public void SetRemain(int remain)

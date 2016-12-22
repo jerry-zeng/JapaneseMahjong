@@ -1260,7 +1260,7 @@ public class MahjongMain : Mahjong
 
         int score = GetAgariScore(ActivePlayer.Tehai, TsumoHai, ActivePlayer.JiKaze, AgariParam);
 
-        Utils.Log( AgariInfo.ToString() );
+        //Utils.Log( AgariInfo.ToString() );
 
 
         int playerIndex = getPlayerIndex( m_kazeFrom );
@@ -1344,7 +1344,7 @@ public class MahjongMain : Mahjong
 
         int score = GetAgariScore(ActivePlayer.Tehai, SuteHai, ActivePlayer.JiKaze, AgariParam);
 
-        Utils.Log( AgariInfo.ToString() );
+        //Utils.Log( AgariInfo.ToString() );
 
         if( m_oyaIndex == getPlayerIndex( m_kazeFrom ) ) {
             score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
