@@ -199,7 +199,7 @@ public abstract class Player
         _action.Response = response;
 
         if( ResponseDelayTime > 0f )
-            GameManager.Instance.StartCoroutine( DoResponseDelay(ResponseDelayTime) );
+            GameManager.Get().StartCoroutine( DoResponseDelay(ResponseDelayTime) );
         else
             DoResponseDirectly();
 

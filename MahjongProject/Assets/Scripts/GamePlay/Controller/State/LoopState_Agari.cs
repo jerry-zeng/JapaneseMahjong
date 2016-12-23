@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 
-public class LoopState_AgariTsumo : GameStateBase
+public class LoopState_Agari : GameStateBase
 {
     public override void Exit()
     {
@@ -13,16 +14,15 @@ public class LoopState_AgariTsumo : GameStateBase
     {
         base.Enter();
 
-        StartCoroutine(HandleAgariTsumo());
+        StartCoroutine(HandleAgariRon());
     }
 
-    IEnumerator HandleAgariTsumo() {
+    IEnumerator HandleAgariRon() {
         yield return new WaitForSeconds( MahjongView.AgariAnimationTime );
-
-        Debug.LogWarning("## Tsumo player is in kaze " + logicOwner.ActivePlayer.JiKaze.ToString());
 
         yield return new WaitForSeconds(0.5f);
 
-        EventManager.Get().SendEvent(UIEventType.Display_Agari_Panel);
+        EventManager.Get().SendEvent(UIEventType.Display_Agari_Panel, logicOwner.AgariUpdateInfoList);
     }
+
 }

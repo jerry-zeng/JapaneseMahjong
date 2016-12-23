@@ -8,6 +8,13 @@ using System.Collections.Generic;
 
 public class MahjongMain : Mahjong 
 {
+    protected List<AgariUpdateInfo> m_agariUpdateInfoList = new List<AgariUpdateInfo>();
+    public List<AgariUpdateInfo> AgariUpdateInfoList
+    {
+        get{ return m_agariUpdateInfoList; }
+        protected set{ m_agariUpdateInfoList = value; }
+    }
+
 
     // Step: 1
     protected override void initialize()
@@ -47,7 +54,7 @@ public class MahjongMain : Mahjong
 
         for(int i = 0; i < m_playerList.Count; i++)
         {
-            m_playerList[i].Tenbou = GameSettings.INIT_TENBOU;
+            m_playerList[i].Tenbou = GameSettings.Init_Tenbou;
         }
 
 
@@ -107,6 +114,9 @@ public class MahjongMain : Mahjong
         m_isRinshan = false;
         m_isChanKan = false;
         m_isLast = false;
+
+        AgariUpdateInfoList.Clear();
+        renhouPlayers.Clear();
 
 
         // プレイヤーの自風を設定する。
@@ -451,7 +461,7 @@ public class MahjongMain : Mahjong
         // 3. yama open a new omote dora hai.
 
         if( IsKanCountOverFlow() == true ){
-            HandleInvalidKyoku();
+            OnInvalidKyoku();
         }
         else{
             Ask_Handle_TsumoHai();
@@ -711,7 +721,7 @@ public class MahjongMain : Mahjong
     }
     #endregion
 
-    #region Ask Handle Sute Hai
+    #region Ask Select Sute Hai
     public System.Action onResponse_Select_SuteHai_Handler;
 
     public void Ask_Select_SuteHai()
@@ -738,7 +748,7 @@ public class MahjongMain : Mahjong
     // for ERequest.Handle_TsumoHai
     public void Handle_TsumoAgari()
     {
-        HandleTsumo();
+        OnTsumo();
     }
 
     public void Handle_AnKan()
@@ -926,7 +936,7 @@ public class MahjongMain : Mahjong
     public void Handle_KaKan_Ron()
     {
         m_isTsumo = false;
-        //HandleMultiRon();
+        OnMultiRon();
     }
 
     public void Handle_KaKan_Nagashi()
@@ -940,7 +950,7 @@ public class MahjongMain : Mahjong
     // for ERequest.Handle_SuteHai
     public void Handle_SuteHai_Ron()
     {
-        //HandleMultiRon();
+        OnMultiRon();
     }
 
     public void Handle_SuteHai_Nagashi()
@@ -1249,91 +1259,86 @@ public class MahjongMain : Mahjong
     }
     #endregion
 
-    // some one has tsumo.
-    public void HandleTsumo()
+    protected void OnMultiRon()
     {
-        AgariParam.ResetDoraHais(); // should reset params or create a new.
+        List<EKaze> ronPlayers = GetRonPlayers();
+        if( ronPlayers.Count > 3 )
+            throw new MahjongException("4 players Ron, how it happened?");
 
-        AgariParam.setOmoteDoraHais( getOpenedOmotoDoras() );
-        if( m_activePlayer.IsReach )
-            AgariParam.setUraDoraHais( getOpenedUraDoraHais() );
-
-        int score = GetAgariScore(ActivePlayer.Tehai, TsumoHai, ActivePlayer.JiKaze, AgariParam);
-
-        //Utils.Log( AgariInfo.ToString() );
-
-
-        int playerIndex = getPlayerIndex( m_kazeFrom );
-
-        if( m_oyaIndex == playerIndex ) 
+        if( ronPlayers.Count == 3 && !GameSettings.AllowRon3 ) // ERyuuKyokuReason.Ron3
         {
-            score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
-
-            for( int i = 0; i < GameSettings.PlayerCount-1; i++ )
-            {
-                playerIndex = (playerIndex + 1) % GameSettings.PlayerCount;
-                m_playerList[playerIndex].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
-            }
+            throw new MahjongException("ERyuuKyokuReason.Ron3");
         }
         else
         {
-            score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
+            /// Note: only the first ron player can get the reach bou,
+            ///       make sure the first ron player is the nearest one to m_kazeFrom player.
 
-            for( int i = 0; i < GameSettings.PlayerCount-1; i++ )
+            List<EKaze> ronPlayers_Sorted;
+            int index = -1;
+
+            if( ronPlayers.Count == 1 ){
+                ronPlayers_Sorted = ronPlayers;
+            }
+            else{
+                ronPlayers_Sorted = new List<EKaze>();
+
+                while( ronPlayers.Count > 0 )
+                {
+                    index = ronPlayers.FindIndex( kaze => kaze == m_kazeFrom.Next() );
+                    if( index >= 0 ){
+                        ronPlayers_Sorted.Add( ronPlayers[index] );
+                        ronPlayers.RemoveAt( index );
+                    }
+                    else{
+                        index = ronPlayers.FindIndex( kaze => kaze == m_kazeFrom.Next().Next() );
+                        if( index >= 0 ){
+                            ronPlayers_Sorted.Add( ronPlayers[index] );
+                            ronPlayers.RemoveAt( index );
+                        }
+                        else{
+                            index = ronPlayers.FindIndex( kaze => kaze == m_kazeFrom.Next().Next().Next() );
+                            if( index >= 0 ){
+                                ronPlayers_Sorted.Add( ronPlayers[index] );
+                                ronPlayers.RemoveAt( index );
+                            }
+                            else{
+                                break;
+                            }
+                        }
+                    }
+                } // end while()
+            }
+
+            renhouPlayers.Clear();
+
+            // handle ron one by one
+            for( int i = 0; i < ronPlayers_Sorted.Count; i++ )
             {
-                playerIndex = (playerIndex + 1) % GameSettings.PlayerCount;
-                if( m_oyaIndex == playerIndex ) {
-                    m_playerList[playerIndex].reduceTenbou( m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100) );
+                EKaze kaze = ronPlayers_Sorted[i];
+
+                if( m_isRenhou == true && getPlayerIndex(kaze) != OyaIndex )
+                {
+                    renhouPlayers.Add( kaze );
                 }
-                else {
-                    m_playerList[playerIndex].reduceTenbou( m_agariInfo.scoreInfo.koTsumo + (m_honba * 100) );
-                }
-            }
-        }
 
-        m_activePlayer.increaseTenbou( score ); //1. add Tsumo score.
+                ResetActivePlayer( kaze );
 
-        m_agariInfo.agariScore = score - (m_honba * 300);
-
-        // 点数を清算する。//2. add reach bou score.
-        m_activePlayer.increaseTenbou( m_reachbou * 1000 );
-
-        // リーチ棒の数を初期化する。
-        m_reachbou = 0;
-
-        // UIイベント（ツモあがり）を発行する。
-        //PostUIEvent( UIEventType.Tsumo_Agari, m_kazeFrom, m_kazeFrom );
-
-        // 親を更新する。
-        if( m_oyaIndex != getPlayerIndex( m_kazeFrom ) ) 
-        {
-            SetNextOya();
-            m_honba = 0;
-        }
-        else {
-            m_renchan = true;
-            m_honba++;
-        }
-    }
-
-    public void HandleMultiRon()
-    {
-        foreach( var info in m_playerRespDict )
-        {
-            if( info.Value == EResponse.Ron_Agari ){
-                HandleRon();
+                OnRon();
             }
         }
     }
+
+    protected List<EKaze> renhouPlayers = new List<EKaze>();
 
     // some one has ron.
-    public void HandleRon()
+    protected void OnRon()
     {
-        if( m_isRenhou == true )
-        {
-            int playerIndex = getPlayerIndex( ActivePlayer.JiKaze );
-
-            m_isRenhou = playerIndex != OyaIndex; // Oya player can't renhou.
+        if( renhouPlayers.Contains( ActivePlayer.JiKaze ) ){
+            m_isRenhou = true;
+        }
+        else{
+            m_isRenhou = false;
         }
 
         AgariParam.ResetDoraHais(); // should reset params or create a new.
@@ -1346,28 +1351,197 @@ public class MahjongMain : Mahjong
 
         //Utils.Log( AgariInfo.ToString() );
 
-        if( m_oyaIndex == getPlayerIndex( m_kazeFrom ) ) {
+
+        // cache the agari update info.
+        AgariUpdateInfo aupdateInfo = new AgariUpdateInfo( AgariInfo );
+        aupdateInfo.agariPlayer = m_activePlayer;
+        aupdateInfo.agariPlayerIsOya = getPlayerIndex( ActivePlayer.JiKaze ) == m_oyaIndex;
+        aupdateInfo.isTsumo = false;
+        aupdateInfo.agariHai = m_suteHai;
+
+        aupdateInfo.allOmoteDoraHais = Yama.getAllOmoteDoraHais();
+        aupdateInfo.allUraDoraHais = Yama.getAllUraDoraHais();
+        aupdateInfo.openedOmoteDoraCount = AgariParam.getOmoteDoraHais().Length;
+        if( m_activePlayer.IsReach )
+            aupdateInfo.openedUraDoraCount = aupdateInfo.openedOmoteDoraCount;
+
+
+        if( getPlayerIndex( m_kazeFrom ) == m_oyaIndex ) {
             score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
         }
         else {
             score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
         }
 
+        // lost player
         getPlayer( m_kazeFrom ).reduceTenbou( score );
 
+        PlayerTenbouChangeInfo ptci_lost = new PlayerTenbouChangeInfo();
+        ptci_lost.playerKaze = m_kazeFrom;
+        ptci_lost.changed = -score;
+        ptci_lost.current = getPlayer( m_kazeFrom ).Tenbou; // use the reduced tenbou.
+        aupdateInfo.tenbouChangeInfoList.Add( ptci_lost );
+
+        // current win player
         m_activePlayer.increaseTenbou( score );
+
+        PlayerTenbouChangeInfo ptci_win = new PlayerTenbouChangeInfo();
+        ptci_win.playerKaze = m_activePlayer.JiKaze;
+        ptci_win.changed = score;
+        ptci_win.current = m_activePlayer.Tenbou; // TODO: make sure if use the reduced tenbou.
+        aupdateInfo.tenbouChangeInfoList.Add( ptci_win );
+
+        // other players
+        Player player;
+        for(int i = 0; i < m_playerList.Count; i++)
+        {
+            player = m_playerList[i];
+
+            if( player.JiKaze == m_kazeFrom || player.JiKaze == ActivePlayer.JiKaze )
+                continue;
+
+            PlayerTenbouChangeInfo ptci_other = new PlayerTenbouChangeInfo();
+            ptci_other.playerKaze = player.JiKaze;
+            ptci_other.changed = 0;
+            ptci_other.current = player.Tenbou;
+            aupdateInfo.tenbouChangeInfoList.Add( ptci_other );
+        }
+
+        // update final agari score
         m_agariInfo.agariScore = score - (m_honba * 300);
 
-        // 点数を清算する。
-        m_activePlayer.increaseTenbou( m_reachbou * 1000 );
+        aupdateInfo.agariScore = m_agariInfo.agariScore;
+        AgariUpdateInfoList.Add( aupdateInfo );
 
-        // リーチ棒の数を初期化する。
+
+        /// reach bou point won't be contained to PlayerTenbouChangeInfo 
+        /// 
+        /// Note: only the first ron player can get the reach bou,
+        ///       make sure the first ron player is the nearest one to m_kazeFrom player.
+
+        // リーチ棒の点数を清算する
+        m_activePlayer.increaseTenbou( m_reachbou * GameSettings.Reach_Cost );
         m_reachbou = 0;
 
-        // UIイベント（ロン）を発行する。
+        // UIイベント（ロン）を発行する
         //PostUIEvent( UIEventType.Ron_Agari, m_kazeFrom, m_kazeFrom );
+        //EndKyoku();
+    }
 
-        // 親を更新する。
+    // some one has tsumo.
+    protected void OnTsumo()
+    {
+        AgariParam.ResetDoraHais(); // should reset params or create a new.
+
+        AgariParam.setOmoteDoraHais( getOpenedOmotoDoras() );
+        if( m_activePlayer.IsReach )
+            AgariParam.setUraDoraHais( getOpenedUraDoraHais() );
+
+        int score = GetAgariScore(ActivePlayer.Tehai, TsumoHai, ActivePlayer.JiKaze, AgariParam);
+
+        //Utils.Log( AgariInfo.ToString() );
+
+
+        // cache the agari update info.
+        AgariUpdateInfo aupdateInfo = new AgariUpdateInfo( AgariInfo );
+        aupdateInfo.agariPlayer = m_activePlayer;
+        aupdateInfo.isTsumo = true;
+        aupdateInfo.agariHai = TsumoHai;
+
+        aupdateInfo.allOmoteDoraHais = Yama.getAllOmoteDoraHais();
+        aupdateInfo.allUraDoraHais = Yama.getAllUraDoraHais();
+        aupdateInfo.openedOmoteDoraCount = AgariParam.getOmoteDoraHais().Length;
+        if( m_activePlayer.IsReach )
+            aupdateInfo.openedUraDoraCount = aupdateInfo.openedOmoteDoraCount;
+
+
+        int playerIndex = getPlayerIndex( m_kazeFrom );
+        if( playerIndex == m_oyaIndex ) 
+        {
+            aupdateInfo.agariPlayerIsOya = true;
+
+            score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
+
+            Player player;
+            for( int i = 0; i < GameSettings.PlayerCount-1; i++ )
+            {
+                playerIndex = (playerIndex + 1) % GameSettings.PlayerCount;
+                player = m_playerList[playerIndex];
+
+                int reduceTenbou = m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100);
+
+                player.reduceTenbou( reduceTenbou );
+
+                // every player's tenbou change info
+                PlayerTenbouChangeInfo ptci = new PlayerTenbouChangeInfo();
+                ptci.playerKaze = player.JiKaze;
+                ptci.changed = -reduceTenbou;
+                ptci.current = player.Tenbou; // use the reduced tenbou.
+                aupdateInfo.tenbouChangeInfoList.Add( ptci );
+            }
+        }
+        else
+        {
+            aupdateInfo.agariPlayerIsOya = false;
+
+            score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
+
+            Player player;
+            for( int i = 0; i < GameSettings.PlayerCount-1; i++ )
+            {
+                playerIndex = (playerIndex + 1) % GameSettings.PlayerCount;
+                player = m_playerList[playerIndex];
+
+                int reduceTenbou = 0;
+
+                if( m_oyaIndex == playerIndex ) {
+                    reduceTenbou = m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100);
+                }
+                else {
+                    reduceTenbou = m_agariInfo.scoreInfo.koTsumo + (m_honba * 100);
+                }
+
+                player.reduceTenbou( reduceTenbou );
+
+                // every player's tenbou change info
+                PlayerTenbouChangeInfo ptci = new PlayerTenbouChangeInfo();
+                ptci.playerKaze = player.JiKaze;
+                ptci.changed = -reduceTenbou;
+                ptci.current = player.Tenbou; // use the reduced tenbou.
+                aupdateInfo.tenbouChangeInfoList.Add( ptci );
+            }
+        }
+
+        m_activePlayer.increaseTenbou( score ); //1. add Tsumo score.
+
+        // active player's tenbou change info
+        PlayerTenbouChangeInfo ptci_agariPlayer = new PlayerTenbouChangeInfo();
+        ptci_agariPlayer.playerKaze = m_activePlayer.JiKaze;
+        ptci_agariPlayer.changed = score;
+        ptci_agariPlayer.current = m_activePlayer.Tenbou; // use the added tenbou.
+        aupdateInfo.tenbouChangeInfoList.Add( ptci_agariPlayer );
+
+        // update final agari score
+        m_agariInfo.agariScore = score - (m_honba * 300);
+
+        aupdateInfo.agariScore = m_agariInfo.agariScore;
+        AgariUpdateInfoList.Add( aupdateInfo );
+
+
+        /// reach bou point won't be contained to PlayerTenbouChangeInfo 
+        // リーチ棒の点数を清算する
+        m_activePlayer.increaseTenbou( m_reachbou * GameSettings.Reach_Cost );
+        m_reachbou = 0;
+
+        // UIイベント（ツモあがり）を発行する
+        //PostUIEvent( UIEventType.Tsumo_Agari, m_kazeFrom, m_kazeFrom );
+
+        //EndKyoku();
+    }
+
+    public void EndKyoku()
+    {
+        // 親を更新する
         if( m_oyaIndex != getPlayerIndex( m_kazeFrom ) )
         {
             SetNextOya();
@@ -1380,7 +1554,7 @@ public class MahjongMain : Mahjong
     }
 
     // kan count over 4 but no one agari.
-    public void HandleInvalidKyoku()
+    public void OnInvalidKyoku()
     {
 
     }
@@ -1419,11 +1593,12 @@ public class MahjongMain : Mahjong
         if( getTsumoRemainCount() <= 0 )
             return m_tsumoHai;
 
-        return Utils.GetRandomNum(0,3) < 1? new Hai(8) : m_tsumoHai;
+        return Utils.GetRandomNum(0,3) < 1? new Hai(0) : m_tsumoHai;
     }
 
     protected int[] getTestHaiIds() 
     {
+        int[] haiIds = {0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0}; //测试副露.
         //int[] haiIds = {0, 0, 0, 0, 1, 1, 1, 2, 3, 4, 5, 8, 8, 8};               //暗槓，加槓，大明槓
         //int[] haiIds = {0, 1, 2, 10, 11, 12, 13, 14, 15, 31, 31, 33, 33, 33};    //普通牌.
         //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 27, 27, 30};            //一气通贯.
@@ -1431,7 +1606,7 @@ public class MahjongMain : Mahjong
         //int[] haiIds = {0, 0, 0, 9, 9, 9, 18, 18, 18, 1, 2, 3, 27, 27};          //三色同刻 三暗刻.
         //int[] haiIds = {0, 0, 0, 0, 8, 8, 8, 8, 9, 9, 9, 9, 18, 18};             //三槓.
         //int[] haiIds = {31, 31, 31, 32, 32, 32, 33, 33, 27, 27, 27, 6, 7, 8};    //小三元.
-        int[] haiIds = {0, 0, 1, 2, 3, 4, 4, 6, 27, 27, 27, 31, 31, 31};         //混一色.
+        //int[] haiIds = {0, 0, 1, 2, 3, 4, 4, 6, 27, 27, 27, 31, 31, 31};         //混一色.
         //int[] haiIds = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 8, 8};               //清一色 纯全 二杯口(一色四连顺).
         //int[] haiIds = {0, 0, 1, 1, 2, 2, 6, 6, 7, 7, 8, 8, 8, 8};               //清一色 纯全 二杯口.
         //int[] haiIds = {1, 1, 3, 3, 5, 5, 7, 7, 30, 30, 31, 31, 32, 32};         //七对子.

@@ -21,7 +21,7 @@ public class UIPlayerTenbouChangeInfo : MonoBehaviour
         }
         else if( changeValue < 0 ){
             lab_change.color = Color.red;
-            lab_change.text = "-" + changeValue.ToString();
+            lab_change.text = "" + changeValue.ToString();
         }
         else{
             lab_change.text = "";

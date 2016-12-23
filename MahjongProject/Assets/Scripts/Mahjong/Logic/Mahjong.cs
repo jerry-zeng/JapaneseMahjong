@@ -315,7 +315,8 @@ public abstract class Mahjong
             }
         }
         else if( m_isRenhou ){
-            param.setYakuFlag(EYakuFlagType.RENHOU, true);
+            if( getPlayerIndex( jikaze ) != OyaIndex ) // only ko can Renhou.
+                param.setYakuFlag(EYakuFlagType.RENHOU, true);
         }
 
         if( m_isTsumo && m_isRinshan ) {

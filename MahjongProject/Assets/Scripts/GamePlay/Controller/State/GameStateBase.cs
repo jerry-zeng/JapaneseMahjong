@@ -10,7 +10,7 @@ public class GameStateBase : State
     protected virtual void Awake()
     {
         owner = GetComponent<GameManager>();
-        logicOwner = owner.MahjongMain;
+        logicOwner = owner.LogicMain;
     }
 
     public virtual void OnHandleEvent(UIEventType evtID, object[] args) 

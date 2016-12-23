@@ -4,6 +4,18 @@ namespace YakuHelper
 {
     public class YakuHandler 
     {
+        public YakuHandler Clone()
+        {
+            YakuHandler clone = new YakuHandler();
+            clone.YakuID = this.YakuID;
+            clone.hantei = this.hantei;
+            clone.yakuman = this.yakuman;
+            clone.doubleYakuman = this.doubleYakuman;
+            clone.hanSuu = this.hanSuu;
+
+            return clone;
+        }
+
         protected int YakuID;
 
         // 役の成立判定フラグ 

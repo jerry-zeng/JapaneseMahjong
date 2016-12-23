@@ -19,8 +19,7 @@ public class AI : Player
         _action.Reset();
 
         if(inTest){
-            _action.SutehaiIndex = Utils.GetRandomNum(0, Tehai.getJyunTehaiCount());
-            //_action.SutehaiIndex = Tehai.getJyunTehaiCount();
+            _action.SutehaiIndex = Tehai.getJyunTehaiCount();
             return DoResponse(EResponse.SuteHai);
         }
 

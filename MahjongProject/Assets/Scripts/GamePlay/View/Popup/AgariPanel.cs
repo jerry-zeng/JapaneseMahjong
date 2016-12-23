@@ -23,6 +23,9 @@ public class AgariPanel : MonoBehaviour
     public Transform tenbouInfoRoot;
     public List<UIPlayerTenbouChangeInfo> playerTenbouList = new List<UIPlayerTenbouChangeInfo>();
 
+    public GameObject btn_Continue;
+
+
     private const float haiOffset = 2f;
     private const int DoraHaisColumn = 5;
 
@@ -31,11 +34,26 @@ public class AgariPanel : MonoBehaviour
     private List<UIYakuItem> _yakuItems = new List<UIYakuItem>();
 
 
+    private List<AgariUpdateInfo> agariInfoList;
+    private AgariUpdateInfo currentAgari;
+
+    #region Init
     void Awake()
     {
         yakuItemPrefab.SetActive(false);
+
+        InitYakuInfo();
+
+        UIEventListener.Get(btn_Continue).onClick = OnClickContinue;
+        HideButtons();
     }
 
+
+    void HideButtons()
+    {
+        btn_Continue.GetComponent<BoxCollider>().enabled = false;
+        btn_Continue.gameObject.SetActive(false);
+    }
 
     void InitYakuInfo()
     {
@@ -48,17 +66,15 @@ public class AgariPanel : MonoBehaviour
     }
 
 
-    void InitDoraHais()
+    void InitDoraHais(Hai[] allOmoteDoras, Hai[] allUraDoras)
     {
         if( _omoteDoraHais != null ){
             ClearMahjongList( _omoteDoraHais );
 
-            Hai[] allOmoteDora = GameManager.Instance.MahjongMain.Yama.getAllOmoteDoraHais();
-
             for( int i = 0; i < DoraHaisColumn; i++ )
             {
                 Vector3 pos = new Vector3( -i * (MahjongPai.Width+haiOffset), 0f, 0f );
-                Hai hai = allOmoteDora[i];
+                Hai hai = allOmoteDoras[i];
 
                 MahjongPai pai = PlayerUI.CreateMahjongPai(omoteDoraRoot, pos, hai, false);
                 _omoteDoraHais.Add( pai );
@@ -68,12 +84,10 @@ public class AgariPanel : MonoBehaviour
         if( _uraDoraHais != null ){
             ClearMahjongList( _uraDoraHais );
 
-            Hai[] allUraDora = GameManager.Instance.MahjongMain.Yama.getAllUraDoraHais();
-
             for( int i = 0; i < DoraHaisColumn; i++ )
             {
                 Vector3 pos = new Vector3( -i * (MahjongPai.Width+haiOffset), 0f, 0f );
-                Hai hai = allUraDora[i];
+                Hai hai = allUraDoras[i];
 
                 MahjongPai pai = PlayerUI.CreateMahjongPai(uraDoraRoot, pos, hai, false);
                 _uraDoraHais.Add( pai );
@@ -133,6 +147,7 @@ public class AgariPanel : MonoBehaviour
         }
             
     }
+    #endregion
 
 
     public void Hide()
@@ -140,48 +155,82 @@ public class AgariPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Show()
+    public void Show( List<AgariUpdateInfo> agariList )
     {
-        InitDoraHais();
-        InitYakuInfo();
-        SetTenbouInfo(false);
-
+        HideButtons();
         gameObject.SetActive(true);
 
-        MahjongMain logic = GameManager.Instance.MahjongMain;
-        Player player = GameManager.Instance.MahjongMain.ActivePlayer;
+        agariInfoList = agariList;
 
-        Hai addHai = logic.isTsumo? logic.TsumoHai : logic.SuteHai;
-
-        int doraCount = logic.getOpenedOmotoDoras().Length;
-        ShowOmoteDora( doraCount );
-
-        if( player.IsReach == true )
-            ShowUraDora( doraCount );
-
-        tehai.BindPlayer(player);
-        fuuro.BindPlayer(player);
-
-        Fuuro[] fuuros = player.Tehai.getFuuros();
-        fuuro.UpdateFuuro( fuuros );
-
-        Hai[] hais = player.Tehai.getJyunTehai();
-        tehai.SetTehai( hais, false );
-        tehai.AddPai( addHai, true, true );
-        tehai.SetAllHaisVisiable( true );
-
-        float tehaiPosOffsetX = 0; // move to left if Fuuro has too many DaiMinKan or AnKan.
-
-        tehai.transform.localPosition -= new Vector3(tehaiPosOffsetX, 0f, 0f);
-
-        StartCoroutine( ShowYakuOneByOne(logic.AgariInfo) );
+        StartCoroutine( Show_Internel() );
     }
 
-    IEnumerator ShowYakuOneByOne( AgariInfo agariInfo )
+    private IEnumerator Show_Internel()
+    {
+        for( int i = 0; i < agariInfoList.Count; i++ )
+        {
+            currentAgari = agariInfoList[i];
+
+            InitYakuInfo();
+            SetTenbouInfo(false);
+
+            InitDoraHais( currentAgari.allOmoteDoraHais, currentAgari.allUraDoraHais );
+            ShowOmoteDora( currentAgari.openedOmoteDoraCount );
+            ShowUraDora( currentAgari.openedUraDoraCount );
+
+            Player player = currentAgari.agariPlayer;
+            tehai.BindPlayer(player);
+            fuuro.BindPlayer(player);
+
+            Fuuro[] fuuros = player.Tehai.getFuuros();
+            fuuro.UpdateFuuro( fuuros );
+
+            Hai addHai = currentAgari.agariHai;
+
+            Hai[] hais = player.Tehai.getJyunTehai();
+            tehai.SetTehai( hais, false );
+            tehai.AddPai( addHai, true, true );
+            tehai.SetAllHaisVisiable( true );
+
+            float tehaiPosOffsetX = 0; // move to left if Fuuro has too many DaiMinKan or AnKan.
+
+            // TODO: it's not fit the UI on 4 fuuros and over 3 KaKan or DaiMinKan
+            for( int f = 0; f < fuuros.Length; f++ )
+            {
+                switch( fuuros[i].Type )
+                {
+                    case EFuuroType.MinKou:
+                    case EFuuroType.MinShun:
+                        tehaiPosOffsetX += (MahjongPai.Height - MahjongPai.Width);
+                    break;
+                    case EFuuroType.AnKan:
+                        tehaiPosOffsetX += MahjongPai.Width * 0.5f;
+                    break;
+                    case EFuuroType.DaiMinKan:
+                    case EFuuroType.KaKan:
+                        tehaiPosOffsetX += (MahjongPai.Height - MahjongPai.Width) + MahjongPai.Width * 0.5f;
+                    break;
+                }
+            }
+
+            tehai.transform.localPosition -= new Vector3(tehaiPosOffsetX, 0f, 0f);
+
+            yield return StartCoroutine( ShowYakuOneByOne() );
+
+            yield return new WaitForSeconds(3f);
+        }
+
+        yield return StartCoroutine( ShowSkipButton() );
+
+        currentAgari = null;
+    }
+
+
+    IEnumerator ShowYakuOneByOne()
     {
         yield return new WaitForSeconds(1.0f);
 
-        var yakuArr = agariInfo.hanteiYakus;
+        var yakuArr = currentAgari.hanteiYakus;
 
         for( int i = 0; i < yakuArr.Length; i++ )
         {
@@ -205,14 +254,14 @@ public class AgariPanel : MonoBehaviour
             yield return new WaitForSeconds( yakuDisplayTime );
         }
 
-        ShowTotalScrote( agariInfo );
+        ShowTotalScrote();
     }
 
-    void ShowTotalScrote( AgariInfo agariInfo )
+    void ShowTotalScrote()
     {
         int yakumanCount = 0;
 
-        var yakuArr = agariInfo.hanteiYakus;
+        var yakuArr = currentAgari.hanteiYakus;
 
         for( int i = 0; i < yakuArr.Length; i++ )
         {
@@ -226,22 +275,20 @@ public class AgariPanel : MonoBehaviour
             }
         }
 
-        MahjongMain logic = GameManager.Instance.MahjongMain;
-        int index = logic.getPlayerIndex( logic.ActivePlayer.JiKaze );
-        bool isOya = index == logic.OyaIndex;
 
+        bool isOya = currentAgari.agariPlayerIsOya;
 
         if( yakumanCount > 0 ){
             SetYakuman();
 
-            int yakumanScore = isOya? agariInfo.scoreInfo.oyaRon : agariInfo.scoreInfo.oyaRon;
+            int yakumanScore = isOya? currentAgari.scoreInfo.oyaRon : currentAgari.scoreInfo.oyaRon;
             SetPoint( yakumanScore * yakumanCount );
         }
-        else{
-            
-            int han = agariInfo.han;
-            int fu = agariInfo.fu;
-            int point = isOya? agariInfo.scoreInfo.oyaRon : agariInfo.scoreInfo.oyaRon;
+        else
+        {
+            int han = currentAgari.han;
+            int fu = currentAgari.fu;
+            int point = currentAgari.agariScore;
 
             int level = 0;
 
@@ -346,7 +393,35 @@ public class AgariPanel : MonoBehaviour
 
         SetTenbouInfo(true);
 
-        // TODO: display the tenbou change infos.
+        var tenbouInfos = currentAgari.tenbouChangeInfoList;
+        for( int i = 0; i < tenbouInfos.Count; i++ )
+        {
+            PlayerTenbouChangeInfo info = tenbouInfos[i];
 
+            playerTenbouList[(int)info.playerKaze].SetInfo( info.playerKaze, info.current, info.changed );
+        }
     }
+
+    IEnumerator ShowSkipButton()
+    {
+        yield return new WaitForEndOfFrame();
+
+        Debug.LogWarning( "~~ShowSkipButton()" );
+
+        btn_Continue.SetActive(true);
+        btn_Continue.GetComponent<UIWidget>().alpha = 0f;
+        TweenAlpha.Begin( btn_Continue.gameObject, 0.5f, 1f ).SetOnFinished( () =>
+        {
+            btn_Continue.GetComponent<BoxCollider>().enabled = true;
+        } );
+    }
+
+
+    void OnClickContinue(GameObject go)
+    {
+        btn_Continue.GetComponent<BoxCollider>().enabled = false;
+
+        Debug.LogWarning("## Continue");
+    }
+
 }

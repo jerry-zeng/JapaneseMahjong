@@ -32,7 +32,7 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
 
                 EventManager.Get().SendEvent(UIEventType.Tsumo_Agari, activePlayer);
 
-                owner.ChangeState<LoopState_AgariTsumo>();
+                owner.ChangeState<LoopState_Agari>();
             }
             break;
             case EResponse.Ankan:

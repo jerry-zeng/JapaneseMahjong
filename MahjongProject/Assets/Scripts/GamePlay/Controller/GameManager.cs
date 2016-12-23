@@ -7,13 +7,13 @@ using System;
 public class GameManager : StateMachine, IObserver
 {
     private static GameManager _instance;
-    public static GameManager Instance
+    public static GameManager Get()
     {
-        get { return _instance; }
+        return _instance;
     }
 
     private MahjongMain mahjong;
-    public MahjongMain MahjongMain
+    public MahjongMain LogicMain
     {
         get { return mahjong; }
     }

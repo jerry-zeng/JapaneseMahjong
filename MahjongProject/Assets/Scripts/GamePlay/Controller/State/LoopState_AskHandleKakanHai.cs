@@ -37,7 +37,7 @@ public class LoopState_AskHandleKakanHai : GameStateBase
             // show ron ui.
             EventManager.Get().SendEvent(UIEventType.Ron_Agari, ronPlayers, logicOwner.FromKaze, logicOwner.KakanHai);
 
-            owner.ChangeState<LoopState_AgariRon>();
+            owner.ChangeState<LoopState_Agari>();
         }
         else
         {

@@ -36,7 +36,7 @@ public class MahjongView : UIObject, IObserver
 
     private MahjongMain Model
     {
-        get { return GameManager.Instance.MahjongMain; }
+        get { return GameManager.Get().LogicMain; }
     }
 
 
@@ -460,7 +460,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.Display_Agari_Panel:
             {
-                agariPanel.Show();
+                List<AgariUpdateInfo> agariList = (List<AgariUpdateInfo>)args[0];
+                agariPanel.Show( agariList );
             }
             break;
 
