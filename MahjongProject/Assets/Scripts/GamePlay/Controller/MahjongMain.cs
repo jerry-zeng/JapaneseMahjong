@@ -1567,17 +1567,23 @@ public class MahjongMain : Mahjong
 
     protected void StartTest()
     {
-        // remove all the hais of Oya player.
-        int iPlayer = m_oyaIndex;
-        while( m_playerList[iPlayer].Tehai.getJyunTehai().Length > 0 )
-            m_playerList[iPlayer].Tehai.removeJyunTehaiAt(0);
-
-        // add the test hais.
         int[] haiIds = getTestHaiIds();
-        for( int i = 0; i < haiIds.Length - 1; i++ )
-            m_playerList[iPlayer].Tehai.addJyunTehai( new Hai(haiIds[i]) );
-        
-        m_playerList[iPlayer].Tehai.Sort();
+
+        // remove all the hais of Oya player.
+        for( int i = 0; i < m_playerList.Count; i++ )
+        {
+            if( i == m_oyaIndex )
+            {
+                while( m_playerList[i].Tehai.getJyunTehai().Length > 0 )
+                    m_playerList[i].Tehai.removeJyunTehaiAt(0);
+
+                // add the test hais.
+                for( int j = 0; j < haiIds.Length - 1; j++ )
+                    m_playerList[i].Tehai.addJyunTehai( new Hai(haiIds[j]) );
+
+                m_playerList[i].Tehai.Sort();
+            }
+        }
     }
 
 
@@ -1593,12 +1599,12 @@ public class MahjongMain : Mahjong
         if( getTsumoRemainCount() <= 0 )
             return m_tsumoHai;
 
-        return Utils.GetRandomNum(0,3) < 1? new Hai(0) : m_tsumoHai;
+        return Utils.GetRandomNum(0,3) < 3? new Hai(0) : m_tsumoHai;
     }
 
     protected int[] getTestHaiIds() 
     {
-        int[] haiIds = {0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0}; //测试副露.
+        //int[] haiIds = {0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0}; //测试副露.
         //int[] haiIds = {0, 0, 0, 0, 1, 1, 1, 2, 3, 4, 5, 8, 8, 8};               //暗槓，加槓，大明槓
         //int[] haiIds = {0, 1, 2, 10, 11, 12, 13, 14, 15, 31, 31, 33, 33, 33};    //普通牌.
         //int[] haiIds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 27, 27, 30};            //一气通贯.
@@ -1624,7 +1630,7 @@ public class MahjongMain : Mahjong
         //int[] haiIds = {0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8, 28};              //九连宝灯.
 
         //int[] haiIds = {0, 0, 0, 2, 2, 2, 3, 3, 3, 4, 4, 4, 10, 10};             //四暗刻单骑.
-        //int[] haiIds = {0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 33};    //国士无双十三面.
+        int[] haiIds = {0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 33};    //国士无双十三面.
         //int[] haiIds = {0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8};               //纯正九连宝灯.
 
         return haiIds;

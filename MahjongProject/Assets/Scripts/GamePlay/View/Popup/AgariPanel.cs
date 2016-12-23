@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class AgariPanel : MonoBehaviour
 {
+    public UILabel lab_player_kaze;
     public TehaiUI tehai;
     public FuuroUI fuuro;
 
@@ -57,6 +58,8 @@ public class AgariPanel : MonoBehaviour
 
     void InitYakuInfo()
     {
+        lab_player_kaze.text = "";
+
         ClearYakuItemList( _yakuItems );
 
         lab_han.text = "";
@@ -114,7 +117,7 @@ public class AgariPanel : MonoBehaviour
 
         for( int i = 0; i < list.Count; i++ )
         {
-            Destroy( list[i] );
+            GameObject.Destroy( list[i].gameObject );
         }
         list.Clear();
     }
@@ -182,6 +185,8 @@ public class AgariPanel : MonoBehaviour
             tehai.BindPlayer(player);
             fuuro.BindPlayer(player);
 
+            lab_player_kaze.text = "Player: " + ResManager.getString( "kaze_" + player.JiKaze.ToString().ToLower() );
+
             Fuuro[] fuuros = player.Tehai.getFuuros();
             fuuro.UpdateFuuro( fuuros );
 
@@ -217,7 +222,7 @@ public class AgariPanel : MonoBehaviour
 
             yield return StartCoroutine( ShowYakuOneByOne() );
 
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(4f);
         }
 
         yield return StartCoroutine( ShowSkipButton() );
@@ -251,6 +256,8 @@ public class AgariPanel : MonoBehaviour
             item.transform.localScale = yakuItemPrefab.transform.localScale;
             item.transform.localPosition = new Vector3( yakuItemPosOffset.x, yakuItemPosOffset.y * (i+1), 0f );
 
+            _yakuItems.Add( item );
+
             yield return new WaitForSeconds( yakuDisplayTime );
         }
 
@@ -277,18 +284,19 @@ public class AgariPanel : MonoBehaviour
 
 
         bool isOya = currentAgari.agariPlayerIsOya;
+        int point = currentAgari.agariScore;
 
         if( yakumanCount > 0 ){
             SetYakuman();
 
-            int yakumanScore = isOya? currentAgari.scoreInfo.oyaRon : currentAgari.scoreInfo.oyaRon;
-            SetPoint( yakumanScore * yakumanCount );
+            //int yakumanScore = isOya? currentAgari.scoreInfo.oyaRon : currentAgari.scoreInfo.oyaRon;
+
+            SetPoint( point );
         }
         else
         {
             int han = currentAgari.han;
             int fu = currentAgari.fu;
-            int point = currentAgari.agariScore;
 
             int level = 0;
 
