@@ -70,11 +70,11 @@ public class Yaku
         {
             new CheckReach(this),
             new CheckDoubleReach(this),
-            new CheckIppatu(this),
+            new CheckIppatsu(this),
             new CheckTsumo(this),
             new CheckHaitei(this),
             new CheckHoutei(this),
-            new CheckRinsyan(this),
+            new CheckRinshan(this),
             new CheckChankan(this),
             
             new CheckTanyao(this),
@@ -83,39 +83,39 @@ public class Yaku
 
             //new CheckChiitoitsu(this), // Mustn't handle here.
             //new CheckHonroutou_Chiitoitsu(this), // Mustn't handle here.
-            new CheckCyanta(this),
+            new CheckChanta(this),
             new CheckIkkituukan(this),
-            new CheckSansyokuDoujun(this),
-            new CheckSansyokuDoukou(this),
+            new CheckSansyokuDouJun(this),
+            new CheckSansyokuDouKou(this),
             new CheckToitoi(this),
             new CheckSanankou(this),
             new CheckSankantsu(this),
             new CheckHonroutou(this),
-            new CheckSyousangen(this),
+            new CheckShousangen(this),
 
             new CheckRyanpeikou(this),
-            new CheckHonisou(this),
-            new CheckJyunCyan(this),
+            new CheckHonitsu(this),
+            new CheckJyunChan(this),
 
-            new CheckTinisou(this),
+            new CheckChinitsu(this),
 
             new CheckTenhou(this),
-            new CheckTihou(this),
+            new CheckChihou(this),
             new CheckRenhou(this),
             new CheckSuuankou(this),//四暗刻
             new CheckChinroutou(this),
-            new CheckRyuuisou(this),
+            new CheckRyuiisou(this),
             new CheckSuukantsu(this),
             new CheckDaisangen(this),
-            new CheckSyousuushi(this),
-            new CheckTsuisou(this),
+            new CheckShousuushii(this),
+            new CheckTsuiisou(this),
             //new CheckTsuisou_Chiitoitsu(this), // Mustn't handle here.
-            new CheckCyuurennpoutou(this),
+            new CheckChuurenpoutou(this),
             //new CheckKokushi(this), // Mustn't handle here.
 
-            new CheckDaisuushi(this),
+            new CheckDaisuushii(this),
             new CheckSuuankou_Tanki(this),
-            new CheckCyuurennpoutou_Jyunsei(this),
+            new CheckChuurenpoutou_Jyunsei(this),
             //new CheckKokushi_13Men(this), // Mustn't handle here.
 
             new CheckLenFonHai(this),
@@ -148,23 +148,23 @@ public class Yaku
         {
             new CheckReach(this),
             new CheckDoubleReach(this),
-            new CheckIppatu(this),
+            new CheckIppatsu(this),
             new CheckTsumo(this),
             new CheckHaitei(this),
             new CheckHoutei(this),
-            new CheckRinsyan(this),
+            new CheckRinshan(this),
             new CheckTanyao(this),
-            new CheckHonisou(this),
+            new CheckHonitsu(this),
 
             new CheckChiitoitsu(this), //七对子.
             new CheckHonroutou_Chiitoitsu(this),//七对子混老头.
 
-            new CheckTinisou(this),
+            new CheckChinitsu(this),
 
             new CheckTenhou(this),
-            new CheckTihou(this),
+            new CheckChihou(this),
             new CheckRenhou(this),
-            new CheckTsuisou_Chiitoitsu(this), //七对子字一色.
+            new CheckTsuiisou_Chiitoitsu(this), //七对子字一色.
 
             new CheckDora(this)
         };
@@ -191,11 +191,11 @@ public class Yaku
         _yakuHandlers = new YakuHandler[]
         {
             new CheckTenhou(this),
-            new CheckTihou(this),
+            new CheckChihou(this),
             new CheckRenhou(this),
 
-            new CheckKokushi(this),
-            new CheckKokushi_13Men(this), //国士无双十三面.
+            new CheckKokushiMusou(this),
+            new CheckKokushiMusou_13Men(this), //国士无双十三面.
         };
         #endregion
 

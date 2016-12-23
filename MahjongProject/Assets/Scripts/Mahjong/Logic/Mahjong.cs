@@ -191,11 +191,11 @@ public abstract class Mahjong
         set{ m_isTenhou = value; }
     }
 
-    protected bool m_isTihou = false; //地和
-    public bool isTiHou
+    protected bool m_isChihou = false; //地和
+    public bool isChiHou
     {
-        get{ return m_isTihou; }
-        set{ m_isTihou = value; }
+        get{ return m_isChihou; }
+        set{ m_isChihou = value; }
     }
 
     protected bool m_isRenhou = false; //人和
@@ -328,7 +328,7 @@ public abstract class Mahjong
             if( m_isTenhou ) {
                 param.setYakuFlag(EYakuFlagType.TENHOU, true);
             }
-            else if( m_isTihou ) {
+            else if( m_isChihou ) {
                 param.setYakuFlag(EYakuFlagType.TIHOU, true);
             }
         }

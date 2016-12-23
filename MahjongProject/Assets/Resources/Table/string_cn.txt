@@ -168,7 +168,7 @@
     "value": "立直"
   },
   {
-    "key": "yaku_ippatu",
+    "key": "yaku_ippatsu",
     "value": "一发"
   },
   {
@@ -184,7 +184,7 @@
     "value": "河底捞鱼"
   },
   {
-    "key": "yaku_rinsyan",
+    "key": "yaku_rinshan",
     "value": "杠上开花"
   },
   {
@@ -196,11 +196,11 @@
     "value": "双立直"
   },
   {
-    "key": "yaku_chiitoitu",
+    "key": "yaku_chiitoitsu",
     "value": "七对子"
   },
   {
-    "key": "yaku_cyanta",
+    "key": "yaku_chanta",
     "value": "混全带幺九"
   },
   {
@@ -232,15 +232,15 @@
     "value": "二杯口"
   },
   {
-    "key": "yaku_honisou",
+    "key": "yaku_honitsu",
     "value": "混一色"
   },
   {
-    "key": "yaku_jyuncyan",
+    "key": "yaku_jyunchan",
     "value": "纯全带幺九"
   },
   {
-    "key": "yaku_syousangen",
+    "key": "yaku_shousangen",
     "value": "小三元"
   },
   {
@@ -248,7 +248,7 @@
     "value": "混老头"
   },
   {
-    "key": "yaku_tinisou",
+    "key": "yaku_chinitsu",
     "value": "清一色"
   },
   {
@@ -264,11 +264,11 @@
     "value": "清老头"
   },
   {
-    "key": "yaku_ryuuisou",
+    "key": "yaku_ryuiisou",
     "value": "绿一色"
   },
   {
-    "key": "yaku_tsuisou",
+    "key": "yaku_tsuiisou",
     "value": "字一色"
   },
   {
@@ -276,19 +276,19 @@
     "value": "大三元"
   },
   {
-    "key": "yaku_syousuushi",
+    "key": "yaku_shousuushii",
     "value": "小四喜"
   },
   {
-    "key": "yaku_daisuushi",
+    "key": "yaku_daisuushii",
     "value": "大四喜"
   },
   {
-    "key": "yaku_cyuurennpoutou",
+    "key": "yaku_chuurenpoutou",
     "value": "九莲宝灯"
   },
   {
-    "key": "yaku_kokushi",
+    "key": "yaku_kokushimusou",
     "value": "国士无双"
   },
   {
@@ -296,11 +296,11 @@
     "value": "四暗刻单骑"
   },
   {
-    "key": "yaku_cyuurennpoutou_jyunsei",
+    "key": "yaku_chuurenpoutou_jyunsei",
     "value": "纯正九莲宝灯"
   },
   {
-    "key": "yaku_kokushi_13men",
+    "key": "yaku_kokushimusou_13men",
     "value": "国士无双十三面"
   },
   {
@@ -308,7 +308,7 @@
     "value": "天和"
   },
   {
-    "key": "yaku_tihou",
+    "key": "yaku_chihou",
     "value": "地和"
   },
   {

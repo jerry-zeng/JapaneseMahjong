@@ -100,7 +100,7 @@ public class MahjongMain : Mahjong
         m_renchan = false;
 
         m_isTenhou = true;
-        m_isTihou = true;
+        m_isChihou = true;
         m_isRenhou = true;
 
         m_isTsumo = false;
@@ -389,7 +389,7 @@ public class MahjongMain : Mahjong
         else {
             int chiiHouNokori = Yama.TSUMO_HAIS_MAX - (4*3+1)*GameSettings.PlayerCount - GameSettings.PlayerCount; //66
             if( tsumoNokori < chiiHouNokori ) {
-                m_isTihou = false;
+                m_isChihou = false;
             }
         }
 
@@ -744,7 +744,7 @@ public class MahjongMain : Mahjong
     public void Handle_AnKan()
     {
         m_isTenhou = false;
-        m_isTihou = false;
+        m_isChihou = false;
         m_isRenhou = false;
 
         int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
@@ -832,7 +832,7 @@ public class MahjongMain : Mahjong
         m_activePlayer.IsReach = true;
         m_activePlayer.IsIppatsu = true;
 
-        if( m_isTihou )
+        if( m_isChihou )
             m_activePlayer.IsDoubleReach = true;
 
         m_activePlayer.reduceTenbou( GameSettings.Reach_Cost );
@@ -953,7 +953,7 @@ public class MahjongMain : Mahjong
     public void Handle_Pon()
     {
         m_isTenhou = false;
-        m_isTihou = false;
+        m_isChihou = false;
         m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
@@ -966,7 +966,7 @@ public class MahjongMain : Mahjong
     public void Handle_DaiMinKan()
     {
         m_isTenhou = false;
-        m_isTihou = false;
+        m_isChihou = false;
         m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
@@ -981,7 +981,7 @@ public class MahjongMain : Mahjong
     public void Handle_ChiiLeft()
     {
         m_isTenhou = false;
-        m_isTihou = false;
+        m_isChihou = false;
         m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
@@ -994,7 +994,7 @@ public class MahjongMain : Mahjong
     public void Handle_ChiiCenter()
     {
         m_isTenhou = false;
-        m_isTihou = false;
+        m_isChihou = false;
         m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);
@@ -1007,7 +1007,7 @@ public class MahjongMain : Mahjong
     public void Handle_ChiiRight()
     {
         m_isTenhou = false;
-        m_isTihou = false;
+        m_isChihou = false;
         m_isRenhou = false;
 
         int relation = getRelation(m_kazeFrom, ActivePlayer.JiKaze);

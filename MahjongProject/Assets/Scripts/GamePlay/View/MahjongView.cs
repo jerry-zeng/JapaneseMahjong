@@ -138,7 +138,7 @@ public class MahjongView : UIObject, IObserver
                     ui.SetTenbou( player.Tenbou );
                     ui.Reach( false );
 
-                    ui.SetOyaKaze( i == Model.ChiiChaIndex );
+                    ui.SetOyaKaze( i == Model.OyaIndex );
                     ui.BindPlayer(player);
 
                     if(player.JiKaze == Model.getManKaze()){
