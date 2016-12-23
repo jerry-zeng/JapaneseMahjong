@@ -182,7 +182,7 @@ public class MahjongPai : UIObject
     public void setShining(bool isShining)
     {
         if( isShining ) {
-            TweenAlpha tweener = TweenAlpha.Begin( background.gameObject, 0.5f, 0.5f );
+            TweenAlpha tweener = TweenAlpha.Begin( background.gameObject, 1f, 0.5f );
             tweener.style = UITweener.Style.PingPong;
             tweener.method = UITweener.Method.EaseInOut;
         }

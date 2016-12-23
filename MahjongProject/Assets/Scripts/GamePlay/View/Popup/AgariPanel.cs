@@ -405,13 +405,17 @@ public class AgariPanel : MonoBehaviour
 
         SetTenbouInfo(true);
 
-        var tenbouInfos = currentAgari.tenbouChangeInfoList;
-        for( int i = 0; i < tenbouInfos.Count; i++ )
-        {
-            PlayerTenbouChangeInfo info = tenbouInfos[i];
 
-            playerTenbouList[(int)info.playerKaze].SetInfo( info.playerKaze, info.current, info.changed );
+        var tenbouInfos = currentAgari.tenbouChangeInfoList;
+        EKaze nextKaze = GameAgent.Instance.getManKaze();
+
+        for( int i = 0; i < playerTenbouList.Count; i++ )
+        {
+            PlayerTenbouChangeInfo info = tenbouInfos.Find( ptci=> ptci.playerKaze == nextKaze );
+            playerTenbouList[i].SetInfo( info.playerKaze, info.current, info.changed );
+            nextKaze = nextKaze.Next();
         }
+
     }
 
     IEnumerator ShowSkipButton()

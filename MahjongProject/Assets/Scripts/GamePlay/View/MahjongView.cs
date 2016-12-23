@@ -32,6 +32,7 @@ public class MahjongView : UIObject, IObserver
     public SaifuriPanel saifuriPanel;
     public RyuuKyokuPanel ryuuKyokuPanel;
     public AgariPanel agariPanel;
+    public GameOverPanel gameOverPanel;
 
     protected EKaze shiningKaze = EKaze.Ton;
     protected bool hasShining = false;
@@ -60,6 +61,8 @@ public class MahjongView : UIObject, IObserver
             ryuuKyokuPanel.Hide();
         if(agariPanel != null)
             agariPanel.Hide();
+        if(gameOverPanel != null)
+            gameOverPanel.Hide();
     }
 
     public override void Clear() {
@@ -520,13 +523,13 @@ public class MahjongView : UIObject, IObserver
 
                 ShowAllPlayerTehai();
 
-                ryuuKyokuPanel.Show( msg, null );
+                ryuuKyokuPanel.Show( msg );
             }
             break;
 
             case UIEventType.End_Game:
             {
-                
+                gameOverPanel.Show();
             }
             break;
         }

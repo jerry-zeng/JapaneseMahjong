@@ -9,17 +9,15 @@ public class RyuuKyokuPanel : MonoBehaviour
 
 
     void Start(){
-
+        btn_Confirm.SetOnClick(OnConfirm);
     }
 
 
-    public void Show(string msg, EventDelegate.Callback onClick)
+    public void Show(string msg)
     {
         gameObject.SetActive(true);
 
         lab_msg.text = msg;
-
-        btn_Confirm.SetOnClick( onClick );
     }
 
     public void Hide()
@@ -27,4 +25,8 @@ public class RyuuKyokuPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    void OnConfirm()
+    {
+        EventManager.Get().SendEvent(UIEventType.End_RyuuKyoku);
+    }
 }

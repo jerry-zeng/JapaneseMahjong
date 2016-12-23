@@ -43,8 +43,7 @@ public enum UIEventType
 
     // ゲームの開始 
     Start_Game,
-    // 連荘
-    RenChan,
+
     // 局の開始 
     Start_Kyoku,
 
@@ -72,9 +71,9 @@ public enum UIEventType
 
     // 局の終了 
     End_Kyoku,
+    End_RyuuKyoku,
 
     // ゲームの終了 
     End_Game,
-
 
 }

@@ -15,7 +15,7 @@ public static class GameSettings
     public static bool AllowSuteFonHai4 = true;
 
     // 局の最大値
-    public static int Kyoku_Max = 8; //4.
+    public static int Kyoku_Max = (int)EKyoku.Ton_4;
 
     public static int PlayerCount = 4;
 

@@ -37,6 +37,19 @@ public class GamePrepareState : GameStateBase
     {
         logicOwner.PrepareKyoku();
 
+        string kyokuStr = "";
+        if( logicOwner.IsLastKyoku() ){
+            kyokuStr = "オラス";
+        }
+        else{
+            string kazeStr = ResManager.getString( "kaze_" + logicOwner.getBaKaze().ToString().ToLower() );
+            kyokuStr = kazeStr + logicOwner.Kyoku.ToString() + "局";
+            if( logicOwner.HonBa > 0 )
+                kyokuStr += " " + logicOwner.HonBa.ToString() + "本场";
+            kyokuStr += " Start!";
+        }
+        Debug.LogWarningFormat( kyokuStr );
+
         EventManager.Get().SendEvent(UIEventType.Init_PlayerInfoUI);
         EventManager.Get().SendEvent(UIEventType.SetYama_BeforeHaipai);
 

@@ -208,7 +208,7 @@ public class MahjongMain : Mahjong
     }
 
 
-    protected bool IsLastKyoku()
+    public bool IsLastKyoku()
     {
         return m_kyoku >= GameSettings.Kyoku_Max;
     }
@@ -1552,7 +1552,30 @@ public class MahjongMain : Mahjong
     public bool EndKyoku()
     {
         // 親を更新する
-        if( m_oyaIndex == getPlayerIndex( m_kazeFrom ) )
+        if( getPlayerIndex( m_kazeFrom ) == m_oyaIndex )
+        {
+            m_renchan = true;
+            m_honba++;
+        }
+        else {
+            if( IsLastKyoku() ){
+                return false;
+            }
+            else{
+                GoToNextKyoku();
+
+                SetNextOya();
+                m_honba = 0;
+            }
+        }
+
+        return true;
+    }
+
+    public bool EndRyuuKyoku()
+    {
+        // 親を更新する
+        if( getPlayer(m_oyaIndex).isTenpai() )
         {
             m_renchan = true;
             m_honba++;

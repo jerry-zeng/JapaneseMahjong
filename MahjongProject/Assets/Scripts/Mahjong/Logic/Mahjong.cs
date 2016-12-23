@@ -27,7 +27,10 @@ public abstract class Mahjong
     protected int m_kyoku;
     public int Kyoku
     {
-        get{ return m_kyoku % 4; }
+        get{
+            int ton4 = (int)EKyoku.Ton_4;
+            return m_kyoku > ton4? (m_kyoku-ton4) : m_kyoku; 
+        }
         protected set{ m_kyoku = value; }
     }
 

@@ -31,6 +31,21 @@ public class LoopState_HandleRyuuKyoKu : GameStateBase
         */
     }
 
+    public override void OnHandleEvent(UIEventType evtID, object[] args)
+    {
+        if( evtID == UIEventType.End_RyuuKyoku )
+        {
+            if( logicOwner.EndRyuuKyoku() )
+            {
+                owner.ChangeState<GameStartState>();
+            }
+            else
+            {
+                owner.ChangeState<GameOverState>();
+            }
+        }
+    }
+
     IEnumerator HandleRyuukyokuMan() {
         yield return new WaitForSeconds(0.1f);
 
