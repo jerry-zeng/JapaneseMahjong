@@ -257,7 +257,7 @@ public class Tehai
         if( !validChiiLeft(suteHai, sarashiHais) )
             return false;
 
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_3];
+        Hai[] hais = new Hai[Tehai.MENTSU_LENGTH_3];
 
         hais[0] = new Hai(suteHai);
         int newPickIndex = 0;
@@ -337,7 +337,7 @@ public class Tehai
         if( !validChiiCenter(suteHai, sarashiHais) )
             return false;
 
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_3];
+        Hai[] hais = new Hai[Tehai.MENTSU_LENGTH_3];
 
         hais[1] = new Hai(suteHai);
         int newPickIndex = 1;
@@ -417,7 +417,7 @@ public class Tehai
         if( !validChiiRight(suteHai, sarashiHais) )
             return false;
 
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_3];
+        Hai[] hais = new Hai[Tehai.MENTSU_LENGTH_3];
 
         hais[2] = new Hai(suteHai);
         int newPickIndex = 2;
@@ -480,7 +480,7 @@ public class Tehai
         if( !validPon(suteHai) )
             return false;
 
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_3];
+        Hai[] hais = new Hai[Tehai.MENTSU_LENGTH_3];
 
         hais[0] = new Hai(suteHai);
         int newPickIndex = 0;
@@ -586,7 +586,7 @@ public class Tehai
     // 大明槓を設定する
     public bool setDaiMinKan(Hai suteHai, int relation)
     {
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
+        Hai[] hais = new Hai[Tehai.MENTSU_LENGTH_4];
 
         hais[0] = new Hai(suteHai);
         int newPickIndex = 0;
@@ -687,7 +687,7 @@ public class Tehai
 
         int relation = (int)ERelation.JiBun; //0;
 
-        Hai[] hais = new Hai[Mahjong.MENTSU_HAI_MEMBERS_4];
+        Hai[] hais = new Hai[Tehai.MENTSU_LENGTH_4];
 
         hais[0] = new Hai(tsumoHai);
         int newPickIndex = 3;

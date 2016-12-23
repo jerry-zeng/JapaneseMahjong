@@ -153,7 +153,7 @@ public class AgariPanel : MonoBehaviour
 
         Hai addHai = logic.isTsumo? logic.TsumoHai : logic.SuteHai;
 
-        int doraCount = logic.getOmotoDoras().Length;
+        int doraCount = logic.getOpenedOmotoDoras().Length;
         ShowOmoteDora( doraCount );
 
         if( player.IsReach == true )

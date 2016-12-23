@@ -6,12 +6,6 @@
 
 public abstract class Mahjong 
 {
-    // 面子の構成牌の数(3個:Chii,Pon)
-    public readonly static int MENTSU_HAI_MEMBERS_3 = 3;
-    // 面子の構成牌の数(4個:Kan)
-    public readonly static int MENTSU_HAI_MEMBERS_4 = 4;
-
-
     #region Fields.
     // 山
     protected Yama m_yama;
@@ -69,6 +63,14 @@ public abstract class Mahjong
         protected set{ m_sais = value; }
     }
 
+    // 起家のプレイヤーインデックス
+    protected int m_chiichaIndex;
+    public int ChiiChaIndex
+    {
+        get{ return m_chiichaIndex; }
+        protected set{ m_chiichaIndex = value; }
+    }
+
     // 割れ目
     protected int m_wareme;
     public int Wareme
@@ -83,14 +85,6 @@ public abstract class Mahjong
     {
         get{ return m_oyaIndex; }
         protected set{ m_oyaIndex = value; }
-    }
-
-    // 起家のプレイヤーインデックス
-    protected int m_chiichaIndex;
-    public int ChiiChaIndex
-    {
-        get{ return m_chiichaIndex; }
-        protected set{ m_chiichaIndex = value; }
     }
 
     // 捨牌
@@ -250,7 +244,7 @@ public abstract class Mahjong
     // get player from kaze.
     public Player getPlayer( EKaze kaze )
     { 
-        return m_playerList.Find((p) => p.JiKaze == kaze);
+        return m_playerList.Find( (p) => p.JiKaze == kaze );
     }
 
     // get player index from kaze.
@@ -260,20 +254,15 @@ public abstract class Mahjong
     }
 
     // 表ドラ、槓ドラの配列を取得する
-    public Hai[] getOmotoDoras()
+    public Hai[] getOpenedOmotoDoras()
     {
-        return Yama.getOmoteDoraHais();
+        return Yama.getOpenedOmoteDoraHais();
     }
 
     // 里ドラ、槓ドラの配列を取得する
-    public Hai[] getUraDoras()
+    public Hai[] getOpenedUraDoraHais()
     {
-        return Yama.getUraDoraHais();
-    }
-
-    public Hai[] getAllDoras()
-    {
-        return Yama.getAllDoraHais();
+        return Yama.getOpenedUraDoraHais();
     }
 
     // ツモの残り数を取得する
@@ -282,22 +271,15 @@ public abstract class Mahjong
         return Yama.getTsumoNokori();
     }
 
-    public EKaze getManKaze()
-    {
-        return m_playerList[0].JiKaze;
-    }
-
-    // 自風を取得する(should get from player themselves)
-    protected EKaze getJiKaze() 
-    {
-        return ActivePlayer.JiKaze;
-        //return m_playerList[m_oyaIndex].JiKaze;
-    }
-
     // 場風を取得する
     public EKaze getBaKaze() 
     {
         return m_kyoku <= (int)EKyoku.Ton_4 ? EKaze.Ton : EKaze.Nan;
+    }
+
+    public EKaze getManKaze()
+    {
+        return m_playerList[0].JiKaze;
     }
 
 

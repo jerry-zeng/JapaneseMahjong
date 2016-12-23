@@ -437,7 +437,7 @@ public class MahjongMain : Mahjong
     {
         m_isTsumo = true;
 
-        m_tsumoHai = m_yama.PickRinshanTsumoHai();
+        m_tsumoHai = m_yama.PickRinshanHai();
         isRinshan = true;
 
         if(debugMode) m_tsumoHai = getTestRinshanHai();
@@ -1254,9 +1254,9 @@ public class MahjongMain : Mahjong
     {
         AgariParam.ResetDoraHais(); // should reset params or create a new.
 
-        AgariParam.setOmoteDoraHais( getOmotoDoras() );
+        AgariParam.setOmoteDoraHais( getOpenedOmotoDoras() );
         if( m_activePlayer.IsReach )
-            AgariParam.setUraDoraHais( getUraDoras() );
+            AgariParam.setUraDoraHais( getOpenedUraDoraHais() );
 
         int score = GetAgariScore(ActivePlayer.Tehai, TsumoHai, ActivePlayer.JiKaze, AgariParam);
 
@@ -1338,9 +1338,9 @@ public class MahjongMain : Mahjong
 
         AgariParam.ResetDoraHais(); // should reset params or create a new.
 
-        AgariParam.setOmoteDoraHais( getOmotoDoras() );
+        AgariParam.setOmoteDoraHais( getOpenedOmotoDoras() );
         if( m_activePlayer.IsReach )
-            AgariParam.setUraDoraHais( getUraDoras() );
+            AgariParam.setUraDoraHais( getOpenedUraDoraHais() );
 
         int score = GetAgariScore(ActivePlayer.Tehai, SuteHai, ActivePlayer.JiKaze, AgariParam);
 

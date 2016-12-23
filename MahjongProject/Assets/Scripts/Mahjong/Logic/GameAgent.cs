@@ -74,11 +74,11 @@ public class GameAgent
     }
 
     public Hai[] getOmotoDoraHais(){
-        return _game.getOmotoDoras();
+        return _game.getOpenedOmotoDoras();
     }
 
     public Hai[] getUraDoraHais() {
-        return _game.getUraDoras();
+        return _game.getOpenedUraDoraHais();
     }
 
     public EKaze getManKaze() {
