@@ -51,8 +51,8 @@ public enum UIEventType
     Init_Game,
 
     // Saifuri
-    Saifuri,
-    On_Saifuri_End,
+    Saifuri_For_Oya,
+    On_Saifuri_For_Oya_End,
 
     // 配牌
     HaiPai,

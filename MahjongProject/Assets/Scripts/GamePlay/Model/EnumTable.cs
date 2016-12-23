@@ -13,17 +13,3 @@ public enum EFrontBack
     Back
 }
 
-public enum EPlayerInputType
-{
-    None,
-    Saifuri,
-    SelectMenu,
-    SelectNaki,
-    SelectSutehai,
-}
-
-public enum ERonType
-{
-    SuteHaiRon,
-    KaKanRon
-}

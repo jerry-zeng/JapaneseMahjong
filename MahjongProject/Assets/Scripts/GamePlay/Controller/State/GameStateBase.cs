@@ -13,4 +13,8 @@ public class GameStateBase : State
         logicOwner = owner.MahjongMain;
     }
 
+    public virtual void OnHandleEvent(UIEventType evtID, object[] args) 
+    {
+        
+    }
 }

@@ -84,7 +84,7 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                     }
                 }
                 else{
-                    throw new InvalidResponseException("More than one player perform Pon or DaiMinKan!?");
+                    throw new MahjongException("More than one player perform Pon or DaiMinKan!?");
                 }
             }
             else // no one Pon or DaiMinKan, perform Chii
@@ -136,7 +136,7 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                         owner.ChangeState<LoopState_AskSelectSuteHai>();
                     }
                     else{
-                        throw new InvalidResponseException("More than one player perform Chii!?");
+                        throw new MahjongException("More than one player perform Chii!?");
                     }
                 }
                 else // Nagashi

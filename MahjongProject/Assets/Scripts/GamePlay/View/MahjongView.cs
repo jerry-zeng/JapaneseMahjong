@@ -120,9 +120,9 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
-            case UIEventType.Saifuri: 
+            case UIEventType.Saifuri_For_Oya: 
             {
-                SetSaisPanel( UIEventType.Saifuri );
+                SetSaisPanel( UIEventType.Saifuri_For_Oya );
             }
             break;
 
@@ -513,7 +513,7 @@ public class MahjongView : UIObject, IObserver
         lastSaifuriTarget = saiTarget;
 
         string tip = "";
-        if( saiTarget == UIEventType.Saifuri ) {
+        if( saiTarget == UIEventType.Saifuri_For_Oya ) {
             tip = "Saifuri for deciding Chiicha";
         }
         else {
@@ -534,8 +534,8 @@ public class MahjongView : UIObject, IObserver
 
         saifuriPanel.Hide();
 
-        if( lastSaifuriTarget == UIEventType.Saifuri ) {
-            lastSaifuriTarget = UIEventType.On_Saifuri_End;
+        if( lastSaifuriTarget == UIEventType.Saifuri_For_Oya ) {
+            lastSaifuriTarget = UIEventType.On_Saifuri_For_Oya_End;
         }
         else {
             lastSaifuriTarget = UIEventType.On_Saifuri_For_Haipai_End;

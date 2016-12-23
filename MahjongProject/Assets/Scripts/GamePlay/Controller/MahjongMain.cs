@@ -273,8 +273,8 @@ public class MahjongMain : Mahjong
     public void OnPlayerResponse(EKaze responserKaze, EResponse response)
     {
         if( !CheckResponseValid(m_request, response, responserKaze) )
-            throw new InvalidResponseException( string.Format("Invalid response '{0}' to request '{1}' from kaze {2} to kaze {3}", 
-                                                              response, m_request, m_kazeFrom, responserKaze) );
+            throw new MahjongException("Invalid response '{0}' to request '{1}' from kaze {2} to kaze {3}", 
+                                       response, m_request, m_kazeFrom, responserKaze);
 
         switch( m_request )
         {
@@ -309,7 +309,7 @@ public class MahjongMain : Mahjong
 
             default:
             {
-                throw new InvalidResponseException("Unhandled request: " + m_request.ToString());
+                throw new MahjongException("Unhandled request: " + m_request.ToString());
             }
         }
     }
@@ -655,7 +655,7 @@ public class MahjongMain : Mahjong
                     }
                 }
                 else{
-                    throw new InvalidResponseException("More than one player perform Pon or DaiMinKan!?");
+                    throw new MahjongException("More than one player perform Pon or DaiMinKan!?");
                 }
             }
             else // no one Pon or DaiMinKan, perform Chii
@@ -699,7 +699,7 @@ public class MahjongMain : Mahjong
                         }
                     }
                     else{
-                        throw new InvalidResponseException("More than one player perform Chii!?");
+                        throw new MahjongException("More than one player perform Chii!?");
                     }
                 }
                 else // Nagashi
@@ -822,7 +822,7 @@ public class MahjongMain : Mahjong
     public void Handle_Reach()
     {
         if( ActivePlayer.Tenbou < GameSettings.Reach_Cost )
-            throw new InvalidResponseException("Active player has not enough tenbou to reach!!!");
+            throw new MahjongException("Active player has not enough tenbou to reach!!!");
 
         m_isTenhou = false;
         m_isRinshan = false;
@@ -1029,7 +1029,7 @@ public class MahjongMain : Mahjong
 
         m_suteHai = m_activePlayer.Tehai.removeJyunTehaiAt( m_sutehaiIndex );
         if(m_suteHai == null)
-            throw new InvalidResponseException("Select sute hai won't be null, how it happend!?");
+            throw new MahjongException("Select sute hai won't be null, how it happend!?");
 
         m_activePlayer.Tehai.Sort();
 

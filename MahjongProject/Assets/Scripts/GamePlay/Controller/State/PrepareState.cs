@@ -9,22 +9,26 @@ using System.Collections;
 public class PrepareState : GameStateBase 
 {
 
-    protected override void AddListeners()
-    {
-        owner.AddInputListener(OnSaifuriForQinEnd);
-    }
-    protected override void RemoveListeners()
-    {
-        owner.RemoveInputListener(OnSaifuriForQinEnd);
-    }
-
     public override void Enter() {
         base.Enter();
 
-        EventManager.Get().SendEvent(UIEventType.Saifuri);
+        EventManager.Get().SendEvent(UIEventType.Saifuri_For_Oya);
     }
 
-    void OnSaifuriForQinEnd(EPlayerInputType type, EKaze kaze, object[] args)
+
+    public override void OnHandleEvent(UIEventType evtID, object[] args)
+    {
+        switch(evtID)
+        {
+            case UIEventType.On_Saifuri_For_Oya_End:
+            {
+                OnSaifuriForQinEnd();
+            }
+            break;
+        }
+    }
+
+    void OnSaifuriForQinEnd()
     {
         logicOwner.SetRandomChiicha();
 
@@ -36,4 +40,5 @@ public class PrepareState : GameStateBase
 
         owner.ChangeState<HaiPaiState>();
     }
+
 }

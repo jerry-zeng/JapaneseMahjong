@@ -5,16 +5,6 @@ using System.Collections;
 public class HaiPaiState : GameStateBase 
 {
 
-    protected override void AddListeners()
-    {
-        owner.AddInputListener(OnSaifuriForHaipaiEnd);
-    }
-    protected override void RemoveListeners()
-    {
-        owner.RemoveInputListener(OnSaifuriForHaipaiEnd);
-    }
-
-
     public override void Enter() {
         base.Enter();
 
@@ -28,7 +18,20 @@ public class HaiPaiState : GameStateBase
         EventManager.Get().SendEvent(UIEventType.Saifuri_For_Haipai);
     }
 
-    void OnSaifuriForHaipaiEnd(EPlayerInputType type, EKaze kaze, object[] args)
+
+    public override void OnHandleEvent(UIEventType evtID, object[] args)
+    {
+        switch(evtID)
+        {
+            case UIEventType.On_Saifuri_For_Haipai_End:
+            {
+                OnSaifuriForHaipaiEnd();
+            }
+            break;
+        }
+    }
+
+    void OnSaifuriForHaipaiEnd()
     {
         // haipai.
         logicOwner.SetWaremeAndHaipai();
