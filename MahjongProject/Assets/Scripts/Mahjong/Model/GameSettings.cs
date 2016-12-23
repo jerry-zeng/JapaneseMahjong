@@ -11,6 +11,8 @@ public static class GameSettings
     public static bool AllowFuriten = true;
 
     public static bool AllowRon3 = true;
+    public static bool AllowReach4 = true;
+    public static bool AllowSuteFonHai4 = true;
 
     // 局の最大値
     public static int Kyoku_Max = 8; //4.

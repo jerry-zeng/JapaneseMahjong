@@ -148,6 +148,9 @@ public class PlayerUI : UIObject
     public void SetNaki(bool isNaki = true){
         hou.setNaki(isNaki);
     }
+    public void SetShining(bool isShining){
+        hou.setShining(isShining);
+    }
 
     // 牌山.
     public void SetYamaHais(Dictionary<int, Hai> yamaHais, int start, int end) {

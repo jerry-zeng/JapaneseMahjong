@@ -52,7 +52,12 @@ public class PlayerInputPanel : UIObject
     }
 
 
-    public void HideMenu()
+    protected void NotifyHide()
+    {
+        EventManager.Get().SendEvent(UIEventType.HideMenuList);
+    }
+
+    public void Hide()
     {
         gameObject.SetActive(false);
     }
@@ -102,7 +107,7 @@ public class PlayerInputPanel : UIObject
 
             PlayerAction.Response = EResponse.Pon;
 
-            HideMenu();
+            NotifyHide();
             OwnerPlayer.OnPlayerInputFinished();
         }
     }
@@ -112,66 +117,59 @@ public class PlayerInputPanel : UIObject
         if( isMenuEnable(EActionType.Chii) ){
             //Debug.Log("+ OnClick_Chii()");
 
-            if( PlayerAction.AllSarashiHais.Count > 0 )
+            if( PlayerAction.AllSarashiHais.Count > 2 )
             {
-                if( PlayerAction.AllSarashiHais.Count > 2 )
+                if(PlayerAction.State == EActionState.Select_Chii) // cancel reach.
                 {
-                    if(PlayerAction.State == EActionState.Select_Chii) // cancel reach.
-                    {
-                        PlayerAction.State = EActionState.None; // set state to Select_SuteHai
+                    PlayerAction.State = EActionState.None; // set state to Select_SuteHai
 
-                        playerUI.Tehai.EnableInput( true );
+                    playerUI.Tehai.EnableInput( true );
 
-                        btn_Chii.SetTag( ResManager.getString("button_chii") );
+                    btn_Chii.SetTag( ResManager.getString("button_chii") );
 
-                        // refresh other menu buttons
-                        RefreshMenuButtons();
-                    }
-                    else{
-                        PlayerAction.State = EActionState.Select_Chii;
-
-                        // list chii hai selection.
-                        List<int> enableIndexList = new List<int>();
-                        Hai[] jyunTehais = OwnerPlayer.Tehai.getJyunTehai();
-
-                        for(int i = 0; i < PlayerAction.AllSarashiHais.Count; i++)
-                        {
-                            for( int j = 0; j < jyunTehais.Length; j++){
-                                if( jyunTehais[j].ID == PlayerAction.AllSarashiHais[i].ID )
-                                    enableIndexList.Add( j );
-                            }
-                        }
-
-                        playerUI.Tehai.EnableInput( enableIndexList );
-
-                        btn_Chii.SetTag( ResManager.getString("button_cancel") );
-
-                        // disable other menu buttons.
-                        DisableButtonsExcept(EActionType.Chii);
-                    }
+                    // refresh other menu buttons
+                    RefreshMenuButtons();
                 }
-                else
-                {
-                    // check Chii type.
-                    if( PlayerAction.IsValidChiiLeft ){
-                        PlayerAction.Response = EResponse.Chii_Left;
-                    }
-                    else if( PlayerAction.IsValidChiiCenter ){
-                        PlayerAction.Response = EResponse.Chii_Center;
-                    }
-                    else{
-                        PlayerAction.Response = EResponse.Chii_Right;
+                else{
+                    PlayerAction.State = EActionState.Select_Chii;
+
+                    // list chii hai selection.
+                    List<int> enableIndexList = new List<int>();
+                    Hai[] jyunTehais = OwnerPlayer.Tehai.getJyunTehai();
+
+                    for(int i = 0; i < PlayerAction.AllSarashiHais.Count; i++)
+                    {
+                        for( int j = 0; j < jyunTehais.Length; j++){
+                            if( jyunTehais[j].ID == PlayerAction.AllSarashiHais[i].ID )
+                                enableIndexList.Add( j );
+                        }
                     }
 
-                    PlayerAction.ChiiSelectType = 0;
+                    playerUI.Tehai.EnableInput( enableIndexList );
 
-                    HideMenu();
-                    OwnerPlayer.OnPlayerInputFinished();
+                    btn_Chii.SetTag( ResManager.getString("button_cancel") );
 
+                    // disable other menu buttons.
+                    DisableButtonsExcept(EActionType.Chii);
                 }
             }
-            else{
-                Debug.LogError("Error!!!");
+            else
+            {
+                // check Chii type.
+                if( PlayerAction.IsValidChiiLeft ){
+                    PlayerAction.Response = EResponse.Chii_Left;
+                }
+                else if( PlayerAction.IsValidChiiCenter ){
+                    PlayerAction.Response = EResponse.Chii_Center;
+                }
+                else{
+                    PlayerAction.Response = EResponse.Chii_Right;
+                }
+
+                PlayerAction.ChiiSelectType = 0;
+
+                NotifyHide();
+                OwnerPlayer.OnPlayerInputFinished();
             }
         }
     }
@@ -235,17 +233,15 @@ public class PlayerInputPanel : UIObject
                     else
                         PlayerAction.Response = EResponse.Ankan;
 
-                    HideMenu();
+                    NotifyHide();
                     OwnerPlayer.OnPlayerInputFinished();
-
                 }
             }
             else{
                 PlayerAction.Response = EResponse.DaiMinKan;
 
-                HideMenu();
+                NotifyHide();
                 OwnerPlayer.OnPlayerInputFinished();
-
             }
         }
     }
@@ -290,9 +286,8 @@ public class PlayerInputPanel : UIObject
             else
                 PlayerAction.Response = EResponse.Ron_Agari;
 
-            HideMenu();
+            NotifyHide();
             OwnerPlayer.OnPlayerInputFinished();
-
         }
     }
 
@@ -310,9 +305,8 @@ public class PlayerInputPanel : UIObject
                 PlayerAction.Response = EResponse.Nagashi;
             }
 
-            HideMenu();
+            NotifyHide();
             OwnerPlayer.OnPlayerInputFinished();
-
         }
     }
 

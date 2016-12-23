@@ -41,7 +41,12 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
 
                 EventManager.Get().SendEvent(UIEventType.Ankan, activePlayer);
 
-                owner.ChangeState<LoopState_PickRinshanHai>();
+                if( logicOwner.checkKanCountOverFlow() ){
+                    throw new MahjongException("ERyuuKyokuReason.KanOver4");
+                }
+                else{
+                    owner.ChangeState<LoopState_PickRinshanHai>();
+                }
             }
             break;
             case EResponse.Kakan:
@@ -50,7 +55,12 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
 
                 EventManager.Get().SendEvent(UIEventType.Kakan, activePlayer, logicOwner.KakanHai);
 
-                owner.ChangeState<LoopState_AskHandleKakanHai>();
+                if( logicOwner.checkKanCountOverFlow() ){
+                    throw new MahjongException("ERyuuKyokuReason.KanOver4");
+                }
+                else{
+                    owner.ChangeState<LoopState_AskHandleKakanHai>();
+                }
             }
             break;
             case EResponse.Reach:
@@ -59,7 +69,13 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
 
                 EventManager.Get().SendEvent(UIEventType.Reach, activePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai, logicOwner.isTedashi);
 
-                owner.ChangeState<LoopState_AskHandleSuteHai>();
+                // TODO: need to check after sute reach hai and no one Ron.
+                if( logicOwner.checkReach4() && !GameSettings.AllowReach4 ){
+                    throw new MahjongException("ERyuuKyokuReason.Reach4");
+                }
+                else{
+                    owner.ChangeState<LoopState_AskHandleSuteHai>();
+                }
             }
             break;
             case EResponse.SuteHai:
@@ -68,9 +84,25 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
 
                 EventManager.Get().SendEvent(UIEventType.SuteHai, activePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai, logicOwner.isTedashi);
 
-                owner.ChangeState<LoopState_AskHandleSuteHai>();
+                if( logicOwner.checkSuteFonHai4() && !GameSettings.AllowSuteFonHai4 ){
+                    throw new MahjongException("ERyuuKyokuReason.SuteFonHai4");
+                }
+                else{
+                    owner.ChangeState<LoopState_AskHandleSuteHai>();
+                }
             }
             break;
+            // This is only enable when any players select ERyuuKyokuReason.HaiTypeOver9
+            case EResponse.Nagashi: 
+            {
+                if( logicOwner.checkHaiTypeOver9() ){
+                    throw new MahjongException("ERyuuKyokuReason.HaiTypeOver9");
+                }
+                else{
+                    throw new MahjongException("Invalid response");
+                }
+            }
+            //break;
         }
     }
 }

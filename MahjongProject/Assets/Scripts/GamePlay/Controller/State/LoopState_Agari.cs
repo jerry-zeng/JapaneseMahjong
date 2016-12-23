@@ -25,4 +25,11 @@ public class LoopState_Agari : GameStateBase
         EventManager.Get().SendEvent(UIEventType.Display_Agari_Panel, logicOwner.AgariUpdateInfoList);
     }
 
+    public override void OnHandleEvent(UIEventType evtID, object[] args)
+    {
+        if( evtID == UIEventType.End_Kyoku )
+        {
+            owner.ChangeState<KyoKuOverState>();
+        }
+    }
 }

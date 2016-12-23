@@ -4,17 +4,16 @@ using System.Collections;
 
 public class KyoKuOverState : GameStateBase 
 {
-
     public override void Enter() {
         base.Enter();
 
-        if( logicOwner.IsLastKyoku() ) {
-            owner.ChangeState<GameOverState>();
+        if( logicOwner.EndKyoku() )
+        {
+            owner.ChangeState<GameStartState>();
         }
-        else {
-            logicOwner.GoToNextKyoku();
-            Debug.Log( "Go To Next Kyoku" );
-            owner.ChangeState<InitGameState>();
+        else
+        {
+            owner.ChangeState<GameOverState>();
         }
     }
 }

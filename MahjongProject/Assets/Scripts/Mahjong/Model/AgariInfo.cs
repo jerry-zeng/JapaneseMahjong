@@ -15,6 +15,9 @@ public class AgariInfo
 
     public string[] getYakuNames()
     {
+        if( hanteiYakus == null )
+            return null;
+        
         List<string> yakuNames = new List<string>();
 
         int hanSuu = 0;

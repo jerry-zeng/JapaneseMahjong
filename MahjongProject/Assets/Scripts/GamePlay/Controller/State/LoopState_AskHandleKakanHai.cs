@@ -32,12 +32,17 @@ public class LoopState_AskHandleKakanHai : GameStateBase
         List<EKaze> ronPlayers = logicOwner.GetRonPlayers();
         if( ronPlayers.Count > 0 )
         {
-            logicOwner.Handle_KaKan_Ron();
+            if( ronPlayers.Count >= 3 && !GameSettings.AllowRon3 ){
+                throw new MahjongException("ERyuuKyokuReason.Ron3");
+            }
+            else{
+                logicOwner.Handle_KaKan_Ron();
 
-            // show ron ui.
-            EventManager.Get().SendEvent(UIEventType.Ron_Agari, ronPlayers, logicOwner.FromKaze, logicOwner.KakanHai);
+                // show ron ui.
+                EventManager.Get().SendEvent(UIEventType.Ron_Agari, ronPlayers, logicOwner.FromKaze, logicOwner.KakanHai);
 
-            owner.ChangeState<LoopState_Agari>();
+                owner.ChangeState<LoopState_Agari>();
+            }
         }
         else
         {

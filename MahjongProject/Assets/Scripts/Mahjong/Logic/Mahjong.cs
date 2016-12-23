@@ -32,11 +32,11 @@ public abstract class Mahjong
     }
 
     // リーチ棒の数
-    protected int m_reachbou;
+    protected int m_reachBou;
     public int ReachBou
     {
-        get{ return m_reachbou; }
-        protected set{ m_reachbou = value; }
+        get{ return m_reachBou; }
+        protected set{ m_reachBou = value; }
     }
 
     // 連荘
@@ -64,7 +64,7 @@ public abstract class Mahjong
     }
 
     // 起家のプレイヤーインデックス
-    protected int m_chiichaIndex;
+    protected int m_chiichaIndex = -1;
     public int ChiiChaIndex
     {
         get{ return m_chiichaIndex; }
@@ -72,7 +72,7 @@ public abstract class Mahjong
     }
 
     // 割れ目
-    protected int m_wareme;
+    protected int m_wareme = -1;
     public int Wareme
     {
         get{ return m_wareme; }
@@ -80,7 +80,7 @@ public abstract class Mahjong
     }
 
     // 親のプレイヤーインデックス
-    protected int m_oyaIndex;
+    protected int m_oyaIndex = -1;
     public int OyaIndex
     {
         get{ return m_oyaIndex; }
@@ -95,7 +95,7 @@ public abstract class Mahjong
         protected set{ m_suteHaiList = value; }
     }
 
-    protected int m_sutehaiIndex = 13;
+    protected int m_sutehaiIndex = -1;
     public int SuteHaiIndex
     {
         get{ return m_sutehaiIndex; }
@@ -120,7 +120,7 @@ public abstract class Mahjong
     }
 
     // 摸入牌
-    protected Hai m_tsumoHai = new Hai();
+    protected Hai m_tsumoHai;
     public Hai TsumoHai
     {
         get{ return m_tsumoHai; }
@@ -128,7 +128,7 @@ public abstract class Mahjong
     }
 
     // 打出牌
-    protected Hai m_suteHai = new Hai();
+    protected Hai m_suteHai;
     public Hai SuteHai
     {
         get{ return m_suteHai; }
@@ -136,7 +136,7 @@ public abstract class Mahjong
     }
 
     // kakan hai
-    protected Hai m_kakanHai = new Hai();
+    protected Hai m_kakanHai;
     public Hai KakanHai
     {
         get{ return m_kakanHai; }

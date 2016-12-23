@@ -6,13 +6,16 @@ using System.Collections;
 /// Sai sai furi for deciding Qin jia.
 /// </summary>
 
-public class PrepareState : GameStateBase 
+public class GamePrepareState : GameStateBase 
 {
 
     public override void Enter() {
         base.Enter();
 
-        EventManager.Get().SendEvent(UIEventType.Saifuri_For_Oya);
+        if( logicOwner.needSelectOya() )
+            EventManager.Get().SendEvent(UIEventType.Saifuri_For_Oya);
+        else
+            OnSaifuriForQinEnd();
     }
 
 
@@ -22,6 +25,8 @@ public class PrepareState : GameStateBase
         {
             case UIEventType.On_Saifuri_For_Oya_End:
             {
+                logicOwner.SetOyaChiicha();
+
                 OnSaifuriForQinEnd();
             }
             break;
@@ -30,10 +35,7 @@ public class PrepareState : GameStateBase
 
     void OnSaifuriForQinEnd()
     {
-        logicOwner.SetRandomChiicha();
-
-        // set jikazes.
-        logicOwner.PrepareKyokuYama();
+        logicOwner.PrepareKyoku();
 
         EventManager.Get().SendEvent(UIEventType.Init_PlayerInfoUI);
         EventManager.Get().SendEvent(UIEventType.SetYama_BeforeHaipai);

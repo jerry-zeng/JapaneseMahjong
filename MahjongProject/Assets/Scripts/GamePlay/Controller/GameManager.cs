@@ -35,7 +35,7 @@ public class GameManager : StateMachine, IObserver
     }
 
     void Start() {
-        ChangeState<InitGameState>();
+        ChangeState<GameStartState>();
     }
 
     void OnApplicationQuit()

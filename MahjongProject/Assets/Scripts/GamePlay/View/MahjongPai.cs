@@ -113,6 +113,7 @@ public class MahjongPai : UIObject
         SetTedashi(false);
         SetNaki(false);
         SetReach(false);
+        setShining(false);
 
         Hide();
 
@@ -177,17 +178,20 @@ public class MahjongPai : UIObject
         }
     }
 
-    /*
-    public void SetHighlight(bool isLight)
+    // shining on menu list shown out.
+    public void setShining(bool isShining)
     {
-        if( isLight ) {
-            background.color = Color.magenta;
+        if( isShining ) {
+            TweenAlpha tweener = TweenAlpha.Begin( background.gameObject, 0.5f, 0.5f );
+            tweener.style = UITweener.Style.PingPong;
+            tweener.method = UITweener.Method.EaseInOut;
         }
         else {
-            background.color = normalColor;
+            TweenAlpha tweener = GetComponent<TweenAlpha>();
+            if( tweener != null )
+                TweenAlpha.Begin( background.gameObject, 0f, 1f );
         }
     }
-    */
 
     public void Show() {
         SetFrontBack(EFrontBack.Front);

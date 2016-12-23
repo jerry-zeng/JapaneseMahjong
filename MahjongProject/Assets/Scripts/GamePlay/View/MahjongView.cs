@@ -33,6 +33,8 @@ public class MahjongView : UIObject, IObserver
     public RyuuKyokuPanel ryuuKyokuPanel;
     public AgariPanel agariPanel;
 
+    protected EKaze shiningKaze = EKaze.Ton;
+    protected bool hasShining = false;
 
     private MahjongMain Model
     {
@@ -48,6 +50,18 @@ public class MahjongView : UIObject, IObserver
     }
 
 
+    public void HideAllHudPanel()
+    {
+        if(playerInputPanel != null)
+            playerInputPanel.Hide();
+        if(saifuriPanel != null)
+            saifuriPanel.Hide();
+        if(ryuuKyokuPanel != null)
+            ryuuKyokuPanel.Hide();
+        if(agariPanel != null)
+            agariPanel.Hide();
+    }
+
     public override void Clear() {
         base.Clear();
 
@@ -59,6 +73,8 @@ public class MahjongView : UIObject, IObserver
 
         playerUIDict.Clear();
         playerUIDict_Kaze.Clear();
+
+        isInit = false;
     }
 
 
@@ -104,6 +120,8 @@ public class MahjongView : UIObject, IObserver
 
         isInit = true;
 
+        hasShining = false;
+
         ResManager.LoadStringTable();
     }
 
@@ -117,6 +135,7 @@ public class MahjongView : UIObject, IObserver
             {
                 Clear();
                 Init();
+                HideAllHudPanel();
             }
             break;
 
@@ -240,12 +259,27 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.DisplayMenuList:
             {
+                // if menu is for HandleSuteHai, set sute hai shining.
+                if( Model.CurrentRequest == ERequest.Handle_SuteHai &&
+                   Model.ActivePlayer.Action.MenuList.Count > 0 ){
+                    if( hasShining == false ){
+                        shiningKaze = Model.FromKaze;
+                        playerUIDict_Kaze[shiningKaze].SetShining(true);
+                        hasShining = true;
+                    }
+                }
                 playerInputPanel.Show();
             }
             break;
             case UIEventType.HideMenuList:
             {
-                playerInputPanel.HideMenu();
+                playerInputPanel.Hide();
+
+                // if menu is for HandleSuteHai, set sute hai not shining.
+                if( hasShining ){
+                    playerUIDict_Kaze[shiningKaze].SetShining(false);
+                    hasShining = false;
+                }
             }
             break;
 
@@ -487,6 +521,12 @@ public class MahjongView : UIObject, IObserver
                 ShowAllPlayerTehai();
 
                 ryuuKyokuPanel.Show( msg, null );
+            }
+            break;
+
+            case UIEventType.End_Game:
+            {
+                
             }
             break;
         }

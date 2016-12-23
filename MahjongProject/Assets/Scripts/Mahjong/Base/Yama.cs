@@ -54,6 +54,7 @@ public class Yama
         setTsumoHaisStartIndex(0);
     }
 
+
     // temply implement.
     public Hai[] getYamaHais()
     {
@@ -93,6 +94,10 @@ public class Yama
     public int getLastOmoteHaiIndex()
     {
         return OmoteDoraHaiIndex_InYama[_rinshanHaisIndex];
+    }
+    public int getOpenedOmeteDoraCount()
+    {
+        return _rinshanHaisIndex + 1;
     }
 
 
@@ -305,6 +310,12 @@ public class Yama
                 if(num <= 0) break;
             }
         } 
+    }
+
+    public void resetRedDoras()
+    {
+        for(int i = 0; i < _yamaHais.Length; i++) 
+            _yamaHais[i].IsRed = false;
     }
 
 }

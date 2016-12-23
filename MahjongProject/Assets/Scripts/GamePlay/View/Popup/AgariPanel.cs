@@ -23,6 +23,7 @@ public class AgariPanel : MonoBehaviour
 
     public Transform tenbouInfoRoot;
     public List<UIPlayerTenbouChangeInfo> playerTenbouList = new List<UIPlayerTenbouChangeInfo>();
+    public UILabel lab_reachbou;
 
     public GameObject btn_Continue;
 
@@ -59,6 +60,7 @@ public class AgariPanel : MonoBehaviour
     void InitYakuInfo()
     {
         lab_player_kaze.text = "";
+        lab_reachbou.text = "";
 
         ClearYakuItemList( _yakuItems );
 
@@ -399,6 +401,8 @@ public class AgariPanel : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
+        lab_reachbou.text = "x" + currentAgari.reachBou.ToString();
+
         SetTenbouInfo(true);
 
         var tenbouInfos = currentAgari.tenbouChangeInfoList;
@@ -414,8 +418,6 @@ public class AgariPanel : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        Debug.LogWarning( "~~ShowSkipButton()" );
-
         btn_Continue.SetActive(true);
         btn_Continue.GetComponent<UIWidget>().alpha = 0f;
         TweenAlpha.Begin( btn_Continue.gameObject, 0.5f, 1f ).SetOnFinished( () =>
@@ -427,9 +429,9 @@ public class AgariPanel : MonoBehaviour
 
     void OnClickContinue(GameObject go)
     {
-        btn_Continue.GetComponent<BoxCollider>().enabled = false;
+        Hide();
 
-        Debug.LogWarning("## Continue");
+        EventManager.Get().SendEvent(UIEventType.End_Kyoku);
     }
 
 }

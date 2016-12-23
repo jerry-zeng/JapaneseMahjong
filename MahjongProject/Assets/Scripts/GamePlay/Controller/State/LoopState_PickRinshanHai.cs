@@ -10,20 +10,14 @@ public class LoopState_PickRinshanHai : GameStateBase
 
         logicOwner.PickRinshanHai();
 
+        Hai rinshanHai = logicOwner.TsumoHai;
 
-        if( logicOwner.IsKanCountOverFlow() ){
-            Debug.LogWarning("## Kan Count OverFlow");
-        }
-        else{
-            Hai rinshanHai = logicOwner.TsumoHai;
+        int lastPickIndex = logicOwner.Yama.getPreRinshanHaiIndex();
+        int newDoraHaiIndex = logicOwner.Yama.getLastOmoteHaiIndex();
 
-            int lastPickIndex = logicOwner.Yama.getPreRinshanHaiIndex();
-            int newDoraHaiIndex = logicOwner.Yama.getLastOmoteHaiIndex();
+        EventManager.Get().SendEvent(UIEventType.PickRinshanHai, logicOwner.ActivePlayer, lastPickIndex, rinshanHai, newDoraHaiIndex );
 
-            EventManager.Get().SendEvent(UIEventType.PickRinshanHai, logicOwner.ActivePlayer, lastPickIndex, rinshanHai, newDoraHaiIndex );
-
-            StartCoroutine( AskHandleRinshanHai() );
-        }
+        StartCoroutine( AskHandleRinshanHai() );
 
     }
 

@@ -134,6 +134,20 @@ public class HouUI : UIObject
         MahjongPai lastHai = _allHais[_allHais.Count - 1];
         lastHai.SetNaki(isNaki);
 
+        setShining(false);
+
+        return true;
+    }
+
+    public bool setShining(bool isShining)
+    {
+        if( _allHais.Count <= 0 )
+            return false;
+
+        // set last hai shining.
+        MahjongPai lastHai = _allHais[_allHais.Count - 1];
+        lastHai.setShining(isShining);
+
         return true;
     }
 

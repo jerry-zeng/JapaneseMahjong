@@ -8,6 +8,7 @@ public class LoopState_HandleRyuuKyoKu : GameStateBase
     public override void Enter()
     {
         base.Enter();
+
         Debug.LogWarning("## Ryuu KyoKu 流局 ##");
 
         List<int> tenpaiPlayers = logicOwner.GetTenpaiPlayerIndex();

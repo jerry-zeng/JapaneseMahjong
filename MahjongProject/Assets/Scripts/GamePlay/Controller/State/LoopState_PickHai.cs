@@ -10,12 +10,12 @@ public class LoopState_PickHai : GameStateBase
 
         logicOwner.PickNewTsumoHai();
 
-        if( logicOwner.IsRyuukyoku() ) {
+        if( logicOwner.checkNoTsumoHai() )
+        {
             owner.ChangeState<LoopState_HandleRyuuKyoKu>();
         }
         else {
             Hai tsumoHai = logicOwner.TsumoHai;
-            //logicOwner.ActivePlayer.Tehai.addJyunTehai( tsumoHai );//
 
             int lastPickIndex = logicOwner.Yama.getPreTsumoHaiIndex();
             if( lastPickIndex < 0 ){

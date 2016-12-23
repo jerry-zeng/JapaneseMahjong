@@ -4,11 +4,15 @@ using System.Collections;
 
 public class GameOverState : GameStateBase 
 {
-
-    public override void Enter() {
+    public override void Enter() 
+    {
         base.Enter();
 
-        Debug.Log("Game over, show the score list.");
+        logicOwner.GameOver();
+
+        Debug.Log("show the score list.");
+
+        EventManager.Get().SendEvent(UIEventType.End_Game);
     }
 
 }

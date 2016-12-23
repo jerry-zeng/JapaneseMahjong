@@ -33,12 +33,17 @@ public class LoopState_AskHandleSuteHai : GameStateBase
         List<EKaze> ronPlayers = logicOwner.GetRonPlayers();
         if( ronPlayers.Count > 0 )
         {
-            logicOwner.Handle_SuteHai_Ron();
+            if( ronPlayers.Count >= 3 && !GameSettings.AllowRon3 ){
+                throw new MahjongException("ERyuuKyokuReason.Ron3");
+            }
+            else{
+                logicOwner.Handle_SuteHai_Ron();
 
-            // show ron ui.
-            EventManager.Get().SendEvent(UIEventType.Ron_Agari, ronPlayers, logicOwner.FromKaze, logicOwner.SuteHai);
+                // show ron ui.
+                EventManager.Get().SendEvent(UIEventType.Ron_Agari, ronPlayers, logicOwner.FromKaze, logicOwner.SuteHai);
 
-            owner.ChangeState<LoopState_Agari>();
+                owner.ChangeState<LoopState_Agari>();
+            }
         }
         else
         {
@@ -78,7 +83,12 @@ public class LoopState_AskHandleSuteHai : GameStateBase
 
                             EventManager.Get().SendEvent(UIEventType.DaiMinKan, logicOwner.ActivePlayer, logicOwner.FromKaze);
 
-                            owner.ChangeState<LoopState_PickRinshanHai>();
+                            if( logicOwner.checkKanCountOverFlow() ){
+                                throw new MahjongException("ERyuuKyokuReason.KanOver4");
+                            }
+                            else{
+                                owner.ChangeState<LoopState_PickRinshanHai>();
+                            }
                         }
                         break;
                     }
@@ -139,7 +149,7 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                         throw new MahjongException("More than one player perform Chii!?");
                     }
                 }
-                else // Nagashi
+                else // no one handle the sute hai.
                 {
                     logicOwner.Handle_SuteHai_Nagashi();
 

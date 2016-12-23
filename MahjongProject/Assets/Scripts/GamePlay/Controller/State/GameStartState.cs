@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class InitGameState : GameStateBase 
+public class GameStartState : GameStateBase 
 {
 
     public override void Enter() {
@@ -18,6 +18,6 @@ public class InitGameState : GameStateBase
 
         EventManager.Get().SendEvent( UIEventType.Init_Game );
 
-        owner.ChangeState<PrepareState>();
+        owner.ChangeState<GamePrepareState>();
     }
 }

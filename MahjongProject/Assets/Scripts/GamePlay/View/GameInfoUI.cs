@@ -41,7 +41,7 @@ public class GameInfoUI : UIObject
     }
 
     public void SetReachCount(int count) {
-        reachCountLab.text = count.ToString();
+        reachCountLab.text = "x" + count.ToString();
 
         if(!reachBan.enabled)
             reachBan.enabled = true;

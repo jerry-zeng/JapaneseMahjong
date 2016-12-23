@@ -15,6 +15,8 @@ public class AgariUpdateInfo : AgariInfo
     public Hai[] allUraDoraHais;
     public int openedUraDoraCount;
 
+    public int reachBou;
+
 
     public AgariUpdateInfo(){
         
