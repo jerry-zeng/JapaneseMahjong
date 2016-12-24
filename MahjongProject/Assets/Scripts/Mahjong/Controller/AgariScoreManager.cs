@@ -8,6 +8,7 @@ using Math = UnityEngine.Mathf;
 
 public sealed class AgariScoreManager 
 {
+    /*
     // fields.
     static ScoreInfo[,] SCORE_LIST = new ScoreInfo[13,13]
     {
@@ -25,35 +26,80 @@ public sealed class AgariScoreManager
         {new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000),new ScoreInfo(36000,12000,24000, 6000)},
         {new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000)}
     };
+    */
+
+    // 满贯.
+    static Score SCORE_MAN_GAN = new Score(12000,4000, 8000,2000,4000);
+
+    // 1-4 han: 20,25,30,40,50,60,70,80,90,100,110 fu.
+    static Score[] SCORE_1 = new Score[11]
+    {
+        //20fu               //25fu               //30fu                            //40fu                             //50fu                             //60fu                               //70fu                              //80fu                              //90fu                              //100fu                            //110fu
+        new Score(0,0,0,0,0),new Score(0,0,0,0,0),new Score(1500,500,1000,300,500), new Score(2000,700,1300,400,700),  new Score(2400,800,1600,400,800),  new Score(2900,1000,2000,500,1000),  new Score(3400,1200,2300,600,1200), new Score(3900,1300,2600,700,1300), new Score(4400,1500,2900,800,1500), new Score(4800,1600,3200,800,1600),new Score(5300,1800,3600,900,1800)
+    };
+    static Score[] SCORE_2 = new Score[11]
+    {
+        //20fu               //25fu               //30fu                            //40fu                             //50fu                             //60fu                               //70fu                              //80fu                              //90fu                              //100fu                             //110fu
+        new Score(0,0,0,0,0),new Score(0,0,0,0,0),new Score(2900,1000,2000,500,1000),new Score(3900,1300,2600,700,1300),new Score(4800,1600,3200,800,1600),new Score(5800,2000,3900,1000,2000),new Score(3400,1200,4500,1200,2300),new Score(7700,2600,5200,1300,2600),new Score(8700,2900,5800,1500,2900),new Score(9600,3200,6400,1600,3200),new Score(10600,3600,7100,1800,3600)
+    };
+    static Score[] SCORE_3 = new Score[11]
+    {
+        //20fu                             //25fu                             //30fu                              //40fu                              //50fu                              //60fu                               // 70fu                  //80fu                   //90fu                   //100fu                  //110fu
+        new Score(3900,1300,2600,700,1300),new Score(4800,1600,3200,800,1600),new Score(5800,2000,3900,1000,2000),new Score(7700,2600,5200,1300,2600),new Score(9600,3200,6400,1600,3200),new Score(11600,3900,7700,2000,3900),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN)
+    };
+    static Score[] SCORE_4 = new Score[11]
+    {
+        //20fu                              //25fu                              //30fu                               //40fu                   //50fu                   //60fu                   // 70fu                  //80fu                   //90fu                   //100fu                  //110fu
+        new Score(7700,2600,5200,1300,2600),new Score(9600,3200,6400,1600,3200),new Score(11600,3900,7700,2000,3900),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN),new Score(SCORE_MAN_GAN)
+    };
+
+    static Score SCORE_5     = new Score(SCORE_MAN_GAN); //(12000,4000,  8000,2000,4000);
+    static Score SCORE_6_7   = new Score(18000,6000,  12000,3000,6000);
+    static Score SCORE_8_10  = new Score(24000,8000,  16000,4000,8000);
+    static Score SCORE_11_12 = new Score(36000,12000, 24000,6000,12000);
+    static Score SCORE_13    = new Score(48000,16000, 32000,8000,16000);
+
 
     private static CountFormat formatWorker = new CountFormat();
 
 
     // 上がり点数を取得します
-    public static ScoreInfo GetScoreInfo(int hanSuu, int huSuu)
+    public static Score GetScoreInfo(int hanSuu, int huSuu)
     {
-        if( hanSuu == 0 )
-            return new ScoreInfo( SCORE_LIST[0, 0] );
-
         int iFu;
-        if (huSuu == 20) {
+        if(huSuu <= 20){
             iFu = 0;
         } 
-        else if (huSuu == 25) {
+        else if(huSuu == 25){
             iFu = 1;
         } 
-        else if (huSuu > 120) {
-            iFu = 12;
+        else if(huSuu > 110){
+            iFu = 10;
         } 
         else {
             iFu = (huSuu / 10) - 1;
         }
-         
+
         if( hanSuu > 13 ) hanSuu = 13;
 
-        int iHan = hanSuu - 1;
+        switch( hanSuu )
+        {
+            case 1: return new Score( SCORE_1[iFu] );
+            case 2: return new Score( SCORE_2[iFu] );
+            case 3: return new Score( SCORE_3[iFu] );
+            case 4: return new Score( SCORE_4[iFu] );
+            case 5: return new Score( SCORE_5 );
+            case 6:
+            case 7: return new Score( SCORE_6_7 );
+            case 8:
+            case 9:
+            case 10:return new Score( SCORE_8_10 );
+            case 11:
+            case 12:return new Score( SCORE_11_12 );
+            case 13:return new Score( SCORE_13 );
 
-        return new ScoreInfo( SCORE_LIST[iHan, iFu] );
+            default:return new Score( SCORE_1[0] );
+        }
     }
 
 
@@ -231,7 +277,7 @@ public sealed class AgariScoreManager
 
             agariInfo.scoreInfo = GetScoreInfo(agariInfo.han, agariInfo.fu);
 
-            return agariInfo.scoreInfo.koRon;
+            return agariInfo.scoreInfo.koAgari;
         }
 
         /// 2. check Kokushi(国士无双)
@@ -247,7 +293,7 @@ public sealed class AgariScoreManager
 
                 agariInfo.scoreInfo = GetScoreInfo(agariInfo.han, agariInfo.fu);
 
-                return agariInfo.scoreInfo.koRon;
+                return agariInfo.scoreInfo.koAgari;
             }
 
             return 0;
@@ -270,9 +316,9 @@ public sealed class AgariScoreManager
             hanSuuArr[i] = yaku.calculateHanSuu();
             huSuuArr[i] = CalculateHu(tehai, addHai, combis[i], param, yaku);
 
-            ScoreInfo info = GetScoreInfo(hanSuuArr[i], huSuuArr[i]);
+            Score scoreInfo = GetScoreInfo(hanSuuArr[i], huSuuArr[i]);
 
-            scoreArr[i] = info.koRon;
+            scoreArr[i] = scoreInfo.koAgari;
 
             if( scoreArr[i] > maxAgariScore )
             {
@@ -280,7 +326,7 @@ public sealed class AgariScoreManager
                 agariInfo.fu = huSuuArr[i];
                 agariInfo.hanteiYakus = yaku.getHanteiYakus();
 
-                agariInfo.scoreInfo = info;
+                agariInfo.scoreInfo = scoreInfo;
 
                 maxAgariScore = scoreArr[i];
             }

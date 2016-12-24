@@ -98,11 +98,13 @@ public class MahjongMain : Mahjong
 
     protected void initPlayerKaze()
     {
-        EKaze kaze = (EKaze)m_oyaIndex;
+        EKaze kaze = EKaze.Ton; //oya is always EKaze.Ton
 
-        for( int i = 0; i < m_playerList.Count; i++)
+        for( int i = 0, j = m_oyaIndex; i < m_playerList.Count; i++,j++)
         {
-            m_playerList[i].JiKaze = kaze;
+            if( j >= m_playerList.Count ) j = 0;
+
+            m_playerList[j].JiKaze = kaze;
 
             kaze = kaze.Next();
         }
@@ -1400,10 +1402,10 @@ public class MahjongMain : Mahjong
 
 
         if( getPlayerIndex( m_kazeFrom ) == m_oyaIndex ) {
-            score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
+            score = m_agariInfo.scoreInfo.oyaAgari + (m_honba * 300);
         }
         else {
-            score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
+            score = m_agariInfo.scoreInfo.koAgari + (m_honba * 300);
         }
 
         // lost player
@@ -1506,7 +1508,7 @@ public class MahjongMain : Mahjong
         {
             aupdateInfo.agariPlayerIsOya = true;
 
-            score = m_agariInfo.scoreInfo.oyaRon + (m_honba * 300);
+            score = m_agariInfo.scoreInfo.oyaAgari + (m_honba * 300);
 
             Player player;
             for( int i = 0; i < GameSettings.PlayerCount-1; i++ )
@@ -1514,7 +1516,7 @@ public class MahjongMain : Mahjong
                 playerIndex = (playerIndex + 1) % GameSettings.PlayerCount;
                 player = m_playerList[playerIndex];
 
-                int reduceTenbou = m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100);
+                int reduceTenbou = m_agariInfo.scoreInfo.oyaTsumoKoPay + (m_honba * 100);
 
                 player.reduceTenbou( reduceTenbou );
 
@@ -1530,7 +1532,7 @@ public class MahjongMain : Mahjong
         {
             aupdateInfo.agariPlayerIsOya = false;
 
-            score = m_agariInfo.scoreInfo.koRon + (m_honba * 300);
+            score = m_agariInfo.scoreInfo.koAgari + (m_honba * 300);
 
             Player player;
             for( int i = 0; i < GameSettings.PlayerCount-1; i++ )
@@ -1541,10 +1543,10 @@ public class MahjongMain : Mahjong
                 int reduceTenbou = 0;
 
                 if( m_oyaIndex == playerIndex ) {
-                    reduceTenbou = m_agariInfo.scoreInfo.oyaTsumo + (m_honba * 100);
+                    reduceTenbou = m_agariInfo.scoreInfo.koTsumoOyaPay + (m_honba * 100);
                 }
                 else {
-                    reduceTenbou = m_agariInfo.scoreInfo.koTsumo + (m_honba * 100);
+                    reduceTenbou = m_agariInfo.scoreInfo.koTsumoKoPay + (m_honba * 100);
                 }
 
                 player.reduceTenbou( reduceTenbou );

@@ -38,7 +38,7 @@ public class AgariUpdateInfo : AgariInfo
         for( int i = 0; i < dest.hanteiYakus.Length; i++ )
             dest.hanteiYakus[i] = src.hanteiYakus[i].Clone();
 
-        dest.scoreInfo = new ScoreInfo( src.scoreInfo );
+        dest.scoreInfo = new Score( src.scoreInfo );
         dest.agariScore = src.agariScore;
     }
 
