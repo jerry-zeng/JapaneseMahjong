@@ -6330,7 +6330,7 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
-  mText: "\u7ED3\u675F"
+  mText: "\u91CD\u6765"
   mFontSize: 40
   mFontStyle: 0
   mAlignment: 0

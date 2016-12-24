@@ -220,7 +220,9 @@ public class AgariPanel : MonoBehaviour
                 }
             }
 
-            tehai.transform.localPosition -= new Vector3(tehaiPosOffsetX, 0f, 0f);
+            Vector3 pos = tehai.transform.localPosition;
+            pos.x = -tehaiPosOffsetX;
+            tehai.transform.localPosition = pos;
 
             yield return StartCoroutine( ShowYakuOneByOne() );
 
