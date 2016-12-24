@@ -1289,6 +1289,10 @@ public class MahjongMain : Mahjong
     }
     #endregion
 
+
+    protected List<EKaze> m_ronPlayers = new List<EKaze>();
+    protected List<EKaze> m_renhouPlayers = new List<EKaze>();
+
     protected void OnMultiRon()
     {
         List<EKaze> ronPlayers = GetRonPlayers();
@@ -1304,32 +1308,31 @@ public class MahjongMain : Mahjong
             /// Note: only the first ron player can get the reach bou,
             ///       make sure the first ron player is the nearest one to m_kazeFrom player.
 
-            List<EKaze> ronPlayers_Sorted;
             int index = -1;
 
             if( ronPlayers.Count == 1 ){
-                ronPlayers_Sorted = ronPlayers;
+                m_ronPlayers = ronPlayers;
             }
             else{
-                ronPlayers_Sorted = new List<EKaze>();
+                m_ronPlayers.Clear();
 
                 while( ronPlayers.Count > 0 )
                 {
                     index = ronPlayers.FindIndex( kaze => kaze == m_kazeFrom.Next() );
                     if( index >= 0 ){
-                        ronPlayers_Sorted.Add( ronPlayers[index] );
+                        m_ronPlayers.Add( ronPlayers[index] );
                         ronPlayers.RemoveAt( index );
                     }
                     else{
                         index = ronPlayers.FindIndex( kaze => kaze == m_kazeFrom.Next().Next() );
                         if( index >= 0 ){
-                            ronPlayers_Sorted.Add( ronPlayers[index] );
+                            m_ronPlayers.Add( ronPlayers[index] );
                             ronPlayers.RemoveAt( index );
                         }
                         else{
                             index = ronPlayers.FindIndex( kaze => kaze == m_kazeFrom.Next().Next().Next() );
                             if( index >= 0 ){
-                                ronPlayers_Sorted.Add( ronPlayers[index] );
+                                m_ronPlayers.Add( ronPlayers[index] );
                                 ronPlayers.RemoveAt( index );
                             }
                             else{
@@ -1343,9 +1346,9 @@ public class MahjongMain : Mahjong
             m_renhouPlayers.Clear();
 
             // handle ron one by one
-            for( int i = 0; i < ronPlayers_Sorted.Count; i++ )
+            for( int i = 0; i < m_ronPlayers.Count; i++ )
             {
-                EKaze kaze = ronPlayers_Sorted[i];
+                EKaze kaze = m_ronPlayers[i];
 
                 if( m_isRenhou == true && getPlayerIndex(kaze) != OyaIndex )
                 {
@@ -1358,8 +1361,6 @@ public class MahjongMain : Mahjong
             }
         }
     }
-
-    protected List<EKaze> m_renhouPlayers = new List<EKaze>();
 
     // some one has ron.
     protected void OnRon()
@@ -1598,12 +1599,13 @@ public class MahjongMain : Mahjong
     public bool EndKyoku()
     {
         // 親を更新する
-        if( getPlayerIndex( m_kazeFrom ) == m_oyaIndex )
+        if( (isTsumo && getPlayerIndex(ActivePlayer.JiKaze) == m_oyaIndex) ||
+           getPlayerIndex(m_ronPlayers[0]) == m_oyaIndex )
         {
             m_renchan = true;
             m_honba++;
         }
-        else {
+        else{
             if( IsLastKyoku() ){
                 return false;
             }
@@ -1626,7 +1628,7 @@ public class MahjongMain : Mahjong
             m_renchan = true;
             m_honba++;
         }
-        else {
+        else{
             if( IsLastKyoku() ){
                 return false;
             }
