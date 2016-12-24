@@ -54,6 +54,11 @@ public class MahjongMain : Mahjong
         m_playerList.Add( new AI("C") );
         m_playerList.Add( new AI("D") );
 
+        for( int i = 0; i < m_playerList.Count; i++ )
+        {
+            m_playerList[i].Tenbou = GameSettings.Init_Tenbou;
+        }
+
         GameSettings.PlayerCount = m_playerList.Count;
 
         GameAgent.Instance.Initialize(this);
@@ -125,13 +130,14 @@ public class MahjongMain : Mahjong
         m_isChanKan = false;
         m_isLast = false;
 
-        initPlayerKaze();
 
         for( int i = 0; i < m_playerList.Count; i++ )
         {
             m_playerList[i].Init();
-            m_playerList[i].Tenbou = GameSettings.Init_Tenbou;
         }
+
+        initPlayerKaze();
+
 
         m_suteHaiList.Clear();
         m_sutehaiIndex = -1;
