@@ -8,11 +8,9 @@ public class GameOverState : GameStateBase
     {
         base.Enter();
 
-        logicOwner.GameOver();
+        logicOwner.EndGame();
 
-        Debug.Log("show the score list.");
-
-        EventManager.Get().SendEvent(UIEventType.End_Game);
+        EventManager.Get().SendEvent(UIEventType.End_Game, logicOwner.AgariUpdateInfoList);
     }
 
 }

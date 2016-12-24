@@ -244,9 +244,20 @@ public class MahjongMain : Mahjong
         return m_tsumoHai == null;
     }
 
-    public void GameOver()
+    /// <summary>
+    /// Ends the game, and calculate the final point score.
+    /// </summary>
+    public void EndGame()
     {
-        Utils.LogWarning("Game Over!!!");
+        AgariUpdateInfoList.Clear();
+
+        AgariUpdateInfo aupdateInfo = new AgariUpdateInfo();
+        aupdateInfo.manKaze = getManKaze();
+        aupdateInfo.reachBou = m_reachBou;
+
+        aupdateInfo.tenbouChangeInfoList = AgariScoreManager.GetPointScore(PlayerList, ref m_reachBou);
+
+        AgariUpdateInfoList.Add( aupdateInfo );
     }
 
     #region Request & Response
@@ -435,7 +446,7 @@ public class MahjongMain : Mahjong
                 }
                 else{
                     if( IsLastKyoku() ){
-                        GameOver();
+                        EndGame();
                     }
                     else{
                         GoToNextKyoku();

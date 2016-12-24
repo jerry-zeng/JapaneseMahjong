@@ -1,5 +1,5 @@
-﻿//#define Disable_Agari
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Math = UnityEngine.Mathf;
 
 
 /// <summary>
@@ -26,9 +26,8 @@ public sealed class AgariScoreManager
         {new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000),new ScoreInfo(48000,16000,32000, 8000)}
     };
 
-    #if !Disable_Agari
     private static CountFormat formatWorker = new CountFormat();
-    #endif
+
 
     // 上がり点数を取得します
     public static ScoreInfo GetScoreInfo(int hanSuu, int huSuu)
@@ -49,14 +48,10 @@ public sealed class AgariScoreManager
         else {
             iFu = (huSuu / 10) - 1;
         }
+         
+        if( hanSuu > 13 ) hanSuu = 13;
 
-        int iHan;
-        if (hanSuu > 13) {
-            iHan = 13 - 1;
-        } 
-        else {
-            iHan = hanSuu - 1;
-        }
+        int iHan = hanSuu - 1;
 
         return new ScoreInfo( SCORE_LIST[iHan, iFu] );
     }
@@ -219,10 +214,6 @@ public sealed class AgariScoreManager
 
     public static int GetAgariScore(Tehai tehai, Hai addHai, AgariParam param, ref HaiCombi[] combis, ref AgariInfo agariInfo)
     {
-        #if Disable_Agari
-        return 0;
-        #else
-
         formatWorker.setCounterFormat(tehai, addHai);
 
         // あがりの組み合わせを取得します
@@ -306,7 +297,74 @@ public sealed class AgariScoreManager
         }
 
         return maxAgariScore;
-        #endif
+    }
+
+
+    /// <summary>
+    /// Gets the final point score.
+    /// 
+    /// Note: if the reach bou is not 0, the topest player will get it.
+    ///       if more than 1 player has the same topest score, let the one who is the nearest EKaze.Ton be topest.
+    /// </summary>
+
+    public static List<PlayerTenbouChangeInfo> GetPointScore( List<Player> playerList, ref int reachBou )
+    {
+        List<Player> playerList_Sort = new List<Player>( playerList );
+        playerList_Sort.Sort( SortPlayer );
+
+        // topest player
+        int topestPlayerIndex = 0;
+
+        //顺位马: 8-4 (8,4,-4,-8)
+        int ShunMa = 4;
+        int BackTenbou = GameSettings.Back_Tenbou;
+        float Base = 1000f;
+        int TopBonus = Math.FloorToInt((BackTenbou - GameSettings.Init_Tenbou) / Base * playerList.Count); //20pt
+
+
+        if( reachBou > 0 ){
+            playerList_Sort[topestPlayerIndex].increaseTenbou( reachBou * GameSettings.Reach_Cost );
+            reachBou = 0;
+        }
+
+        // calculate points
+        List<PlayerTenbouChangeInfo> resultPointList = new List<PlayerTenbouChangeInfo>();
+        int totalPoint = 0;
+        int bonus = 0;
+        Player player;
+
+        for( int i = 0; i < playerList_Sort.Count; i++ )
+        {
+            player = playerList_Sort[i];
+
+            bonus = (i == topestPlayerIndex)? TopBonus : 0;
+
+            PlayerTenbouChangeInfo ptci = new PlayerTenbouChangeInfo();
+            ptci.playerKaze = player.JiKaze;
+            ptci.current = player.Tenbou;
+            ptci.changed = Math.FloorToInt( (player.Tenbou - BackTenbou)/Base + ((2-i) * ShunMa) + bonus );
+
+            resultPointList.Add( ptci );
+
+            totalPoint += ptci.changed;
+        }
+
+        // adjust
+        if( totalPoint != 0 )
+            resultPointList[topestPlayerIndex].changed -= totalPoint;
+
+        return resultPointList;
+    }
+
+    static int SortPlayer(Player x, Player y)
+    {
+        if( x.Tenbou == y.Tenbou )
+        {
+            return (int)x.JiKaze - (int)y.JiKaze;  // As EKaze.Ton == 0, this can be so simple
+        }
+        else{
+            return -(x.Tenbou - y.Tenbou);
+        }
     }
 
 }

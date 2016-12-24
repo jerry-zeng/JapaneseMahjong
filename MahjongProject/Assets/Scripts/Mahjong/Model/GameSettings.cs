@@ -23,6 +23,8 @@ public static class GameSettings
 
     // 持ち点の初期値
     public const int Init_Tenbou = 25000;
+    public const int Back_Tenbou = 30000; // used for calculating final pt
+
     public const int Reach_Cost = 1000;
     public const int HonBa_Cost = 300;
 

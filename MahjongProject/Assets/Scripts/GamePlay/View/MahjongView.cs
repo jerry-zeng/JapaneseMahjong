@@ -518,7 +518,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.End_Game:
             {
-                gameOverPanel.Show();
+                List<AgariUpdateInfo> agariList = (List<AgariUpdateInfo>)args[0];
+                gameOverPanel.Show( agariList );
             }
             break;
         }
