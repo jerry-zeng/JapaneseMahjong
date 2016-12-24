@@ -104,6 +104,10 @@ public class GameAgent
         get{ return _game.CountFormater; }
     }
 
+    public int getTotalKanCount()
+    {
+        return _game.GetTotalKanCount(null);
+    }
 
     // あがり点を取得する
     public int getAgariScore(Tehai tehai, Hai addHai, EKaze jikaze)
@@ -212,6 +216,51 @@ public class GameAgent
                 return true;
         }
         return false;
+    }
+
+
+    public bool CheckHaiTypeOver9( Tehai tehai, Hai addHai )
+    {
+        if( !_game.isChiHou )
+            return false;
+
+        if( tehai.getJyunTehaiCount() < Tehai.JYUN_TEHAI_LENGTH_MAX-1 )
+            return false;
+
+
+        int[] checkId = { 
+            Hai.ID_WAN_1, Hai.ID_WAN_9,Hai.ID_PIN_1,Hai.ID_PIN_9,Hai.ID_SOU_1,Hai.ID_SOU_9,
+            Hai.ID_TON, Hai.ID_NAN,Hai.ID_SYA,Hai.ID_PE,Hai.ID_HAKU,Hai.ID_HATSU,Hai.ID_CHUN
+        };
+        int[] countNumber = {0,0,0,0,0,0,0,0,0,0,0,0,0}; //length = 13
+
+        //手牌をコピーする
+        Hai[] checkHais = tehai.getJyunTehai();
+
+        for(int i = 0; i < checkHais.Length; i++)
+        {
+            for(int j = 0; j < checkId.Length; j++)
+            {
+                if( checkHais[i].ID == checkId[j] )
+                    countNumber[j]++;
+            }
+        }
+
+        for(int j = 0; j < checkId.Length; j++)
+        {
+            if( addHai.ID == checkId[j] )
+                countNumber[j]++;
+        }
+
+        int totalHaiType = 0; 
+
+        for(int c = 0; c < countNumber.Length; c++)
+        {
+            if( countNumber[c] > 0 )
+                totalHaiType++;
+        }
+
+        return totalHaiType >= 9;
     }
     #endregion
 }

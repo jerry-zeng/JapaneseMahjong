@@ -45,6 +45,11 @@ public class Man : Player
             }
         }
 
+        // 九种九牌check
+        if( MahjongAgent.CheckHaiTypeOver9(Tehai, tsumoHai) ){
+            _action.MenuList.Add( EActionType.HaiType9 );
+        }
+
         // check enable Reach
         if( CheckReachPreConditions() == true ) 
         {
@@ -60,59 +65,65 @@ public class Man : Player
         // 制限事項。リーチ後のカンをさせない
         if( !MahjongAgent.isReach(JiKaze) ) 
         {
-            // tsumo kans
-            List<Hai> kanHais = new List<Hai>();
-            if( Tehai.validAnyTsumoKan(tsumoHai, kanHais) )
+            if( MahjongAgent.getTotalKanCount() < GameSettings.KanCountMax )
             {
-                _action.setValidTsumoKan(true, kanHais);
+                // tsumo kans
+                List<Hai> kanHais = new List<Hai>();
+                if( Tehai.validAnyTsumoKan(tsumoHai, kanHais) )
+                {
+                    _action.setValidTsumoKan(true, kanHais);
 
-                _action.MenuList.Add( EActionType.Kan );
+                    _action.MenuList.Add( EActionType.Kan );
+                }
             }
         }
         else
         {
-            // if player machi hais won't change after setting AnKan, enable to to it.
-            if( Tehai.validAnKan(tsumoHai) )
+            if( MahjongAgent.getTotalKanCount() < GameSettings.KanCountMax )
             {
-                List<Hai> machiHais;
-                if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
+                // if player machi hais won't change after setting AnKan, enable to to it.
+                if( Tehai.validAnKan(tsumoHai) )
                 {
-                    Tehai tehaiCopy = new Tehai( Tehai );
-                    tehaiCopy.setAnKan( tsumoHai );
-                    tehaiCopy.Sort();
-
-                    List<Hai> newMachiHais;
-
-                    if( MahjongAgent.tryGetMachiHais(tehaiCopy, out newMachiHais) )
+                    List<Hai> machiHais;
+                    if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
                     {
-                        if( machiHais.Count == newMachiHais.Count ){
-                            machiHais.Sort( Tehai.Compare );
-                            newMachiHais.Sort( Tehai.Compare );
+                        Tehai tehaiCopy = new Tehai( Tehai );
+                        tehaiCopy.setAnKan( tsumoHai );
+                        tehaiCopy.Sort();
 
-                            bool enableAnkan = true;
+                        List<Hai> newMachiHais;
 
-                            for( int i = 0; i < machiHais.Count; i++ )
-                            {
-                                if( machiHais[i].ID != newMachiHais[i].ID ){
-                                    enableAnkan = false;
-                                    break;
+                        if( MahjongAgent.tryGetMachiHais(tehaiCopy, out newMachiHais) )
+                        {
+                            if( machiHais.Count == newMachiHais.Count ){
+                                machiHais.Sort( Tehai.Compare );
+                                newMachiHais.Sort( Tehai.Compare );
+
+                                bool enableAnkan = true;
+
+                                for( int i = 0; i < machiHais.Count; i++ )
+                                {
+                                    if( machiHais[i].ID != newMachiHais[i].ID ){
+                                        enableAnkan = false;
+                                        break;
+                                    }
                                 }
-                            }
 
-                            if( enableAnkan == true )
-                            {
-                                _action.setValidTsumoKan(true, new List<Hai>(){ tsumoHai });
+                                if( enableAnkan == true )
+                                {
+                                    _action.setValidTsumoKan(true, new List<Hai>(){ tsumoHai });
 
-                                _action.MenuList.Add( EActionType.Kan );
-                                _action.MenuList.Add( EActionType.Nagashi );
+                                    _action.MenuList.Add( EActionType.Kan );
+                                    _action.MenuList.Add( EActionType.Nagashi );
 
-                                _action.State = EActionState.Select_Kan;
+                                    _action.State = EActionState.Select_Kan;
+                                }
                             }
                         }
                     }
-                }
-            }
-
+                } // end if(valid ankan)
+            } // end kan count check
+            
             // can Ron or Ankan, sute hai automatically.
             if( _action.MenuList.Count == 0) {
                 _action.SutehaiIndex = Tehai.getJyunTehaiCount(); // sute the tsumo hai on Reach
@@ -202,9 +213,12 @@ public class Man : Player
         
 
         // check menu Kan
-        if( Tehai.validDaiMinKan(suteHai) ) {
-            _action.IsValidDaiMinKan = true;
-            _action.MenuList.Add( EActionType.Kan );
+        if( MahjongAgent.getTotalKanCount() < GameSettings.KanCountMax )
+        {
+            if( Tehai.validDaiMinKan(suteHai) ) {
+                _action.IsValidDaiMinKan = true;
+                _action.MenuList.Add( EActionType.Kan );
+            }
         }
 
         // check menu Pon

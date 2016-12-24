@@ -33,7 +33,10 @@ public class LoopState_AskHandleKakanHai : GameStateBase
         if( ronPlayers.Count > 0 )
         {
             if( ronPlayers.Count >= 3 && !GameSettings.AllowRon3 ){
-                throw new MahjongException("ERyuuKyokuReason.Ron3");
+                logicOwner.Handle_Invalid_RyuuKyoku(); // must.
+
+                logicOwner.RyuuKyokuReason = ERyuuKyokuReason.Ron3;
+                owner.ChangeState<LoopState_HandleRyuuKyoKu>();
             }
             else{
                 logicOwner.Handle_KaKan_Ron();

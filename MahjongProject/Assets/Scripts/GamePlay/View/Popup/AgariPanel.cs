@@ -407,7 +407,7 @@ public class AgariPanel : MonoBehaviour
 
 
         var tenbouInfos = currentAgari.tenbouChangeInfoList;
-        EKaze nextKaze = GameAgent.Instance.getManKaze();
+        EKaze nextKaze = currentAgari.manKaze;
 
         for( int i = 0; i < playerTenbouList.Count; i++ )
         {

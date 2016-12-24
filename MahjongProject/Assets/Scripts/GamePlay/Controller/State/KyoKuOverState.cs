@@ -7,7 +7,17 @@ public class KyoKuOverState : GameStateBase
     public override void Enter() {
         base.Enter();
 
-        if( logicOwner.EndKyoku() )
+        bool result = true;
+
+        if( logicOwner.RyuuKyokuReason != ERyuuKyokuReason.None ){
+            result = logicOwner.EndRyuuKyoku();
+        }
+        else  // Ron,Tsumo, or Nagashimangan.
+        {  
+            result = logicOwner.EndKyoku();
+        }
+
+        if( result == true )
         {
             owner.ChangeState<GameStartState>();
         }

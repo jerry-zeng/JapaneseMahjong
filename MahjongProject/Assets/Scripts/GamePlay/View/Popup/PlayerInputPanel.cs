@@ -11,6 +11,7 @@ public class PlayerInputPanel : UIObject
     public PlayerInputButton btn_Reach;
     public PlayerInputButton btn_Agari;
     public PlayerInputButton btn_Nagashi;
+    public PlayerInputButton btn_HaiType9;
 
     private PlayerUI playerUI;
 
@@ -38,6 +39,10 @@ public class PlayerInputPanel : UIObject
         btn_Nagashi.index = 5;
         btn_Nagashi.SetOnClick( Onclick_Nagashi );
         btn_Nagashi.SetTag( ResManager.getString("button_pass") );
+
+        btn_HaiType9.index = 6;
+        btn_HaiType9.SetOnClick( Onclick_Nagashi );
+        btn_HaiType9.SetTag( ResManager.getString(ERyuuKyokuReason.HaiTypeOver9.ToString()) );
     }
 
     public void SetOwnerPlayerUI(PlayerUI ui)
@@ -89,7 +94,11 @@ public class PlayerInputPanel : UIObject
             btn_Agari.SetTag( ResManager.getString("button_tsumo") );
 
         btn_Nagashi.SetEnable( isMenuEnable(EActionType.Nagashi) );
+
+        btn_HaiType9.SetEnable( isMenuEnable(EActionType.HaiType9) );
+        btn_HaiType9.gameObject.SetActive( isMenuEnable(EActionType.HaiType9) );
     }
+
     void DisableButtonsExcept( EActionType type )
     {
         btn_Pon.SetEnable( type == EActionType.Pon );
@@ -98,6 +107,9 @@ public class PlayerInputPanel : UIObject
         btn_Reach.SetEnable( type == EActionType.Reach );
         btn_Agari.SetEnable( type == EActionType.Ron || type == EActionType.Tsumo );
         btn_Nagashi.SetEnable( type == EActionType.Nagashi );
+
+        btn_HaiType9.SetEnable( type == EActionType.HaiType9 );
+        btn_HaiType9.gameObject.SetActive( type == EActionType.HaiType9 );
     }
 
     public void OnClick_Pon()
@@ -293,7 +305,7 @@ public class PlayerInputPanel : UIObject
 
     public void Onclick_Nagashi()
     {
-        if( isMenuEnable(EActionType.Nagashi) ){
+        if( isMenuEnable(EActionType.Nagashi) || isMenuEnable(EActionType.HaiType9) ){
             //Debug.Log("+ Onclick_Nagashi()");
 
             if( PlayerAction.State == EActionState.Select_Kan ) // enable Ankan after Reach.

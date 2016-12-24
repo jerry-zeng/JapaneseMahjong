@@ -10,14 +10,16 @@ public static class GameSettings
     // if allow furiten
     public static bool AllowFuriten = true;
 
-    public static bool AllowRon3 = true;
-    public static bool AllowReach4 = true;
-    public static bool AllowSuteFonHai4 = true;
+    public static bool AllowRon3 = false;
+    public static bool AllowReach4 = false;
+    public static bool AllowSuteFonHai4 = false;
 
     // 局の最大値
     public static int Kyoku_Max = (int)EKyoku.Ton_4;
 
     public static int PlayerCount = 4;
+
+    public const int KanCountMax = 4;
 
     // 持ち点の初期値
     public const int Init_Tenbou = 25000;

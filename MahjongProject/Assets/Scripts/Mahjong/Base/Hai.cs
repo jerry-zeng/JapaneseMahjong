@@ -369,6 +369,15 @@ public class Hai
         get{ return IS_TSUUS[_id]; }
     }
 
+    public bool IsFon
+    {
+        get{ return _id >= ID_TON && _id <= ID_PE; }
+    }
+    public bool IsSanGen
+    {
+        get{ return _id >= ID_HAKU && _id <= ID_CHUN; }
+    }
+
     /// <summary>
     /// 一九、字牌 フラグを取得する
     /// </summary>

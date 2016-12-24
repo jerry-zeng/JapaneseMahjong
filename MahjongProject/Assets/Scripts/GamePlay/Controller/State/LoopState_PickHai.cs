@@ -12,6 +12,7 @@ public class LoopState_PickHai : GameStateBase
 
         if( logicOwner.checkNoTsumoHai() )
         {
+            logicOwner.RyuuKyokuReason = ERyuuKyokuReason.NoTsumoHai;
             owner.ChangeState<LoopState_HandleRyuuKyoKu>();
         }
         else {

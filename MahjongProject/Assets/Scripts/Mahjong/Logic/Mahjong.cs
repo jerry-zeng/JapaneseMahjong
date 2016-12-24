@@ -286,6 +286,38 @@ public abstract class Mahjong
     }
 
 
+    public int GetTotalKanCount( int[] eachPlayerKanCount )
+    {
+        int totalKan = 0;
+
+        if(eachPlayerKanCount == null)
+            eachPlayerKanCount = new int[4];
+
+        for( int i = 0; i < PlayerList.Count; i++ )
+        {
+            Fuuro[] fuuros = PlayerList[i].Tehai.getFuuros();
+            int kanCount = 0;
+
+            for( int j = 0; j < fuuros.Length; j++ )
+            {
+                switch( fuuros[j].Type )
+                {
+                    case EFuuroType.AnKan:
+                    case EFuuroType.KaKan:
+                    case EFuuroType.DaiMinKan:
+                    kanCount++;
+                    break;
+                }
+            }
+
+            eachPlayerKanCount[i] = kanCount;
+
+            totalKan += kanCount;
+        }
+
+        return totalKan;
+    }
+
     public int GetAgariScore(Tehai tehai, Hai addHai, EKaze jikaze, AgariParam param = null)
     {
         if(param == null) {

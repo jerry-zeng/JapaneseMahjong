@@ -42,7 +42,10 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
                 EventManager.Get().SendEvent(UIEventType.Ankan, activePlayer);
 
                 if( logicOwner.checkKanCountOverFlow() ){
-                    throw new MahjongException("ERyuuKyokuReason.KanOver4");
+                    logicOwner.Handle_Invalid_RyuuKyoku(); // must.
+
+                    logicOwner.RyuuKyokuReason = ERyuuKyokuReason.KanOver4;
+                    owner.ChangeState<LoopState_HandleRyuuKyoKu>();
                 }
                 else{
                     owner.ChangeState<LoopState_PickRinshanHai>();
@@ -56,7 +59,10 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
                 EventManager.Get().SendEvent(UIEventType.Kakan, activePlayer, logicOwner.KakanHai);
 
                 if( logicOwner.checkKanCountOverFlow() ){
-                    throw new MahjongException("ERyuuKyokuReason.KanOver4");
+                    logicOwner.Handle_Invalid_RyuuKyoku(); // must.
+
+                    logicOwner.RyuuKyokuReason = ERyuuKyokuReason.KanOver4;
+                    owner.ChangeState<LoopState_HandleRyuuKyoKu>();
                 }
                 else{
                     owner.ChangeState<LoopState_AskHandleKakanHai>();
@@ -69,13 +75,21 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
 
                 EventManager.Get().SendEvent(UIEventType.Reach, activePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai, logicOwner.isTedashi);
 
-                // TODO: need to check after sute reach hai and no one Ron.
-                if( logicOwner.checkReach4() && !GameSettings.AllowReach4 ){
-                    throw new MahjongException("ERyuuKyokuReason.Reach4");
+                // 4 fon
+                if( logicOwner.checkSuteFonHai4() && !GameSettings.AllowSuteFonHai4 ){
+                    logicOwner.Handle_Invalid_RyuuKyoku(); // must.
+
+                    logicOwner.RyuuKyokuReason = ERyuuKyokuReason.SuteFonHai4;
+                    owner.ChangeState<LoopState_HandleRyuuKyoKu>();
+                    return;
                 }
-                else{
-                    owner.ChangeState<LoopState_AskHandleSuteHai>();
+
+                // need to check after sute reach hai and no one Ron.
+                else if( logicOwner.checkReach4() && !GameSettings.AllowReach4 ){
+                    logicOwner.Reach4Flag = true;
                 }
+
+                owner.ChangeState<LoopState_AskHandleSuteHai>();
             }
             break;
             case EResponse.SuteHai:
@@ -85,7 +99,10 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
                 EventManager.Get().SendEvent(UIEventType.SuteHai, activePlayer, logicOwner.SuteHaiIndex, logicOwner.SuteHai, logicOwner.isTedashi);
 
                 if( logicOwner.checkSuteFonHai4() && !GameSettings.AllowSuteFonHai4 ){
-                    throw new MahjongException("ERyuuKyokuReason.SuteFonHai4");
+                    logicOwner.Handle_Invalid_RyuuKyoku(); // must.
+
+                    logicOwner.RyuuKyokuReason = ERyuuKyokuReason.SuteFonHai4;
+                    owner.ChangeState<LoopState_HandleRyuuKyoKu>();
                 }
                 else{
                     owner.ChangeState<LoopState_AskHandleSuteHai>();
@@ -96,13 +113,16 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
             case EResponse.Nagashi: 
             {
                 if( logicOwner.checkHaiTypeOver9() ){
-                    throw new MahjongException("ERyuuKyokuReason.HaiTypeOver9");
+                    logicOwner.Handle_Invalid_RyuuKyoku(); // must.
+
+                    logicOwner.RyuuKyokuReason = ERyuuKyokuReason.HaiTypeOver9;
+                    owner.ChangeState<LoopState_HandleRyuuKyoKu>();
                 }
                 else{
-                    throw new MahjongException("Invalid response");
+                    throw new MahjongException("Invalid response on ERyuuKyokuReason.HaiTypeOver9 not established");
                 }
             }
-            //break;
+            break;
         }
     }
 }

@@ -149,8 +149,45 @@
   },
   {
     "key": "info_end",
-    "value": "終了"
+    "value": "オラス"
   },
+  {
+    "key": "is_tenpai",
+    "value": "テンパイ"
+  },
+  {
+    "key": "not_tenpai",
+    "value": "ノーテン"
+  },
+  {
+    "key": "None",
+    "value": ""
+  },
+  {
+    "key": "NoTsumoHai",
+    "value": "荒牌"
+  },
+  {
+    "key": "HaiTypeOver9",
+    "value": "九種九牌"
+  },
+  {
+    "key": "SuteFonHai4",
+    "value": "四風連打"
+  },
+  {
+    "key": "KanOver4",
+    "value": "四槓散了"
+  },
+  {
+    "key": "Reach4",
+    "value": "四家立直"
+  },
+  {
+    "key": "Ron3",
+    "value": "三家和"
+  },
+
   {
     "key": "yaku_tanyao",
     "value": "断幺九"

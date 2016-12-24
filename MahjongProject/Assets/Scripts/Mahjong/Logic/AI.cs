@@ -39,6 +39,12 @@ public class AI : Player
             }
         }
 
+        // 九种九牌check
+        if( MahjongAgent.CheckHaiTypeOver9(Tehai, tsumoHai) ){
+            if( Utils.GetRandomNum(0, 2) < 1 )
+                return DoResponse(EResponse.Nagashi);
+        }
+
         // リーチの場合は、ツモ切りする
         if( MahjongAgent.isReach(JiKaze) )
         {
@@ -180,6 +186,16 @@ public class AI : Player
 
         // TODO: Chii, Pon, Kan check
 
+        // check Kan(test)
+        /*
+        if( MahjongAgent.getTotalKanCount() < GameSettings.KanCountMax )
+        {
+            if( Tehai.validDaiMinKan(suteHai) ) {
+                _action.IsValidDaiMinKan = true;
+                return DoResponse(EResponse.DaiMinKan);
+            }
+        }
+        */
 
         return DoResponse(EResponse.Nagashi);
     }
@@ -240,11 +256,11 @@ public class AI : Player
         List<int> reachHaiIndex = _action.ReachHaiIndexList;
 
         Tehai tehaiCopy = new Tehai( Tehai );
-        int maxScore = 0;
+        int minScore = int.MaxValue;
 
         for( int i = 0; i < reachHaiIndex.Count; i++ )
         {
-            Hai hai = tehaiCopy.removeJyunTehaiAt(i);
+            Hai hai = tehaiCopy.removeJyunTehaiAt( reachHaiIndex[i] ); // reachHaiIndex[i], not i
 
             List<Hai> machiiHais;
             if( MahjongAgent.tryGetMachiHais(tehaiCopy, out machiiHais) )
@@ -256,9 +272,9 @@ public class AI : Player
                     FormatWorker.setCounterFormat(tehaiCopy, addHai);
 
                     int score = MahjongAgent.getAgariScore( tehaiCopy, addHai, JiKaze );
-                    if( score > maxScore )
+                    if( score <= minScore )
                     {
-                        maxScore = score;
+                        minScore = score;
                         _action.ReachSelectIndex = i;
                     }
                 }

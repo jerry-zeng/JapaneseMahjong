@@ -34,7 +34,10 @@ public class LoopState_AskHandleSuteHai : GameStateBase
         if( ronPlayers.Count > 0 )
         {
             if( ronPlayers.Count >= 3 && !GameSettings.AllowRon3 ){
-                throw new MahjongException("ERyuuKyokuReason.Ron3");
+                logicOwner.Handle_Invalid_RyuuKyoku(); // must.
+
+                logicOwner.RyuuKyokuReason = ERyuuKyokuReason.Ron3;
+                owner.ChangeState<LoopState_HandleRyuuKyoKu>();
             }
             else{
                 logicOwner.Handle_SuteHai_Ron();
@@ -47,6 +50,15 @@ public class LoopState_AskHandleSuteHai : GameStateBase
         }
         else
         {
+            // ERyuuKyokuReason.Reach4: no one Ron the 4th player's rute hai
+            if( logicOwner.Reach4Flag == true ){
+                logicOwner.Handle_Invalid_RyuuKyoku(); // must.
+
+                logicOwner.RyuuKyokuReason = ERyuuKyokuReason.Reach4;
+                owner.ChangeState<LoopState_HandleRyuuKyoKu>();
+                return;
+            }
+
             // As DaiMinKan and Pon is availabe to one player at the same time, and their priority is bigger than Chii,
             // perform DaiMinKan and Pon firstly.
             List<EKaze> validKaze = new List<EKaze>();
@@ -84,7 +96,10 @@ public class LoopState_AskHandleSuteHai : GameStateBase
                             EventManager.Get().SendEvent(UIEventType.DaiMinKan, logicOwner.ActivePlayer, logicOwner.FromKaze);
 
                             if( logicOwner.checkKanCountOverFlow() ){
-                                throw new MahjongException("ERyuuKyokuReason.KanOver4");
+                                logicOwner.Handle_Invalid_RyuuKyoku(); // must.
+
+                                logicOwner.RyuuKyokuReason = ERyuuKyokuReason.KanOver4;
+                                owner.ChangeState<LoopState_HandleRyuuKyoKu>();
                             }
                             else{
                                 owner.ChangeState<LoopState_PickRinshanHai>();

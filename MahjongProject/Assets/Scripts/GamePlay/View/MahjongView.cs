@@ -262,9 +262,12 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.DisplayMenuList:
             {
+                // TODO: shouldn't use Model too frequently
+
                 // if menu is for HandleSuteHai, set sute hai shining.
                 if( Model.CurrentRequest == ERequest.Handle_SuteHai &&
-                   Model.ActivePlayer.Action.MenuList.Count > 0 ){
+                   Model.ActivePlayer.Action.MenuList.Count > 0 )
+                {
                     if( hasShining == false ){
                         shiningKaze = Model.FromKaze;
                         playerUIDict_Kaze[shiningKaze].SetShining(true);
@@ -505,25 +508,11 @@ public class MahjongView : UIObject, IObserver
             case UIEventType.RyuuKyoku:
             {
                 ERyuuKyokuReason reason = (ERyuuKyokuReason)args[0];
-
-                string msg = "";
-
-                if( reason == ERyuuKyokuReason.NoTsumoHai )
-                {
-                    List<int> tenpaiPlayers = (List<int>)args[1];
-
-                    string tenpaiIndex = "";
-                    for(int i = 0; i < tenpaiPlayers.Count; i++)
-                        tenpaiIndex += tenpaiPlayers[i].ToString() + ",";
-
-                    msg = string.Format( "{0}人听牌{1}", tenpaiPlayers.Count.ToString(), 
-                                    (tenpaiIndex.Length > 0? (" : " + tenpaiIndex.Substring(0, tenpaiIndex.Length-1)) : "" ) );
-                    
-                }
+                List<AgariUpdateInfo> agariList = (List<AgariUpdateInfo>)args[1];
 
                 ShowAllPlayerTehai();
 
-                ryuuKyokuPanel.Show( msg );
+                ryuuKyokuPanel.Show( reason, agariList );
             }
             break;
 

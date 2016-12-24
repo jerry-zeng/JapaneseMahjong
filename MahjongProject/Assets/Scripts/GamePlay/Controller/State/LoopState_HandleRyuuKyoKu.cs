@@ -11,65 +11,34 @@ public class LoopState_HandleRyuuKyoKu : GameStateBase
 
         Debug.LogWarning("## Ryuu KyoKu 流局 ##");
 
-        List<int> tenpaiPlayers = logicOwner.GetTenpaiPlayerIndex();
+        if( logicOwner.RyuuKyokuReason == ERyuuKyokuReason.NoTsumoHai )
+        {
+            if( logicOwner.HandleRyuukyokuMan() )
+            {
+                EventManager.Get().SendEvent(UIEventType.Tsumo_Agari, logicOwner.ActivePlayer);
 
-        EventManager.Get().SendEvent(UIEventType.RyuuKyoku, ERyuuKyokuReason.NoTsumoHai, tenpaiPlayers);
-
-        /*
-        if( logicOwner.HasRyuukyokuMan() ) {
-            StartCoroutine( HandleRyuukyokuMan() );
-        }
-        else {
-            if( logicOwner.HasRyuukyokuTenpai() ) {
-                StartCoroutine( HandleRyuukyokuTenpai() );
+                owner.ChangeState<LoopState_Agari>();
             }
-            else {
-                StartCoroutine( RyuukyokuOver() );
+            else
+            {
+                logicOwner.HandleRyuukyokuTenpai();
 
+                EventManager.Get().SendEvent(UIEventType.RyuuKyoku, ERyuuKyokuReason.NoTsumoHai, logicOwner.AgariUpdateInfoList);
             }
         }
-        */
+        else
+        {
+            EventManager.Get().SendEvent(UIEventType.RyuuKyoku, logicOwner.RyuuKyokuReason, logicOwner.AgariUpdateInfoList);
+        }
     }
+
 
     public override void OnHandleEvent(UIEventType evtID, object[] args)
     {
         if( evtID == UIEventType.End_RyuuKyoku )
         {
-            if( logicOwner.EndRyuuKyoku() )
-            {
-                owner.ChangeState<GameStartState>();
-            }
-            else
-            {
-                owner.ChangeState<GameOverState>();
-            }
+            owner.ChangeState<KyoKuOverState>();
         }
-    }
-
-    IEnumerator HandleRyuukyokuMan() {
-        yield return new WaitForSeconds(0.1f);
-
-        logicOwner.HandleRyuukyokuMan();
-        Debug.Log("-> HandleRyuukyokuMan()");
-
-        owner.ChangeState<KyoKuOverState>();
-    }
-
-    IEnumerator HandleRyuukyokuTenpai() {
-        yield return new WaitForSeconds(0.1f);
-
-        logicOwner.HandleRyuukyokuTenpai();
-        Debug.Log("-> HandleRyuukyokuTenpai()");
-
-        owner.ChangeState<KyoKuOverState>();
-    }
-
-    IEnumerator RyuukyokuOver() {
-        yield return new WaitForSeconds(0.1f);
-
-        Debug.Log("-> RyuukyokuOver()");
-
-        owner.ChangeState<KyoKuOverState>();
     }
 
 }

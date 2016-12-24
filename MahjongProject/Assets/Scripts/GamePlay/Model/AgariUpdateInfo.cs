@@ -16,6 +16,7 @@ public class AgariUpdateInfo : AgariInfo
     public int openedUraDoraCount;
 
     public int reachBou;
+    public EKaze manKaze;
 
 
     public AgariUpdateInfo(){

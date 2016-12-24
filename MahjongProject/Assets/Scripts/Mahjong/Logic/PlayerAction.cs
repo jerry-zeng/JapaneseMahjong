@@ -21,6 +21,8 @@ public enum EActionType
     Tsumo  = 4,
     Ron    = 5,
     Nagashi= 6,
+
+    HaiType9 = 7,
 }
 
 
