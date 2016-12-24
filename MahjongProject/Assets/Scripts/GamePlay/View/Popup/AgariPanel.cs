@@ -202,6 +202,7 @@ public class AgariPanel : MonoBehaviour
             float tehaiPosOffsetX = 0; // move to left if Fuuro has too many DaiMinKan or AnKan.
 
             // TODO: it's not fit the UI on 4 fuuros and over 3 KaKan or DaiMinKan
+            // move tehai position or scale down fuuros
             for( int f = 0; f < fuuros.Length; f++ )
             {
                 switch( fuuros[i].Type )

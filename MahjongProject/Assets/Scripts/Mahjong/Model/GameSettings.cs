@@ -26,6 +26,6 @@ public static class GameSettings
     public const int Back_Tenbou = 30000; // used for calculating final pt
 
     public const int Reach_Cost = 1000;
-    public const int HonBa_Cost = 300;
+    public const int HonBa_Cost = 100;
 
 }
