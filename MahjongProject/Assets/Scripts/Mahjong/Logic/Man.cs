@@ -47,7 +47,7 @@ public class Man : Player
 
         // 九种九牌check
         if( MahjongAgent.CheckHaiTypeOver9(Tehai, tsumoHai) ){
-            _action.MenuList.Add( EActionType.HaiType9 );
+            _action.MenuList.Add( EActionType.RyuuKyoku );
         }
 
         // check enable Reach

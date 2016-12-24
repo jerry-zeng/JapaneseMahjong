@@ -12019,7 +12019,7 @@ MonoBehaviour:
   btn_Reach: {fileID: 42401729}
   btn_Agari: {fileID: 1387656870}
   btn_Nagashi: {fileID: 416781887}
-  btn_HaiType9: {fileID: 1403434093}
+  btn_RyuuKyoku: {fileID: 1403434093}
 --- !u!1001 &914440244
 Prefab:
   m_ObjectHideFlags: 0
@@ -18727,7 +18727,7 @@ GameObject:
   - 65: {fileID: 1403434094}
   - 114: {fileID: 1403434093}
   m_Layer: 5
-  m_Name: btn_HaiType9
+  m_Name: btn_RyuuKyoku
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

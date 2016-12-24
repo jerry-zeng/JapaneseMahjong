@@ -22,7 +22,7 @@ public enum EActionType
     Ron    = 5,
     Nagashi= 6,
 
-    HaiType9 = 7,
+    RyuuKyoku = 7,
 }
 
 

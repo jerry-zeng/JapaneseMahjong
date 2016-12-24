@@ -11,7 +11,7 @@ public class PlayerInputPanel : UIObject
     public PlayerInputButton btn_Reach;
     public PlayerInputButton btn_Agari;
     public PlayerInputButton btn_Nagashi;
-    public PlayerInputButton btn_HaiType9;
+    public PlayerInputButton btn_RyuuKyoku;
 
     private PlayerUI playerUI;
 
@@ -40,9 +40,9 @@ public class PlayerInputPanel : UIObject
         btn_Nagashi.SetOnClick( Onclick_Nagashi );
         btn_Nagashi.SetTag( ResManager.getString("button_pass") );
 
-        btn_HaiType9.index = 6;
-        btn_HaiType9.SetOnClick( Onclick_Nagashi );
-        btn_HaiType9.SetTag( ResManager.getString(ERyuuKyokuReason.HaiTypeOver9.ToString()) );
+        btn_RyuuKyoku.index = 6;
+        btn_RyuuKyoku.SetOnClick( Onclick_Nagashi );
+        btn_RyuuKyoku.SetTag( ResManager.getString(ERyuuKyokuReason.HaiTypeOver9.ToString()) );
     }
 
     public void SetOwnerPlayerUI(PlayerUI ui)
@@ -95,8 +95,8 @@ public class PlayerInputPanel : UIObject
 
         btn_Nagashi.SetEnable( isMenuEnable(EActionType.Nagashi) );
 
-        btn_HaiType9.SetEnable( isMenuEnable(EActionType.HaiType9) );
-        btn_HaiType9.gameObject.SetActive( isMenuEnable(EActionType.HaiType9) );
+        btn_RyuuKyoku.SetEnable( isMenuEnable(EActionType.RyuuKyoku) );
+        btn_RyuuKyoku.gameObject.SetActive( isMenuEnable(EActionType.RyuuKyoku) );
     }
 
     void DisableButtonsExcept( EActionType type )
@@ -108,8 +108,8 @@ public class PlayerInputPanel : UIObject
         btn_Agari.SetEnable( type == EActionType.Ron || type == EActionType.Tsumo );
         btn_Nagashi.SetEnable( type == EActionType.Nagashi );
 
-        btn_HaiType9.SetEnable( type == EActionType.HaiType9 );
-        btn_HaiType9.gameObject.SetActive( type == EActionType.HaiType9 );
+        btn_RyuuKyoku.SetEnable( type == EActionType.RyuuKyoku );
+        btn_RyuuKyoku.gameObject.SetActive( type == EActionType.RyuuKyoku );
     }
 
     public void OnClick_Pon()
@@ -305,7 +305,7 @@ public class PlayerInputPanel : UIObject
 
     public void Onclick_Nagashi()
     {
-        if( isMenuEnable(EActionType.Nagashi) || isMenuEnable(EActionType.HaiType9) ){
+        if( isMenuEnable(EActionType.Nagashi) || isMenuEnable(EActionType.RyuuKyoku) ){
             //Debug.Log("+ Onclick_Nagashi()");
 
             if( PlayerAction.State == EActionState.Select_Kan ) // enable Ankan after Reach.
