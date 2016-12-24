@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System;
+using UnityEngine.SceneManagement;
 
 
 public class GameManager : StateMachine, IObserver
@@ -38,9 +38,20 @@ public class GameManager : StateMachine, IObserver
         ChangeState<GameStartState>();
     }
 
+    void OnDestroy()
+    {
+        ResManager.ClearMahjongPaiPool();
+    }
+
     void OnApplicationQuit()
     {
         ResManager.ClearMahjongPaiPool();
+    }
+
+
+    public void Restart()
+    {
+        SceneManager.LoadScene( SceneManager.GetActiveScene().name );
     }
 
 

@@ -74,15 +74,15 @@ public class MahjongMain : Mahjong
         return m_sais;
     }
 
-    public bool needSelectOya()
+    public bool needSelectChiiCha()
     {
-        return m_oyaIndex < 0;
+        return m_chiichaIndex < 0;
     }
 
     // Step: 3
-    public void SetOyaChiicha()
+    public void SetOyaChiicha(int index)
     {
-        m_oyaIndex = (m_sais[0].Num + m_sais[1].Num - 1) % m_playerList.Count;
+        m_oyaIndex = index;
 
         if(debugMode) m_oyaIndex = 0;
 

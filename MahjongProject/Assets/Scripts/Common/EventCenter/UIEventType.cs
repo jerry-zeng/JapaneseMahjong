@@ -39,7 +39,6 @@ public enum UIEventType
     DisplayMenuList,
     HideMenuList,
 
-    OnPlayerInput,
 
     // ゲームの開始 
     Start_Game,
@@ -50,16 +49,16 @@ public enum UIEventType
     Init_Game,
 
     // Saifuri
-    Saifuri_For_Oya,
-    On_Saifuri_For_Oya_End,
-
-    // 配牌
-    HaiPai,
+    Select_ChiiCha,
+    On_Select_ChiiCha_End,
 
     Init_PlayerInfoUI,
 
-    Saifuri_For_Haipai,
-    On_Saifuri_For_Haipai_End,
+    Select_Wareme,
+    On_Select_Wareme_End,
+
+    // 配牌
+    HaiPai,
 
     SetYama_BeforeHaipai,
     SetUI_AfterHaipai,

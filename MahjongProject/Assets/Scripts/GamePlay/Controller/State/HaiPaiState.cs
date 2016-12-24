@@ -15,7 +15,7 @@ public class HaiPaiState : GameStateBase
     {
         yield return new WaitForSeconds(1);
 
-        EventManager.Get().SendEvent(UIEventType.Saifuri_For_Haipai);
+        EventManager.Get().SendEvent(UIEventType.Select_Wareme);
     }
 
 
@@ -23,15 +23,15 @@ public class HaiPaiState : GameStateBase
     {
         switch(evtID)
         {
-            case UIEventType.On_Saifuri_For_Haipai_End:
+            case UIEventType.On_Select_Wareme_End:
             {
-                OnSaifuriForHaipaiEnd();
+                OnSelectWaremeEnd();
             }
             break;
         }
     }
 
-    void OnSaifuriForHaipaiEnd()
+    void OnSelectWaremeEnd()
     {
         // haipai.
         logicOwner.SetWaremeAndHaipai();

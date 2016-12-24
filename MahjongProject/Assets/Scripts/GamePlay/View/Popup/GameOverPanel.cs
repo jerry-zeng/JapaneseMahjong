@@ -49,7 +49,9 @@ public class GameOverPanel : MonoBehaviour
 
     void OnClickConfirm(GameObject go)
     {
-        
+        Hide();
+
+        GameManager.Get().Restart();
     }
 
 }

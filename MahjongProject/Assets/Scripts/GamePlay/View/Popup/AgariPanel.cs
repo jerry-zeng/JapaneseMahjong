@@ -224,11 +224,10 @@ public class AgariPanel : MonoBehaviour
 
             yield return StartCoroutine( ShowYakuOneByOne() );
 
-            yield return new WaitForSeconds(4f);
+            yield return new WaitForSeconds(3f);
         }
 
-        yield return StartCoroutine( ShowSkipButton() );
-
+        ShowSkipButton();
         currentAgari = null;
     }
 
@@ -418,10 +417,8 @@ public class AgariPanel : MonoBehaviour
 
     }
 
-    IEnumerator ShowSkipButton()
+    void ShowSkipButton()
     {
-        yield return new WaitForEndOfFrame();
-
         btn_Continue.SetActive(true);
         btn_Continue.GetComponent<UIWidget>().alpha = 0f;
         TweenAlpha.Begin( btn_Continue.gameObject, 0.5f, 1f ).SetOnFinished( () =>

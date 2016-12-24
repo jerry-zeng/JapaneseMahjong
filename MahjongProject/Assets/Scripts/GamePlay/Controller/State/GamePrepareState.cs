@@ -12,10 +12,10 @@ public class GamePrepareState : GameStateBase
     public override void Enter() {
         base.Enter();
 
-        if( logicOwner.needSelectOya() )
-            EventManager.Get().SendEvent(UIEventType.Saifuri_For_Oya);
+        if( logicOwner.needSelectChiiCha() )
+            EventManager.Get().SendEvent(UIEventType.Select_ChiiCha);
         else
-            OnSaifuriForQinEnd();
+            OnSaifuriForOyaEnd();
     }
 
 
@@ -23,23 +23,25 @@ public class GamePrepareState : GameStateBase
     {
         switch(evtID)
         {
-            case UIEventType.On_Saifuri_For_Oya_End:
+            case UIEventType.On_Select_ChiiCha_End:
             {
-                logicOwner.SetOyaChiicha();
+                int index = (int)args[0];
 
-                OnSaifuriForQinEnd();
+                logicOwner.SetOyaChiicha(index);
+
+                OnSaifuriForOyaEnd();
             }
             break;
         }
     }
 
-    void OnSaifuriForQinEnd()
+    void OnSaifuriForOyaEnd()
     {
         logicOwner.PrepareKyoku();
 
         string kyokuStr = "";
         if( logicOwner.IsLastKyoku() ){
-            kyokuStr = "オラス";
+            kyokuStr = ResManager.getString("info_end");
         }
         else{
             string kazeStr = ResManager.getString( "kaze_" + logicOwner.getBaKaze().ToString().ToLower() );

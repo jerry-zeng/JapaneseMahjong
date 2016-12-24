@@ -28,7 +28,9 @@ public class MahjongView : UIObject, IObserver
     private GameInfoUI gameInfo;
 
     public Transform mahjongPoolRoot;
+
     public PlayerInputPanel playerInputPanel;
+    public SelectChiiChaPanel selectChiiChanPanel;
     public SaifuriPanel saifuriPanel;
     public RyuuKyokuPanel ryuuKyokuPanel;
     public AgariPanel agariPanel;
@@ -55,6 +57,8 @@ public class MahjongView : UIObject, IObserver
     {
         if(playerInputPanel != null)
             playerInputPanel.Hide();
+        if(selectChiiChanPanel != null)
+            selectChiiChanPanel.Hide();
         if(saifuriPanel != null)
             saifuriPanel.Hide();
         if(ryuuKyokuPanel != null)
@@ -142,9 +146,9 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
-            case UIEventType.Saifuri_For_Oya: 
+            case UIEventType.Select_ChiiCha: 
             {
-                SetSaisPanel( UIEventType.Saifuri_For_Oya );
+                selectChiiChanPanel.Show();
             }
             break;
 
@@ -195,9 +199,11 @@ public class MahjongView : UIObject, IObserver
             }
             break;
 
-            case UIEventType.Saifuri_For_Haipai: 
+            case UIEventType.Select_Wareme: 
             {
-                SetSaisPanel( UIEventType.Saifuri_For_Haipai );
+                Sai[] sais = Model.Saifuri();
+
+                saifuriPanel.Show( sais[0].Num, sais[1].Num );
             }
             break;
 
@@ -539,47 +545,6 @@ public class MahjongView : UIObject, IObserver
         }
     }
 
-    // sais panel objects.
-    UIEventType lastSaifuriTarget;
-
-    void SetSaisPanel(UIEventType saiTarget) 
-    {
-        lastSaifuriTarget = saiTarget;
-
-        string tip = "";
-        if( saiTarget == UIEventType.Saifuri_For_Oya ) {
-            tip = "Saifuri for deciding Chiicha";
-        }
-        else {
-            tip = "Saifuri for deciding Wareme";
-        }
-
-        saifuriPanel.Show( tip, OnClickSaisButton );
-    }
-    void OnClickSaisButton() {
-        Sai[] sais = Model.Saifuri();
-        saifuriPanel.SetResult( sais[0].Num + ", " + sais[1].Num );
-
-        StartCoroutine(OnSaifuriEnd());
-    }
-    IEnumerator OnSaifuriEnd()
-    {      
-        yield return new WaitForSeconds(2);
-
-        saifuriPanel.Hide();
-
-        if( lastSaifuriTarget == UIEventType.Saifuri_For_Oya ) {
-            lastSaifuriTarget = UIEventType.On_Saifuri_For_Oya_End;
-        }
-        else {
-            lastSaifuriTarget = UIEventType.On_Saifuri_For_Haipai_End;
-        }
-        //lastSaifuriTarget = lastSaifuriTarget+1;
-
-        Debug.Log("Response event type: " + lastSaifuriTarget.ToString());
-
-        EventManager.Get().SendEvent( lastSaifuriTarget );
-    }
 
 
     /// <summary>
