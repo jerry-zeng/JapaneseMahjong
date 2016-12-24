@@ -38,11 +38,11 @@ public class UIPlayerTenbouChangeInfo : MonoBehaviour
         lab_tenpai.gameObject.SetActive( showTenpai );
     }
 
-    public void SetPointInfo( EKaze kaze, int point )
+    public void SetPointInfo( EKaze kaze, int tenbou, int point )
     {
         lab_kaze.text = ResManager.getString( "kaze_" + kaze.ToString().ToLower() );
 
-        lab_current.text = "";
+        lab_current.text = tenbou.ToString();
 
         if( point > 0 ){
             lab_change.color = Color.blue;

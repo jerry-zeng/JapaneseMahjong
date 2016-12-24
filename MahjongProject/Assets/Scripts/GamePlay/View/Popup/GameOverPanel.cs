@@ -41,7 +41,7 @@ public class GameOverPanel : MonoBehaviour
         for( int i = 0; i < playerTenbouList.Count; i++ )
         {
             PlayerTenbouChangeInfo info = tenbouInfos.Find( ptci=> ptci.playerKaze == nextKaze );
-            playerTenbouList[i].SetPointInfo( info.playerKaze, info.changed );
+            playerTenbouList[i].SetPointInfo( info.playerKaze, info.current, info.changed );
             nextKaze = nextKaze.Next();
         }
     }
