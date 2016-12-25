@@ -35,6 +35,22 @@ public class MahjongMain : Mahjong
         get; set;
     }
 
+    protected AgariUpdateInfo GetBasicAgariInfo( AgariInfo ai = null )
+    {
+        AgariUpdateInfo aupdateInfo = new AgariUpdateInfo();
+
+        if( ai != null ) AgariUpdateInfo.Copy(aupdateInfo, ai);
+        
+        aupdateInfo.manKaze = getManKaze();
+        aupdateInfo.bakaze = getBaKaze();
+        aupdateInfo.kyoku = Kyoku;
+        aupdateInfo.isLastKyoku = IsLastKyoku();
+        aupdateInfo.honba = HonBa;
+        aupdateInfo.reachBou = ReachBou;
+
+        return aupdateInfo;
+    }
+
 
     // Step: 1
     protected override void initialize()
@@ -267,13 +283,7 @@ public class MahjongMain : Mahjong
     {
         AgariUpdateInfoList.Clear();
 
-        AgariUpdateInfo aupdateInfo = new AgariUpdateInfo();
-        aupdateInfo.manKaze = getManKaze();
-        aupdateInfo.bakaze = getBaKaze();
-        aupdateInfo.kyoku = Kyoku;
-        aupdateInfo.isLastKyoku = IsLastKyoku();
-        aupdateInfo.honba = HonBa;
-        aupdateInfo.reachBou = m_reachBou;
+        AgariUpdateInfo aupdateInfo = GetBasicAgariInfo();
 
         aupdateInfo.tenbouChangeInfoList = AgariScoreManager.GetPointScore(PlayerList, ref m_reachBou);
 
@@ -917,12 +927,7 @@ public class MahjongMain : Mahjong
     // for ERyuuKyokuReason enums
     public void Handle_Invalid_RyuuKyoku()
     {
-        AgariUpdateInfo aupdateInfo = new AgariUpdateInfo();
-        aupdateInfo.manKaze = getManKaze();
-        aupdateInfo.bakaze = getBaKaze();
-        aupdateInfo.kyoku = Kyoku;
-        aupdateInfo.isLastKyoku = IsLastKyoku();
-        aupdateInfo.honba = HonBa;
+        AgariUpdateInfo aupdateInfo = GetBasicAgariInfo();
 
         Player player;
         for( int i = 0; i < PlayerList.Count; i++ )
@@ -1279,12 +1284,7 @@ public class MahjongMain : Mahjong
         }
 
 
-        AgariUpdateInfo aupdateInfo = new AgariUpdateInfo();
-        aupdateInfo.manKaze = getManKaze();
-        aupdateInfo.bakaze = getBaKaze();
-        aupdateInfo.kyoku = Kyoku;
-        aupdateInfo.isLastKyoku = IsLastKyoku();
-        aupdateInfo.honba = HonBa;
+        AgariUpdateInfo aupdateInfo = GetBasicAgariInfo();
 
         Player player;
         for( int i = 0; i < PlayerList.Count; i++ )
@@ -1426,12 +1426,8 @@ public class MahjongMain : Mahjong
         int score = 0;
 
         // cache the agari update info.
-        AgariUpdateInfo aupdateInfo = new AgariUpdateInfo( AgariInfo );
-        aupdateInfo.manKaze = getManKaze();
-        aupdateInfo.bakaze = getBaKaze();
-        aupdateInfo.kyoku = Kyoku;
-        aupdateInfo.isLastKyoku = IsLastKyoku();
-        aupdateInfo.honba = HonBa;
+        AgariUpdateInfo aupdateInfo = GetBasicAgariInfo(AgariInfo);
+
         aupdateInfo.agariPlayer = m_activePlayer;
         aupdateInfo.agariPlayerIsOya = getPlayerIndex( ActivePlayer.JiKaze ) == m_oyaIndex;
         aupdateInfo.isTsumo = false;
@@ -1535,15 +1531,11 @@ public class MahjongMain : Mahjong
         int score = 0;
 
         // cache the agari update info.
-        AgariUpdateInfo aupdateInfo = new AgariUpdateInfo( AgariInfo );
-        aupdateInfo.manKaze = getManKaze();
-        aupdateInfo.bakaze = getBaKaze();
-        aupdateInfo.kyoku = Kyoku;
-        aupdateInfo.isLastKyoku = IsLastKyoku();
-        aupdateInfo.honba = HonBa;
+        AgariUpdateInfo aupdateInfo = GetBasicAgariInfo(AgariInfo);
+
         aupdateInfo.agariPlayer = m_activePlayer;
         aupdateInfo.isTsumo = true;
-        aupdateInfo.agariHai = TsumoHai;
+        aupdateInfo.agariHai = m_tsumoHai;
 
         aupdateInfo.allOmoteDoraHais = Yama.getAllOmoteDoraHais();
         aupdateInfo.allUraDoraHais = Yama.getAllUraDoraHais();
