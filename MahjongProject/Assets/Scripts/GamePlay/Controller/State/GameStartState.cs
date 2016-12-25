@@ -9,15 +9,9 @@ public class GameStartState : GameStateBase
 
         base.Enter();
 
-        StartCoroutine( InitData() );
-    }
-
-    IEnumerator InitData() {
-
-        yield return new WaitForEndOfFrame();
-
         EventManager.Get().SendEvent( UIEventType.Init_Game );
 
         owner.ChangeState<GamePrepareState>();
     }
+
 }

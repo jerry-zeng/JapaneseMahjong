@@ -39,6 +39,9 @@ public enum UIEventType
     DisplayMenuList,
     HideMenuList,
 
+    DisplayKyokuInfo,
+
+    On_UIAnim_End, // callback of all EActionType, and other system animations.
 
     // ゲームの開始 
     Start_Game,

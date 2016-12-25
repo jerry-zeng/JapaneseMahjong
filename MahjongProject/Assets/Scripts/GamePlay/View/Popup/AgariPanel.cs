@@ -15,7 +15,7 @@ public class AgariPanel : MonoBehaviour
     public Transform yakuRoot;
     public GameObject yakuItemPrefab;
     public Vector2 yakuItemPosOffset = new Vector2( 60f, -40f);
-    public float yakuDisplayTime = 1.0f;
+    public float yakuDisplayTime = 0.5f;
 
     public UILabel lab_han;
     public UILabel lab_point;

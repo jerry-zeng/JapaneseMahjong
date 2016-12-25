@@ -14,20 +14,32 @@ public class LoopState_Agari : GameStateBase
     {
         base.Enter();
 
-        StartCoroutine(HandleAgariRon());
+        waitingOperation = StartCoroutine(HandleAgariRon());
     }
 
     IEnumerator HandleAgariRon() {
         yield return new WaitForSeconds( MahjongView.AgariAnimationTime );
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(MahjongView.NormalWaitTime);
+
+        OnAgariAnimEnd();
+    }
+
+    void OnAgariAnimEnd()
+    {
+        StopWaitingOperation();
 
         EventManager.Get().SendEvent(UIEventType.Display_Agari_Panel, logicOwner.AgariUpdateInfoList);
     }
 
+
     public override void OnHandleEvent(UIEventType evtID, object[] args)
     {
-        if( evtID == UIEventType.End_Kyoku )
+        if( evtID == UIEventType.On_UIAnim_End )
+        {
+            OnAgariAnimEnd();
+        }
+        else if( evtID == UIEventType.End_Kyoku )
         {
             owner.ChangeState<KyoKuOverState>();
         }

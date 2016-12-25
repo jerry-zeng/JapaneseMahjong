@@ -88,15 +88,15 @@ public class SelectChiiChaPanel : MonoBehaviour
             MahjongPai pai = kazePaiList.Find( mp => mp.ID == id );
             pai.Show();
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.4f);
 
-            TweenPosition tweener = TweenPosition.Begin( pai.gameObject, 0.4f, kazePosList[i] );
+            TweenPosition tweener = TweenPosition.Begin( pai.gameObject, 0.3f, kazePosList[i] );
             tweener.style = UITweener.Style.Once;
 
             if( i == kazePaiList.Count-1 )
                 tweener.SetOnFinished( OnMoveEnd );
 
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.2f);
         }
     }
 

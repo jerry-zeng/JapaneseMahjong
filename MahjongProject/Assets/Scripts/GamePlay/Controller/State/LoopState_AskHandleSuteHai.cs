@@ -17,7 +17,7 @@ public class LoopState_AskHandleSuteHai : GameStateBase
 
         logicOwner.onResponse_SuteHai_Handler = OnHandle_ResponseSuteHai;
 
-        StartCoroutine(AskHandleSuteHai());
+        waitingOperation = StartCoroutine(AskHandleSuteHai());
     }
 
     IEnumerator AskHandleSuteHai()
@@ -25,8 +25,22 @@ public class LoopState_AskHandleSuteHai : GameStateBase
         // wait for sute hai animation time.
         yield return new WaitForSeconds( MahjongView.SuteHaiAnimationTime + 0.1f );
 
+        OnSuteHaiAnimEnd();
+    }
+
+    public override void OnHandleEvent(UIEventType evtID, object[] args)
+    {
+        if( evtID == UIEventType.On_UIAnim_End )
+            OnSuteHaiAnimEnd();
+    }
+
+    void OnSuteHaiAnimEnd()
+    {
+        StopWaitingOperation();
+
         logicOwner.Ask_Handle_SuteHai();
     }
+
 
     void OnHandle_ResponseSuteHai()
     {

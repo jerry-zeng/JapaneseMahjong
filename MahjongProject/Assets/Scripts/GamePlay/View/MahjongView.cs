@@ -19,9 +19,13 @@ using System.Collections.Generic;
 
 public class MahjongView : UIObject, IObserver 
 {
+    // TODO: all yield trigger should be replaced with UIEventType.On_UIAnim_End callback.
+    public const float NormalWaitTime = 0.5f;
+    public const float KyokuInfoAnimationTime = 2.5f;
     public const float SuteHaiAnimationTime = 0.3f;
     public const float NakiAnimationTime = 0.3f;
     public const float AgariAnimationTime = 0.3f;
+
 
     private Dictionary<int, PlayerUI> playerUIDict = new Dictionary<int, PlayerUI>();
     private Dictionary<EKaze, PlayerUI> playerUIDict_Kaze = new Dictionary<EKaze, PlayerUI>();
@@ -31,6 +35,7 @@ public class MahjongView : UIObject, IObserver
 
     public PlayerInputPanel playerInputPanel;
     public SelectChiiChaPanel selectChiiChanPanel;
+    public KyokuInfoPanel kyokuInfoPanel;
     public SaifuriPanel saifuriPanel;
     public RyuuKyokuPanel ryuuKyokuPanel;
     public AgariPanel agariPanel;
@@ -59,6 +64,8 @@ public class MahjongView : UIObject, IObserver
             playerInputPanel.Hide();
         if(selectChiiChanPanel != null)
             selectChiiChanPanel.Hide();
+        if(kyokuInfoPanel != null)
+            kyokuInfoPanel.Hide();
         if(saifuriPanel != null)
             saifuriPanel.Hide();
         if(ryuuKyokuPanel != null)
@@ -172,7 +179,7 @@ public class MahjongView : UIObject, IObserver
                         playerInputPanel.SetOwnerPlayerUI(ui);
                     }
                 }
-                Debug.Log( "MahjongView: init player info ui end..." );
+
             }
             break;
 
@@ -193,9 +200,17 @@ public class MahjongView : UIObject, IObserver
 
                     playerUIDict[i].SetYamaHais( haiDict, indexRange[0], indexRange[1] );
                 }
-                Debug.Log("MahjongView: SetYama_BeforeHaipai end...");
 
                 //TestYama();
+            }
+            break;
+
+            case UIEventType.DisplayKyokuInfo:
+            {
+                string kyokuStr = (string)args[0];
+                string honbaStr = (string)args[1];
+
+                kyokuInfoPanel.Show( kyokuStr, honbaStr );
             }
             break;
 
@@ -221,7 +236,7 @@ public class MahjongView : UIObject, IObserver
                 int waremeIndex = Model.Wareme;
                 int tsumoHaiStartIndex = waremeIndex + totalPickHaiCount;
 
-                Debug.Log(string.Format("remove yamahai in range[{0},{1}]", waremeIndex+1, tsumoHaiStartIndex % Yama.YAMA_HAIS_MAX));
+                //Debug.Log(string.Format("remove yamahai in range[{0},{1}]", waremeIndex+1, tsumoHaiStartIndex % Yama.YAMA_HAIS_MAX));
 
                 for( int i = waremeIndex+1; i <= tsumoHaiStartIndex; i++ ) 
                 {
@@ -260,8 +275,6 @@ public class MahjongView : UIObject, IObserver
                     showIndex += Yama.YAMA_HAIS_MAX;
                 pi = findPlayerForYamahaiIndex(showIndex);
                 playerUIDict[pi].SetWareme(showIndex);
-
-                Debug.Log("MahjongView: SetUI_AfterHaipai end...");
             }
             break;
 

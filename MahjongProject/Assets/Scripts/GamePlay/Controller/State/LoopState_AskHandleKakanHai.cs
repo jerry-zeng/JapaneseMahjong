@@ -17,11 +17,24 @@ public class LoopState_AskHandleKakanHai : GameStateBase
 
         logicOwner.onResponse_KakanHai_Handler = OnHandle_ResponseKakanHai;
 
-        StartCoroutine(AskHandleKakanHai());
+        waitingOperation = StartCoroutine(AskHandleKakanHai());
     }
 
     IEnumerator AskHandleKakanHai() {
         yield return new WaitForSeconds( MahjongView.NakiAnimationTime + 0.1f );
+
+        OnKakanAnimEnd();
+    }
+
+    public override void OnHandleEvent(UIEventType evtID, object[] args)
+    {
+        if( evtID == UIEventType.On_UIAnim_End )
+            OnKakanAnimEnd();
+    }
+
+    void OnKakanAnimEnd()
+    {
+        StopWaitingOperation();
 
         logicOwner.Ask_Handle_KaKanHai();
     }

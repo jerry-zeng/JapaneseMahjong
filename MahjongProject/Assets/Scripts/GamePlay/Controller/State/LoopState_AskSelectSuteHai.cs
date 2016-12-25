@@ -18,13 +18,26 @@ public class LoopState_AskSelectSuteHai : GameStateBase
         logicOwner.onResponse_Select_SuteHai_Handler = OnHandle_ResponseSelectSuteHai;
 
         //logicOwner.Ask_Select_SuteHai();
-        StartCoroutine( AskSelectSuteHai() );
+        waitingOperation = StartCoroutine( AskSelectSuteHai() );
     }
 
     IEnumerator AskSelectSuteHai()
     {
         // wait for naki animation time.
         yield return new WaitForSeconds( MahjongView.NakiAnimationTime + 0.1f );
+
+        OnSuteHaiAnimEnd();
+    }
+
+    public override void OnHandleEvent(UIEventType evtID, object[] args)
+    {
+        if( evtID == UIEventType.On_UIAnim_End )
+            OnSuteHaiAnimEnd();
+    }
+
+    void OnSuteHaiAnimEnd()
+    {
+        StopWaitingOperation();
 
         logicOwner.Ask_Select_SuteHai();
     }

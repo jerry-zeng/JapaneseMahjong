@@ -17,14 +17,6 @@ public class LoopState_PickRinshanHai : GameStateBase
 
         EventManager.Get().SendEvent(UIEventType.PickRinshanHai, logicOwner.ActivePlayer, lastPickIndex, rinshanHai, newDoraHaiIndex );
 
-        StartCoroutine( AskHandleRinshanHai() );
-
-    }
-
-    IEnumerator AskHandleRinshanHai()
-    {
-        yield return new WaitForSeconds( MahjongView.NakiAnimationTime );
-
         owner.ChangeState<LoopState_AskHandleTsumoHai>();
     }
 

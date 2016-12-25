@@ -7,7 +7,7 @@ public class SaifuriPanel : MonoBehaviour
     public UILabel lab_tip;
     public UILabel lab_num;
 
-    private float EachAnimTime = 0.5f;
+    private float EachAnimTime = 0.3f;
 
 
     private int num1;
@@ -92,7 +92,7 @@ public class SaifuriPanel : MonoBehaviour
         else{
             saifuriTime += Time.deltaTime;
 
-            if( saifuriTime >= 1f )
+            if( saifuriTime >= 0.5f )
                 OnEnd();
         }
     }
