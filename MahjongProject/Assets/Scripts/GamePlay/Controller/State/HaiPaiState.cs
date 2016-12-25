@@ -47,13 +47,14 @@ public class HaiPaiState : GameStateBase
         EventManager.Get().SendEvent(UIEventType.DisplayKyokuInfo, kyokuStr, honbaStr);
     }
 
-
+    /*
     IEnumerator PrepareYamaUI() 
     {
         yield return new WaitForSeconds(MahjongView.KyokuInfoAnimationTime);
 
         OnDisplayKyokuInfoEnd();
     }
+    */
 
     void OnDisplayKyokuInfoEnd()
     {
@@ -87,7 +88,7 @@ public class HaiPaiState : GameStateBase
 
         EventManager.Get().SendEvent(UIEventType.SetUI_AfterHaipai);
 
-        waitingOperation = StartCoroutine(StartLoop());
+        StartCoroutine(StartLoop());
     }
 
     IEnumerator StartLoop()

@@ -17,9 +17,10 @@ public class LoopState_AskHandleSuteHai : GameStateBase
 
         logicOwner.onResponse_SuteHai_Handler = OnHandle_ResponseSuteHai;
 
-        waitingOperation = StartCoroutine(AskHandleSuteHai());
+        //waitingOperation = StartCoroutine(AskHandleSuteHai());
     }
 
+    /*
     IEnumerator AskHandleSuteHai()
     {
         // wait for sute hai animation time.
@@ -27,6 +28,7 @@ public class LoopState_AskHandleSuteHai : GameStateBase
 
         OnSuteHaiAnimEnd();
     }
+    */
 
     public override void OnHandleEvent(UIEventType evtID, object[] args)
     {
@@ -55,6 +57,7 @@ public class LoopState_AskHandleSuteHai : GameStateBase
             }
             else{
                 logicOwner.Handle_SuteHai_Ron();
+                logicOwner.AgariResult = EAgariType.Ron;
 
                 // show ron ui.
                 EventManager.Get().SendEvent(UIEventType.Ron_Agari, ronPlayers, logicOwner.FromKaze, logicOwner.SuteHai);

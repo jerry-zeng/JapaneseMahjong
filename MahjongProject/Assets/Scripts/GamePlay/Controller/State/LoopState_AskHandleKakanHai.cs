@@ -17,14 +17,16 @@ public class LoopState_AskHandleKakanHai : GameStateBase
 
         logicOwner.onResponse_KakanHai_Handler = OnHandle_ResponseKakanHai;
 
-        waitingOperation = StartCoroutine(AskHandleKakanHai());
+        //waitingOperation = StartCoroutine(AskHandleKakanHai());
     }
-
-    IEnumerator AskHandleKakanHai() {
+    /*
+    IEnumerator AskHandleKakanHai()
+    {
         yield return new WaitForSeconds( MahjongView.NakiAnimationTime + 0.1f );
 
         OnKakanAnimEnd();
     }
+    */
 
     public override void OnHandleEvent(UIEventType evtID, object[] args)
     {
@@ -53,6 +55,7 @@ public class LoopState_AskHandleKakanHai : GameStateBase
             }
             else{
                 logicOwner.Handle_KaKan_Ron();
+                logicOwner.AgariResult = EAgariType.ChanKanRon;
 
                 // show ron ui.
                 EventManager.Get().SendEvent(UIEventType.Ron_Agari, ronPlayers, logicOwner.FromKaze, logicOwner.KakanHai);

@@ -23,6 +23,13 @@ public class MahjongMain : Mahjong
         set{ m_ryuuKyokuReason = value; }
     }
 
+    protected EAgariType m_agariResult = EAgariType.None;
+    public EAgariType AgariResult
+    {
+        get{ return m_agariResult; }
+        set{ m_agariResult = value; }
+    }
+
     public bool Reach4Flag
     {
         get; set;
@@ -50,8 +57,8 @@ public class MahjongMain : Mahjong
         // プレイヤーの配列を初期化する。
         m_playerList = new List<Player>();
         m_playerList.Add( new Man("A", EVoiceType.W_B) );
-        m_playerList.Add( new AI("B", EVoiceType.M_B) );
-        m_playerList.Add( new AI("C", EVoiceType.M_C) );
+        m_playerList.Add( new AI("B", EVoiceType.M_A) );
+        m_playerList.Add( new AI("C", EVoiceType.M_B) );
         m_playerList.Add( new AI("D", EVoiceType.M_D) );
 
         for( int i = 0; i < m_playerList.Count; i++ )
@@ -145,6 +152,7 @@ public class MahjongMain : Mahjong
         m_agariUpdateInfoList.Clear();
         m_renhouPlayers.Clear();
         m_ryuuKyokuReason = ERyuuKyokuReason.None;
+        m_agariResult = EAgariType.None;
         Reach4Flag = false;
 
         m_reachBou = 0;
@@ -445,7 +453,7 @@ public class MahjongMain : Mahjong
         {
             this.RyuuKyokuReason = ERyuuKyokuReason.NoTsumoHai;
 
-            if( HandleRyuukyokuMan() ){
+            if( HandleNagashiMangan() ){
                 
             }
             else{
@@ -988,6 +996,18 @@ public class MahjongMain : Mahjong
         //Ask_Handle_SuteHai();
     }
 
+    // cancel Reach in some special situations.
+    public void OnReachFail()
+    {
+        Player player = getPlayer(m_kazeFrom);
+        player.increaseTenbou( GameSettings.Reach_Cost );
+        player.IsReach = false;
+        player.IsDoubleReach = false;
+        player.IsIppatsu = false;
+
+        m_reachBou--;
+    }
+
     public void Handle_SuteHai()
     {
         m_isTenhou = false;
@@ -1172,7 +1192,7 @@ public class MahjongMain : Mahjong
     /// if some one is nagashimangan(流局满贯), return true, otherwise return false.
     /// </summary>
     /// <returns><c>true</c>, if some one is ryuukyoku man, <c>false</c> otherwise.</returns>
-    public bool HandleRyuukyokuMan() 
+    public bool HandleNagashiMangan() 
     {
         // 流し満貫の確認をする, start at OyaIndex.
         for( int i = 0, j = m_oyaIndex; i < m_playerList.Count; i++, j++ ) 
@@ -1475,6 +1495,8 @@ public class MahjongMain : Mahjong
     // some one has tsumo.
     protected void OnTsumo()
     {
+        this.RyuuKyokuReason = ERyuuKyokuReason.None;
+
         AgariParam.ResetDoraHais(); // should reset params or create a new.
 
         AgariParam.setOmoteDoraHais( getOpenedOmotoDoras() );

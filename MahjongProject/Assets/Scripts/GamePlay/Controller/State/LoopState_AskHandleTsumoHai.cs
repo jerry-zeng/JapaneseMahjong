@@ -29,6 +29,7 @@ public class LoopState_AskHandleTsumoHai : GameStateBase
             case EResponse.Tsumo_Agari:
             {
                 logicOwner.Handle_TsumoAgari();
+                logicOwner.AgariResult = EAgariType.Tsumo;
 
                 EventManager.Get().SendEvent(UIEventType.Tsumo_Agari, activePlayer);
 

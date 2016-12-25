@@ -13,8 +13,10 @@ public class LoopState_HandleRyuuKyoKu : GameStateBase
 
         if( logicOwner.RyuuKyokuReason == ERyuuKyokuReason.NoTsumoHai )
         {
-            if( logicOwner.HandleRyuukyokuMan() )
+            if( logicOwner.HandleNagashiMangan() )
             {
+                logicOwner.AgariResult = EAgariType.NagashiMangan;
+
                 EventManager.Get().SendEvent(UIEventType.Tsumo_Agari, logicOwner.ActivePlayer);
 
                 owner.ChangeState<LoopState_Agari>();

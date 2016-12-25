@@ -14,16 +14,36 @@ public class LoopState_Agari : GameStateBase
     {
         base.Enter();
 
-        waitingOperation = StartCoroutine(HandleAgariRon());
+        // TODO: send agari event here instead of before this state entering
+        /*
+        if( logicOwner.AgariResult == EAgariType.Tsumo )
+        {
+            EventManager.Get().SendEvent(UIEventType.Tsumo_Agari, logicOwner.ActivePlayer);
+        }
+        else if( logicOwner.AgariResult == EAgariType.NagashiMangan )
+        {
+            EventManager.Get().SendEvent(UIEventType.Tsumo_Agari, logicOwner.ActivePlayer);
+        }
+        else if( logicOwner.AgariResult == EAgariType.Ron )
+        {
+            EventManager.Get().SendEvent(UIEventType.Ron_Agari, logicOwner.GetRonPlayers(), logicOwner.FromKaze, logicOwner.SuteHai);
+        }
+        else if( logicOwner.AgariResult == EAgariType.ChanKanRon )
+        {
+            EventManager.Get().SendEvent(UIEventType.Ron_Agari, logicOwner.GetRonPlayers(), logicOwner.FromKaze, logicOwner.KakanHai);
+        }
+        */
+
+        //waitingOperation = StartCoroutine(HandleAgariRon());
     }
 
+    /*
     IEnumerator HandleAgariRon() {
         yield return new WaitForSeconds( MahjongView.AgariAnimationTime );
 
-        yield return new WaitForSeconds(MahjongView.NormalWaitTime);
-
         OnAgariAnimEnd();
     }
+    */
 
     void OnAgariAnimEnd()
     {

@@ -19,12 +19,14 @@ using System.Collections.Generic;
 
 public class MahjongView : UIObject, IObserver 
 {
-    // TODO: all yield trigger should be replaced with UIEventType.On_UIAnim_End callback.
+    // all yield trigger should be replaced with UIEventType.On_UIAnim_End callback.
     public const float NormalWaitTime = 0.5f;
-    public const float KyokuInfoAnimationTime = 2.5f;
-    public const float SuteHaiAnimationTime = 0.3f;
-    public const float NakiAnimationTime = 0.3f;
-    public const float AgariAnimationTime = 0.3f;
+
+    private const float KyokuInfoAnimationTime = 2.5f;
+    private const float SuteHaiAnimationTime = 0.3f;
+    private const float ReachAnimationTime = 0.4f;
+    private const float NakiAnimationTime = 0.3f;
+    private const float AgariAnimationTime = 0.5f;
 
 
     private Dictionary<int, PlayerUI> playerUIDict = new Dictionary<int, PlayerUI>();
@@ -55,6 +57,16 @@ public class MahjongView : UIObject, IObserver
     }
     void OnDisable() {
         EventManager.Get().removeObserver(this);
+    }
+
+
+    public void UIAnimWillEndAfter(float time)
+    {
+        Invoke( "OnUIAnimEnd", time ); // use StartCoroutine() instead if any errors appear.
+    }
+    void OnUIAnimEnd()
+    {
+        EventManager.Get().SendEvent(UIEventType.On_UIAnim_End);
     }
 
 
@@ -352,6 +364,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.SuteHai:
             {
+                UIAnimWillEndAfter( SuteHaiAnimationTime );
+
                 Player activePlayer = (Player)args[0];
                 int sutehaiIndex = (int)args[1];
                 //Hai suteHai = (Hai)args[2];
@@ -374,6 +388,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.Reach:
             {
+                UIAnimWillEndAfter( ReachAnimationTime );
+
                 Player activePlayer = (Player)args[0];
                 int sutehaiIndex = (int)args[1];
                 //Hai suteHai = (Hai)args[2];
@@ -400,6 +416,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.Kakan:
             {
+                UIAnimWillEndAfter( NakiAnimationTime );
+
                 Player activePlayer = (Player)args[0];
                 //Hai kakanHai = (Hai)args[1];
 
@@ -415,6 +433,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.Ankan:
             {
+                UIAnimWillEndAfter( NakiAnimationTime );
+
                 Player activePlayer = (Player)args[0];
 
                 PlayerUI ui = playerUIDict_Kaze[activePlayer.JiKaze];
@@ -429,6 +449,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.DaiMinKan:
             {
+                UIAnimWillEndAfter( NakiAnimationTime );
+
                 Player activePlayer = (Player)args[0];
                 EKaze fromKaze = (EKaze)args[1];
 
@@ -447,6 +469,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.Pon:
             {
+                UIAnimWillEndAfter( NakiAnimationTime );
+
                 Player activePlayer = (Player)args[0];
                 EKaze fromKaze = (EKaze)args[1];
 
@@ -467,6 +491,8 @@ public class MahjongView : UIObject, IObserver
             case UIEventType.Chii_Center:
             case UIEventType.Chii_Right:
             {
+                UIAnimWillEndAfter( NakiAnimationTime );
+
                 Player activePlayer = (Player)args[0];
                 EKaze fromKaze = (EKaze)args[1];
 
@@ -485,6 +511,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.Ron_Agari:
             {
+                UIAnimWillEndAfter( AgariAnimationTime );
+
                 List<EKaze> ronPlayers = (List<EKaze>)args[0];
                 EKaze fromKaze = (EKaze)args[1];
                 Hai ronHai = (Hai)args[2];
@@ -508,6 +536,8 @@ public class MahjongView : UIObject, IObserver
 
             case UIEventType.Tsumo_Agari:
             {
+                UIAnimWillEndAfter( AgariAnimationTime );
+
                 Player activePlayer = (Player)args[0];
 
                 PlayerUI ui = playerUIDict_Kaze[ activePlayer.JiKaze ];

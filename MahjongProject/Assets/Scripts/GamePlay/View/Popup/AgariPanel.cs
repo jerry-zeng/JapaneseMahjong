@@ -389,17 +389,22 @@ public class AgariPanel : MonoBehaviour
 
     void PlayLevelVoice(int level)
     {
+        ECvType cv = ECvType.ManGan;
+
         switch( level )
         {
             default:
-            case 0: break;
+            case 0: return;
 
-            case 1: GameManager.Get().Speak(ECvType.ManGan); break;
-            case 2: GameManager.Get().Speak(ECvType.HaReMan); break;
-            case 3: GameManager.Get().Speak(ECvType.BaiMan); break;
-            case 4: GameManager.Get().Speak(ECvType.SanBaiMan); break;
-            case 5: GameManager.Get().Speak(ECvType.YakuMan); break;
+            case 1: cv = ECvType.ManGan; break;
+            case 2: cv = ECvType.HaReMan; break;
+            case 3: cv = ECvType.BaiMan; break;
+            case 4: cv = ECvType.SanBaiMan; break;
+            case 5: cv = ECvType.YakuMan; break;
         }
+
+        string cvPath = AudioConfig.GetCVPath(currentAgari.agariPlayer.VoiceType, cv);
+        AudioManager.Get().PlaySFX( cvPath );
     }
 
     UIYakuItem CreateYakuItem( string yakuNameKey, int han )
