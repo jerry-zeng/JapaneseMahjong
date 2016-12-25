@@ -1,2 +1,2 @@
 # JapaneseMahjong
-A Japanese Mahjong demo created in Unity(Not Completed).
+A Japanese Mahjong demo created in Unity 5.3.4 (Demo Completed).
