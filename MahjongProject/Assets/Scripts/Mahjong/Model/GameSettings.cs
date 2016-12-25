@@ -1,6 +1,8 @@
 ﻿
 public static class GameSettings 
 {
+    public static int PlayerCount = 4;
+
     // 食断.
     public static bool UseKuitan = true;
 
@@ -10,15 +12,13 @@ public static class GameSettings
     // if allow furiten
     public static bool AllowFuriten = true;
 
-    public static bool AllowRon3 = false;
-    public static bool AllowReach4 = false;
-    public static bool AllowSuteFonHai4 = false;
+
+    public const bool AllowRon3 = false;
+    public const bool AllowReach4 = false;
+    public const bool AllowSuteFonHai4 = false;
 
     // 局の最大値
-    public static int Kyoku_Max = (int)EKyoku.Ton_4;
-
-    public static int PlayerCount = 4;
-
+    public const int Kyoku_Max = (int)EKyoku.Nan_4;
     public const int KanCountMax = 4;
 
     // 持ち点の初期値

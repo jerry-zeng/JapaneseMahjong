@@ -32,8 +32,7 @@ public class AI : Player
         int agariScore = MahjongAgent.getAgariScore(Tehai, tsumoHai, JiKaze);
         if( agariScore > 0 )
         {
-            bool hasFuriten = isFuriten();
-            if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
+            if( GameSettings.AllowFuriten || !isFuriten() )
             {
                 return DoResponse(EResponse.Tsumo_Agari);
             }
@@ -44,8 +43,7 @@ public class AI : Player
 
         // 九种九牌check
         if( MahjongAgent.CheckHaiTypeOver9(Tehai, tsumoHai) ){
-            if( Utils.GetRandomNum(0, 2) < 1 )
-                return DoResponse(EResponse.Nagashi);
+            return DoResponse(EResponse.Nagashi); 
         }
 
         // リーチの場合は、ツモ切りする
@@ -74,49 +72,56 @@ public class AI : Player
         // 制限事項。リーチ後のカンをさせない
         if( !MahjongAgent.isReach(JiKaze) ) 
         {
-            // TODO: tsumo kans
-            List<Hai> kanHais = new List<Hai>();
-            if( Tehai.validAnyTsumoKan(tsumoHai, kanHais) )
-            {
-                _action.setValidTsumoKan(true, kanHais);
+            /*
+            if( MahjongAgent.getTotalKanCount() < GameSettings.KanCountMax )
+            {                
+                // TODO: tsumo kans
+                List<Hai> kanHais = new List<Hai>();
+                if( Tehai.validAnyTsumoKan(tsumoHai, kanHais) )
+                {
+                    _action.setValidTsumoKan(true, kanHais);
 
-
+                }
             }
+            */
         }
         else
         {
-            // if player machi hais won't change after setting AnKan, enable to to it.
-            if( Tehai.validAnKan(tsumoHai) )
+            if( MahjongAgent.getTotalKanCount() < GameSettings.KanCountMax )
             {
-                List<Hai> machiHais;
-                if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
+                // if player machi hais won't change after setting AnKan, enable to to it.
+                if( Tehai.validAnKan(tsumoHai) )
                 {
-                    Tehai tehaiCopy = new Tehai( Tehai );
-                    tehaiCopy.setAnKan( tsumoHai );
-                    tehaiCopy.Sort();
-
-                    List<Hai> newMachiHais;
-
-                    if( MahjongAgent.tryGetMachiHais(tehaiCopy, out newMachiHais) )
+                    List<Hai> machiHais;
+                    if( MahjongAgent.tryGetMachiHais(Tehai, out machiHais) )
                     {
-                        if( machiHais.Count == newMachiHais.Count ){
-                            machiHais.Sort( Tehai.Compare );
-                            newMachiHais.Sort( Tehai.Compare );
+                        Tehai tehaiCopy = new Tehai( Tehai );
+                        tehaiCopy.setAnKan( tsumoHai );
+                        tehaiCopy.Sort();
 
-                            bool enableAnkan = true;
+                        List<Hai> newMachiHais;
 
-                            for( int i = 0; i < machiHais.Count; i++ )
-                            {
-                                if( machiHais[i].ID != newMachiHais[i].ID ){
-                                    enableAnkan = false;
-                                    break;
+                        if( MahjongAgent.tryGetMachiHais(tehaiCopy, out newMachiHais) )
+                        {
+                            if( machiHais.Count == newMachiHais.Count ){
+                                machiHais.Sort( Tehai.Compare );
+                                newMachiHais.Sort( Tehai.Compare );
+
+                                bool enableAnkan = true;
+
+                                for( int i = 0; i < machiHais.Count; i++ )
+                                {
+                                    if( machiHais[i].ID != newMachiHais[i].ID ){
+                                        enableAnkan = false;
+                                        break;
+                                    }
                                 }
-                            }
 
-                            if( enableAnkan == true )
-                            {
-                                _action.setValidTsumoKan(true, new List<Hai>(){ tsumoHai });
-                                return DoResponse(EResponse.Ankan);
+                                if( enableAnkan == true )
+                                {
+                                    _action.setValidTsumoKan(true, new List<Hai>(){ tsumoHai });
+                                    return DoResponse(EResponse.Ankan);
+                                }
                             }
                         }
                     }
@@ -148,8 +153,7 @@ public class AI : Player
         int agariScore = MahjongAgent.getAgariScore(Tehai, kanHai, JiKaze);
         if( agariScore > 0 )
         {
-            bool hasFuriten = isFuriten();
-            if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
+            if( GameSettings.AllowFuriten || !isFuriten() )
             {
                 return DoResponse(EResponse.Ron_Agari);
             }
@@ -171,8 +175,7 @@ public class AI : Player
         int agariScore = MahjongAgent.getAgariScore(Tehai, suteHai, JiKaze);
         if( agariScore > 0 ) // Ron
         {
-            bool hasFuriten = isFuriten();
-            if( hasFuriten == false || (hasFuriten && GameSettings.AllowFuriten) )
+            if( GameSettings.AllowFuriten || !isFuriten() )
             {
                 return DoResponse(EResponse.Ron_Agari);
             }
@@ -215,7 +218,7 @@ public class AI : Player
 
 
 
-    protected void thinkSutehai(Hai addHai)
+    protected virtual void thinkSutehai(Hai addHai)
     {
         _action.SutehaiIndex = Tehai.getJyunTehaiCount();
 
@@ -242,7 +245,7 @@ public class AI : Player
     }
 
 
-    protected void thinkSelectSuteHai()
+    protected virtual void thinkSelectSuteHai()
     {
         thinkSutehai(null);
 
@@ -252,7 +255,7 @@ public class AI : Player
         }
     }
 
-    protected void thinkReach()
+    protected virtual void thinkReach()
     {
         _action.ReachSelectIndex = 0;
 
@@ -290,7 +293,7 @@ public class AI : Player
 
     protected readonly static int HYOUKA_SHUU = 1;
 
-    protected int getCountFormatScore(CountFormat countFormat)
+    protected virtual int getCountFormatScore(CountFormat countFormat)
     {
         int score = 0;
         HaiCounterInfo[] countArr = countFormat.getCounterArray();
