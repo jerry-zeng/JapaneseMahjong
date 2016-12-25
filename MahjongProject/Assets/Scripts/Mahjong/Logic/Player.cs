@@ -195,7 +195,7 @@ public abstract class Player
         get{ return GameAgent.Instance; }
     }
 
-    protected float ResponseDelayTime = 0.5f;
+    protected float ResponseDelayTime = 0.3f; // must > 0
 
     protected Action<EKaze, EResponse> _onResponse;
 
@@ -208,6 +208,8 @@ public abstract class Player
     protected EResponse DoResponse(EResponse response)
     {
         _action.Response = response;
+
+        ResponseDelayTime = Math.Max(ResponseDelayTime, 0.1f);
 
         if( ResponseDelayTime > 0f )
             GameManager.Get().StartCoroutine( DoResponseDelay(ResponseDelayTime) );
