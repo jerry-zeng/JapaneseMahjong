@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lab_reachbou: {fileID: 1401165911}
-  btn_Confirm: {fileID: 1977841376}
+  btn_Continue: {fileID: 1977841376}
   playerTenbouList:
   - {fileID: 1497933118}
   - {fileID: 1295329556}
@@ -998,7 +998,7 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
-  mText: Set wareme...
+  mText: Set Wareme
   mFontSize: 40
   mFontStyle: 0
   mAlignment: 0
@@ -5024,7 +5024,7 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
-  mText: Select a hai to decide ChiiCha
+  mText: Select a hai to determine ChiiCha
   mFontSize: 40
   mFontStyle: 0
   mAlignment: 0
@@ -7310,7 +7310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad2095e9619c8e4bae3832c54b62bbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  btn_Confirm: {fileID: 2090542213}
+  btn_Continue: {fileID: 2090542213}
   lab_msg: {fileID: 278653938}
   playerTenbouList:
   - {fileID: 984305567}
@@ -8623,7 +8623,7 @@ GameObject:
   - 65: {fileID: 1977841379}
   - 114: {fileID: 1977841378}
   m_Layer: 5
-  m_Name: btn_Confirm
+  m_Name: btn_Continue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

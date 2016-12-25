@@ -56,6 +56,30 @@
     "value": "x"
   },
   {
+    "key": "child",
+    "value": "子"
+  },
+  {
+    "key": "parent",
+    "value": "親"
+  },
+  {
+    "key": "continue",
+    "value": "つづき"
+  },
+  {
+    "key": "replay",
+    "value": "もう一度"
+  },
+  {
+    "key": "honba",
+    "value": "本场"
+  },
+  {
+    "key": "kyoku",
+    "value": "局"
+  },
+  {
     "key": "omotedora",
     "value": "表ドラ"
   },

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class RyuuKyokuPanel : MonoBehaviour
 {
-    public GameObject btn_Confirm;
+    public GameObject btn_Continue;
     public UILabel lab_msg;
 
     public List<UIPlayerTenbouChangeInfo> playerTenbouList = new List<UIPlayerTenbouChangeInfo>();
@@ -15,7 +15,10 @@ public class RyuuKyokuPanel : MonoBehaviour
 
 
     void Start(){
-        UIEventListener.Get(btn_Confirm).onClick = OnConfirm;
+        UIEventListener.Get(btn_Continue).onClick = OnConfirm;
+
+        UILabel btnTag = btn_Continue.GetComponentInChildren<UILabel>(true);
+        btnTag.text = ResManager.getString("continue");
     }
 
 

@@ -6,14 +6,17 @@ using System.Collections.Generic;
 public class GameOverPanel : MonoBehaviour 
 {
     public UILabel lab_reachbou;
-    public GameObject btn_Confirm;
+    public GameObject btn_Continue;
     public List<UIPlayerTenbouChangeInfo> playerTenbouList = new List<UIPlayerTenbouChangeInfo>();
 
     private AgariUpdateInfo currentAgari;
 
 
     void Start(){
-        UIEventListener.Get(btn_Confirm).onClick = OnClickConfirm;
+        UIEventListener.Get(btn_Continue).onClick = OnClickConfirm;
+
+        UILabel btnTag = btn_Continue.GetComponentInChildren<UILabel>(true);
+        btnTag.text = ResManager.getString("replay");
     }
 
 

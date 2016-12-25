@@ -41,13 +41,17 @@ public class AgariPanel : MonoBehaviour
     private AgariUpdateInfo currentAgari;
 
     #region Init
-    void Awake()
+    void Start()
     {
         yakuItemPrefab.SetActive(false);
 
         InitYakuInfo();
 
         UIEventListener.Get(btn_Continue).onClick = OnClickContinue;
+
+        UILabel btnTag = btn_Continue.GetComponentInChildren<UILabel>(true);
+        btnTag.text = ResManager.getString("continue");
+
         HideButtons();
     }
 
@@ -251,11 +255,11 @@ public class AgariPanel : MonoBehaviour
         else
         {
             string kazeStr = ResManager.getString( "kaze_" + currentAgari.bakaze.ToString().ToLower() );
-            kyokuStr = kazeStr + currentAgari.kyoku.ToString() + "局";
+            kyokuStr = kazeStr + currentAgari.kyoku.ToString() + ResManager.getString("kyoku");
         }
 
         if( currentAgari.honba > 0 )
-            honbaStr = currentAgari.honba.ToString() + "本场";
+            honbaStr = currentAgari.honba.ToString() + ResManager.getString("honba");
 
         lab_kyoku.text = kyokuStr + "  " + honbaStr;
     }

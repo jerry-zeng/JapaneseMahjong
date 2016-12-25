@@ -148,7 +148,7 @@ public class MahjongView : UIObject, IObserver
 
         hasShining = false;
 
-        ResManager.LoadStringTable();
+        ResManager.LoadStringTable(true);
     }
 
 
