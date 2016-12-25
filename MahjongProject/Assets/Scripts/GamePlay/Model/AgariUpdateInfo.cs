@@ -17,6 +17,10 @@ public class AgariUpdateInfo : AgariInfo
 
     public int reachBou;
     public EKaze manKaze;
+    public EKaze bakaze;
+    public int kyoku;
+    public int honba;
+    public bool isLastKyoku;
 
 
     public AgariUpdateInfo(){

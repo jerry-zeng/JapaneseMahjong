@@ -269,6 +269,10 @@ public class MahjongMain : Mahjong
 
         AgariUpdateInfo aupdateInfo = new AgariUpdateInfo();
         aupdateInfo.manKaze = getManKaze();
+        aupdateInfo.bakaze = getBaKaze();
+        aupdateInfo.kyoku = Kyoku;
+        aupdateInfo.isLastKyoku = IsLastKyoku();
+        aupdateInfo.honba = HonBa;
         aupdateInfo.reachBou = m_reachBou;
 
         aupdateInfo.tenbouChangeInfoList = AgariScoreManager.GetPointScore(PlayerList, ref m_reachBou);
@@ -915,6 +919,10 @@ public class MahjongMain : Mahjong
     {
         AgariUpdateInfo aupdateInfo = new AgariUpdateInfo();
         aupdateInfo.manKaze = getManKaze();
+        aupdateInfo.bakaze = getBaKaze();
+        aupdateInfo.kyoku = Kyoku;
+        aupdateInfo.isLastKyoku = IsLastKyoku();
+        aupdateInfo.honba = HonBa;
 
         Player player;
         for( int i = 0; i < PlayerList.Count; i++ )
@@ -1273,6 +1281,10 @@ public class MahjongMain : Mahjong
 
         AgariUpdateInfo aupdateInfo = new AgariUpdateInfo();
         aupdateInfo.manKaze = getManKaze();
+        aupdateInfo.bakaze = getBaKaze();
+        aupdateInfo.kyoku = Kyoku;
+        aupdateInfo.isLastKyoku = IsLastKyoku();
+        aupdateInfo.honba = HonBa;
 
         Player player;
         for( int i = 0; i < PlayerList.Count; i++ )
@@ -1416,6 +1428,10 @@ public class MahjongMain : Mahjong
         // cache the agari update info.
         AgariUpdateInfo aupdateInfo = new AgariUpdateInfo( AgariInfo );
         aupdateInfo.manKaze = getManKaze();
+        aupdateInfo.bakaze = getBaKaze();
+        aupdateInfo.kyoku = Kyoku;
+        aupdateInfo.isLastKyoku = IsLastKyoku();
+        aupdateInfo.honba = HonBa;
         aupdateInfo.agariPlayer = m_activePlayer;
         aupdateInfo.agariPlayerIsOya = getPlayerIndex( ActivePlayer.JiKaze ) == m_oyaIndex;
         aupdateInfo.isTsumo = false;
@@ -1521,6 +1537,10 @@ public class MahjongMain : Mahjong
         // cache the agari update info.
         AgariUpdateInfo aupdateInfo = new AgariUpdateInfo( AgariInfo );
         aupdateInfo.manKaze = getManKaze();
+        aupdateInfo.bakaze = getBaKaze();
+        aupdateInfo.kyoku = Kyoku;
+        aupdateInfo.isLastKyoku = IsLastKyoku();
+        aupdateInfo.honba = HonBa;
         aupdateInfo.agariPlayer = m_activePlayer;
         aupdateInfo.isTsumo = true;
         aupdateInfo.agariHai = TsumoHai;

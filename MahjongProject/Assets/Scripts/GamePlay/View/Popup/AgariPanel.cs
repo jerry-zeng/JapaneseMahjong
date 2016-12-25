@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class AgariPanel : MonoBehaviour
 {
     public UILabel lab_player_kaze;
+    public UILabel lab_kyoku;
     public TehaiUI tehai;
     public FuuroUI fuuro;
 
@@ -60,6 +61,7 @@ public class AgariPanel : MonoBehaviour
     void InitYakuInfo()
     {
         lab_player_kaze.text = "";
+        lab_kyoku.text = "";
         lab_reachbou.text = "";
 
         ClearYakuItemList( _yakuItems );
@@ -187,7 +189,7 @@ public class AgariPanel : MonoBehaviour
             tehai.BindPlayer(player);
             fuuro.BindPlayer(player);
 
-            lab_player_kaze.text = "Player: " + ResManager.getString( "kaze_" + player.JiKaze.ToString().ToLower() );
+            UpdateKyokuInfo();
 
             Fuuro[] fuuros = player.Tehai.getFuuros();
             fuuro.UpdateFuuro( fuuros );
@@ -234,6 +236,29 @@ public class AgariPanel : MonoBehaviour
         currentAgari = null;
     }
 
+
+    void UpdateKyokuInfo()
+    {
+        lab_player_kaze.text = "Player: " + ResManager.getString( "kaze_" + currentAgari.agariPlayer.JiKaze.ToString().ToLower() );
+
+        string kyokuStr = "";
+        string honbaStr = "";
+
+        if( currentAgari.isLastKyoku )
+        {
+            kyokuStr = ResManager.getString("info_end");
+        }
+        else
+        {
+            string kazeStr = ResManager.getString( "kaze_" + currentAgari.bakaze.ToString().ToLower() );
+            kyokuStr = kazeStr + currentAgari.kyoku.ToString() + "局";
+        }
+
+        if( currentAgari.honba > 0 )
+            honbaStr = currentAgari.honba.ToString() + "本场";
+
+        lab_kyoku.text = kyokuStr + "  " + honbaStr;
+    }
 
     IEnumerator ShowYakuOneByOne()
     {
@@ -350,7 +375,8 @@ public class AgariPanel : MonoBehaviour
             lab_level.alpha = 0f;
         }
 
-        lab_han.text = string.Format("{0}{1}    {2}{3}", 
+        string oyaStr = currentAgari.agariPlayerIsOya ? "親" : "子";
+        lab_han.text = oyaStr + "    " + string.Format("{0}{1}    {2}{3}", 
                                      fu, ResManager.getString("fu"),
                                      han, ResManager.getString("han"));
 
