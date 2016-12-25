@@ -80,6 +80,10 @@
     "value": "局"
   },
   {
+    "key": "start",
+    "value": "开始"
+  },
+  {
     "key": "omotedora",
     "value": "表ドラ"
   },

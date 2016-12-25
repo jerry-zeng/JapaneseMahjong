@@ -379,7 +379,7 @@ public class AgariPanel : MonoBehaviour
             lab_level.alpha = 0f;
         }
 
-        string oyaStr = currentAgari.agariPlayerIsOya ? "親" : "子";
+        string oyaStr = ResManager.getString( currentAgari.agariPlayerIsOya ? "parent" : "child" );
         lab_han.text = oyaStr + "    " + string.Format("{0}{1}    {2}{3}", 
                                      fu, ResManager.getString("fu"),
                                      han, ResManager.getString("han"));

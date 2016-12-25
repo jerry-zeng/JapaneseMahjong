@@ -37,10 +37,10 @@ public class HaiPaiState : GameStateBase
             }
 
             string kazeStr = ResManager.getString( "kaze_" + logicOwner.getBaKaze().ToString().ToLower() );
-            kyokuStr = kazeStr + logicOwner.Kyoku.ToString() + "局";
+            kyokuStr = kazeStr + logicOwner.Kyoku.ToString() + ResManager.getString("kyoku");
 
             if( logicOwner.HonBa > 0 )
-                honbaStr = logicOwner.HonBa.ToString() + "本场";
+                honbaStr = logicOwner.HonBa.ToString() + ResManager.getString("honba");
         }
         Debug.LogWarningFormat( kyokuStr + " " + honbaStr + " Start!" );
 
