@@ -1636,7 +1636,7 @@ public class MahjongMain : Mahjong
     {
         // 親を更新する
         if( (isTsumo && getPlayerIndex(m_kazeFrom) == m_oyaIndex) ||
-           getPlayerIndex(m_ronPlayers[0]) == m_oyaIndex )
+           (!isTsumo && getPlayerIndex(m_ronPlayers[0]) == m_oyaIndex) )
         {
             m_renchan = true;
             m_honba++;

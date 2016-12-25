@@ -42,7 +42,7 @@ public class HaiPaiState : GameStateBase
             if( logicOwner.HonBa > 0 )
                 honbaStr = logicOwner.HonBa.ToString() + ResManager.getString("honba");
         }
-        Debug.LogWarningFormat( kyokuStr + " " + honbaStr + " Start!" );
+        Debug.LogWarningFormat( kyokuStr + " " + honbaStr + " " + ResManager.getString("start") + "!" );
 
         EventManager.Get().SendEvent(UIEventType.DisplayKyokuInfo, kyokuStr, honbaStr);
     }
