@@ -594,9 +594,29 @@ namespace YakuHelper
                 hantei = true;
             }
 
+
             EKaze jikaze = owner.AgariParam.getJikaze();
             CheckLenFonHai lenFonHaiChecker = new CheckLenFonHai(owner);
 
+            EKaze bakaze = owner.AgariParam.getBakaze();
+
+            // check BaKaze hai
+            if( bakaze == EKaze.Ton && jikaze != EKaze.Ton ) // lenfon is checking in CheckLenFonHai()
+            {
+                if( owner.checkTon() ){
+                    hanSuu++;
+                    hantei = true;
+                }
+            }
+            else if( bakaze == EKaze.Nan && jikaze != EKaze.Nan ) // lenfon is checking in CheckLenFonHai()
+            {
+                if( owner.checkNan() ){
+                    hanSuu++;
+                    hantei = true;
+                }
+            }
+
+            // check JiKaze hai.
             if( jikaze == EKaze.Ton )
             {
                 if( lenFonHaiChecker.isHantei() ){
