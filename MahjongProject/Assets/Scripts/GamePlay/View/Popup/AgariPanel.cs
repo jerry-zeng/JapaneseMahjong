@@ -262,8 +262,12 @@ public class AgariPanel : MonoBehaviour
 
             _yakuItems.Add( item );
 
+            AudioManager.Get().PlaySFX( AudioConfig.GetSEPath(ESeType.Yaku) );
+
             yield return new WaitForSeconds( yakuDisplayTime );
         }
+
+        yield return new WaitForSeconds( yakuDisplayTime * 0.5f );
 
         ShowTotalScrote();
     }
