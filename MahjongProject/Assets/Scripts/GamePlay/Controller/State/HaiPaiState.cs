@@ -28,7 +28,7 @@ public class HaiPaiState : GameStateBase
         else
         {
             if( logicOwner.getBaKaze() == EKaze.Nan ){
-                if(logicOwner.HonBa == 0 )
+                if( logicOwner.Kyoku == 1 && logicOwner.HonBa == 0 )
                     owner.Speak(ECvType.NanBa_Start);
             }
             else if(logicOwner.getBaKaze() == EKaze.Ton){

@@ -794,6 +794,7 @@ public class MahjongMain : Mahjong
         m_isTenhou = false;
         m_isChihou = false;
         m_isRenhou = false;
+        m_isTsumo = false;
 
         int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
         int ankanHaiID = ActivePlayer.Action.TsumoKanHaiList[kanSelectIndex].ID;
@@ -836,6 +837,7 @@ public class MahjongMain : Mahjong
 
     public void Handle_KaKan()
     {
+        m_isTsumo = false;
         m_isChanKan = true;
 
         int kanSelectIndex = ActivePlayer.Action.KanSelectIndex;
@@ -1633,7 +1635,7 @@ public class MahjongMain : Mahjong
     public bool EndKyoku()
     {
         // 親を更新する
-        if( (isTsumo && getPlayerIndex(ActivePlayer.JiKaze) == m_oyaIndex) ||
+        if( (isTsumo && getPlayerIndex(m_kazeFrom) == m_oyaIndex) ||
            getPlayerIndex(m_ronPlayers[0]) == m_oyaIndex )
         {
             m_renchan = true;
