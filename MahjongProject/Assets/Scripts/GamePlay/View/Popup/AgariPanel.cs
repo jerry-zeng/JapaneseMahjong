@@ -349,6 +349,8 @@ public class AgariPanel : MonoBehaviour
         lab_han.text = string.Format("{0}{1}    {2}{3}", 
                                      fu, ResManager.getString("fu"),
                                      han, ResManager.getString("han"));
+
+        PlayLevelVoice(level);
     }
 
     void SetYakuman()
@@ -357,6 +359,8 @@ public class AgariPanel : MonoBehaviour
 
         lab_level.alpha = 1f;
         lab_level.text = ResManager.getString( GetYakuLevelNameKey(5) );
+
+        PlayLevelVoice(5);
     }
 
     void SetPoint( int point )
@@ -376,6 +380,21 @@ public class AgariPanel : MonoBehaviour
             case 3: return "baiman";
             case 4: return "sanbaiman";
             case 5: return "yakuman";
+        }
+    }
+
+    void PlayLevelVoice(int level)
+    {
+        switch( level )
+        {
+            default:
+            case 0: break;
+
+            case 1: GameManager.Get().Speak(ECvType.ManGan); break;
+            case 2: GameManager.Get().Speak(ECvType.HaReMan); break;
+            case 3: GameManager.Get().Speak(ECvType.BaiMan); break;
+            case 4: GameManager.Get().Speak(ECvType.SanBaiMan); break;
+            case 5: GameManager.Get().Speak(ECvType.YakuMan); break;
         }
     }
 

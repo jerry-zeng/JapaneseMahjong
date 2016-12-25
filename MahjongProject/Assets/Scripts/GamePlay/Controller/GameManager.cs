@@ -18,6 +18,13 @@ public class GameManager : StateMachine, IObserver
         get { return mahjong; }
     }
 
+    private EVoiceType _systemVoiceType = EVoiceType.W_B;
+    public EVoiceType SystemVoiceType
+    {
+        get{ return _systemVoiceType; }
+        set{ _systemVoiceType = value; }
+    }
+
 
     void OnEnable() 
     {
@@ -54,6 +61,10 @@ public class GameManager : StateMachine, IObserver
         SceneManager.LoadScene( SceneManager.GetActiveScene().name );
     }
 
+    public void Speak( ECvType content )
+    {
+        AudioManager.Get().PlaySFX( AudioConfig.GetCVPath(SystemVoiceType, content) );
+    }
 
     public void OnHandleEvent(UIEventType evtID, object[] args) 
     {

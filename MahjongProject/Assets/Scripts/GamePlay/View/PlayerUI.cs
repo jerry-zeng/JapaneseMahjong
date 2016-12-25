@@ -98,9 +98,10 @@ public class PlayerUI : UIObject
     }
 
 
-    public void Speak( EActionType type )
+    public void Speak( ECvType content )
     {
-        Debug.LogWarning( type.ToString() + "!!!" );
+        AudioManager.Get().PlaySFX( AudioConfig.GetCVPath(OwnerPlayer.VoiceType, content) );
+        //Debug.LogWarning( type.ToString() + "!!!" );
     }
 
 

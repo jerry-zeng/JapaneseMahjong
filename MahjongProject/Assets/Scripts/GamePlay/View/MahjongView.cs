@@ -353,6 +353,9 @@ public class MahjongView : UIObject, IObserver
                     ui.SortTehai( activePlayer.Tehai.getJyunTehai(), SuteHaiAnimationTime );
 
                 SetManInputEnable(false);
+
+                // play a sute hai sound
+                AudioManager.Get().PlaySFX( AudioConfig.GetSEPath(ESeType.SuteHai) );
             }
             break;
 
@@ -368,7 +371,7 @@ public class MahjongView : UIObject, IObserver
                 ui.SetTedashi(isTedashi);
                 ui.Reach();
 
-                ui.Speak( EActionType.Reach );
+                ui.Speak( ECvType.Reach );
 
                 // needn't sort hais if sute the last one.
                 if( sutehaiIndex < activePlayer.Tehai.getJyunTehaiCount() )
@@ -391,7 +394,7 @@ public class MahjongView : UIObject, IObserver
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
 
-                ui.Speak( EActionType.Kan );
+                ui.Speak( ECvType.Kan );
 
                 SetManInputEnable(!activePlayer.IsAI);
             }
@@ -405,7 +408,7 @@ public class MahjongView : UIObject, IObserver
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
 
-                ui.Speak( EActionType.Kan );
+                ui.Speak( ECvType.Kan );
 
                 SetManInputEnable(!activePlayer.IsAI);
             }
@@ -420,7 +423,7 @@ public class MahjongView : UIObject, IObserver
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
 
-                ui.Speak( EActionType.Kan );
+                ui.Speak( ECvType.Kan );
 
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
                 fromUI.SetNaki();
@@ -438,7 +441,7 @@ public class MahjongView : UIObject, IObserver
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
 
-                ui.Speak( EActionType.Pon );
+                ui.Speak( ECvType.Pon );
 
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
                 fromUI.SetNaki();
@@ -458,7 +461,7 @@ public class MahjongView : UIObject, IObserver
                 ui.UpdateFuuro( activePlayer.Tehai.getFuuros() );
                 ui.SetTehai( activePlayer.Tehai.getJyunTehai(), true );
 
-                ui.Speak( EActionType.Chii );
+                ui.Speak( ECvType.Chii );
 
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
                 fromUI.SetNaki();
@@ -479,7 +482,7 @@ public class MahjongView : UIObject, IObserver
                     ui.PickHai( ronHai, true, false );
                     ui.SetTehaiVisiable(true);
 
-                    ui.Speak( EActionType.Ron );
+                    ui.Speak( ECvType.Ron );
                 }
 
                 PlayerUI fromUI = playerUIDict_Kaze[fromKaze];
@@ -497,7 +500,7 @@ public class MahjongView : UIObject, IObserver
                 PlayerUI ui = playerUIDict_Kaze[ activePlayer.JiKaze ];
                 ui.SetTehaiVisiable(true);
 
-                ui.Speak( EActionType.Tsumo );
+                ui.Speak( ECvType.Tsumo );
 
                 // show out all players' tehai
                 ShowAllPlayerTehai();

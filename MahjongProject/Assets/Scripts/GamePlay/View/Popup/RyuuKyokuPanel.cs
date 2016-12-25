@@ -38,6 +38,8 @@ public class RyuuKyokuPanel : MonoBehaviour
     {
         lab_msg.text = GetRyuuKyokuReasonString();
 
+        PlayRyuuKyokuVoice();
+
         bool showTenpai = ryuuKyokuReason == ERyuuKyokuReason.NoTsumoHai;
 
         var tenbouInfos = currentAgari.tenbouChangeInfoList;
@@ -56,6 +58,29 @@ public class RyuuKyokuPanel : MonoBehaviour
         return ResManager.getString( ryuuKyokuReason.ToString() );
     }
 
+    void PlayRyuuKyokuVoice()
+    {
+        ECvType cv = ECvType.RyuuKyoku;
+        if( ryuuKyokuReason == ERyuuKyokuReason.NoTsumoHai ){
+            cv = ECvType.RyuuKyoku;
+        }
+        else if( ryuuKyokuReason == ERyuuKyokuReason.HaiTypeOver9 ){
+            cv = ECvType.RKK_HaiTypeOver9;
+        }
+        else if( ryuuKyokuReason == ERyuuKyokuReason.SuteFonHai4 ){
+            cv = ECvType.RKK_SuteFonHai4;
+        }
+        else if( ryuuKyokuReason == ERyuuKyokuReason.KanOver4 ){
+            cv = ECvType.RKK_KanOver4;
+        }
+        else if( ryuuKyokuReason == ERyuuKyokuReason.Reach4 ){
+            cv = ECvType.RKK_Reach4;
+        }
+        else if( ryuuKyokuReason == ERyuuKyokuReason.Ron3 ){
+            cv = ECvType.RKK_Ron3;
+        }
+        GameManager.Get().Speak(cv);
+    }
 
     void OnConfirm( GameObject go )
     {

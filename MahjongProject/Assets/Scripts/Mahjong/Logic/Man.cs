@@ -7,6 +7,9 @@ public class Man : Player
     public Man(string name) : base(name){
         
     }
+    public Man(string name, EVoiceType voiceType) : base(name, voiceType){
+
+    }
 
     public override bool IsAI
     {

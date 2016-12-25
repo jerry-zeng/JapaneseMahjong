@@ -6,17 +6,28 @@ using System.Collections.Generic;
 public abstract class Player
 {
     protected string _name;
-    protected PlayerAction _action = new PlayerAction();
+    protected EVoiceType _voiceType = EVoiceType.W_B;
 
     public Player(string name)
     {
         this._name = name;
+    }
+    public Player(string name, EVoiceType voiceType)
+    {
+        this._name = name;
+        this._voiceType = voiceType;
     }
 
     public string Name
     {
         get{ return _name; }
     }
+    public EVoiceType VoiceType
+    {
+        get{ return _voiceType; }
+    }
+
+    protected PlayerAction _action = new PlayerAction();
     public PlayerAction Action
     {
         get{ return _action; }

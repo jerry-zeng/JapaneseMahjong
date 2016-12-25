@@ -49,10 +49,10 @@ public class MahjongMain : Mahjong
 
         // プレイヤーの配列を初期化する。
         m_playerList = new List<Player>();
-        m_playerList.Add( new Man("A") );
-        m_playerList.Add( new AI("B") );
-        m_playerList.Add( new AI("C") );
-        m_playerList.Add( new AI("D") );
+        m_playerList.Add( new Man("A", EVoiceType.W_B) );
+        m_playerList.Add( new AI("B", EVoiceType.M_B) );
+        m_playerList.Add( new AI("C", EVoiceType.M_C) );
+        m_playerList.Add( new AI("D", EVoiceType.M_D) );
 
         for( int i = 0; i < m_playerList.Count; i++ )
         {
