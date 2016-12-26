@@ -361,8 +361,8 @@ public sealed class AgariScoreManager
         // topest player
         int topestPlayerIndex = 0;
 
-        //顺位马: 8-4 (8,4,-4,-8)
-        int ShunMa = 4;
+        //马: 20-10 (20,10,-10,-20)
+        int ShunMa = 10;
         int BackTenbou = GameSettings.Back_Tenbou;
         float Base = 1000f;
         int TopBonus = Math.FloorToInt((BackTenbou - GameSettings.Init_Tenbou) / Base * playerList.Count); //20pt
