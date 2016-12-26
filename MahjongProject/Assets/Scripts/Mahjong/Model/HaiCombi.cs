@@ -13,7 +13,7 @@ public class HaiCombi
     // 頭のNK
     public int atamaNumKind = 0;
 
-    // 順子のNKの配列
+    // 順子のNKの配列 (store the left hai's NK of a shun mentsu)
     public int[] shunNumKinds = new int[4];
 
     // 順子のNKの配列の有効な個数
@@ -25,21 +25,32 @@ public class HaiCombi
     // 刻子のNKの配列の有効な個数
     public int kouCount = 0;
 
+    //public List<int> shunNumKinds = new List<int>();
+    //public List<int> kouNumKinds = new List<int>();
+
 
     public void Clear()
     {
-        for(int i = 0; i < shunNumKinds.Length; i++)
-            shunNumKinds[i] = 0;
-        for(int i = 0; i < kouNumKinds.Length; i++)
-            kouNumKinds[i] = 0;
-        
         this.atamaNumKind = 0;
+
+        for(int i = 0; i < shunNumKinds.Length; i++){
+            shunNumKinds[i] = 0;
+        }
         this.shunCount = 0;
+
+        for(int i = 0; i < kouNumKinds.Length; i++){
+            kouNumKinds[i] = 0;
+        }
         this.kouCount = 0;
+
+        //shunNumKinds.Clear();
+        //kouNumKinds.Clear();
     }
 
     public static void copy(HaiCombi dest, HaiCombi src)
     {
+        dest.Clear();
+
         dest.atamaNumKind = src.atamaNumKind;
 
         dest.shunCount = src.shunCount;
@@ -49,5 +60,12 @@ public class HaiCombi
         dest.kouCount = src.kouCount;
         for( int i = 0; i < dest.kouCount; i++ )
             dest.kouNumKinds[i] = src.kouNumKinds[i];
+
+        /*
+        for( int i = 0; i < src.shunNumKinds.Count; i++ )
+            dest.shunNumKinds.Add( src.shunNumKinds[i] );
+        for( int i = 0; i < src.kouNumKinds.Count; i++ )
+            dest.kouNumKinds.Add( src.kouNumKinds[i] );
+        */
     }
 }
