@@ -8,5 +8,5 @@ As all the texture and sound resources were downloaded from internet, DON'T use 
 
 # Screenshots
 ![image](https://github.com/jerry-zeng/JapaneseMahjong/blob/master/screen_shot_3.png)
-![image](https://github.com/jerry-zeng/JapaneseMahjong/blob/master/screen_shot_1.png)
 ![image](https://github.com/jerry-zeng/JapaneseMahjong/blob/master/screen_shot_4.png)
+![image](https://github.com/jerry-zeng/JapaneseMahjong/blob/master/screen_shot_1.png)
