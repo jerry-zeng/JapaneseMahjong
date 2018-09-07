@@ -61,8 +61,8 @@ public class YamaUI : UIObject
         base.Init();
 
         if(isInit == false){
-            top = transform.FindChild("Top");
-            bottom = transform.FindChild("Bottom");
+            top = transform.Find("Top");
+            bottom = transform.Find("Bottom");
 
             isInit = true;
         }

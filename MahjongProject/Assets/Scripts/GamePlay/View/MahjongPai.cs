@@ -92,7 +92,7 @@ public class MahjongPai : UIObject
         if( isInit == false )
         {
             background = GetComponent<UISprite>();
-            majSprite = transform.FindChild("sprite").GetComponent<UISprite>();
+            majSprite = transform.Find("sprite").GetComponent<UISprite>();
             boxCollider = GetComponent<BoxCollider>();
 
             isInit = true;

@@ -16,10 +16,10 @@ public class GameInfoUI : UIObject
 
     public override void Init() {
         if(isInit == false){
-            kyokuLab = transform.FindChild("Kyoku").GetComponent<UILabel>();
-            reachCountLab = transform.FindChild("ReachCount").GetComponent<UILabel>();
-            reachBan = transform.FindChild("ReachBan").GetComponent<UISprite>();
-            lab_remain = transform.FindChild("lab_remain").GetComponent<UILabel>();
+            kyokuLab = transform.Find("Kyoku").GetComponent<UILabel>();
+            reachCountLab = transform.Find("ReachCount").GetComponent<UILabel>();
+            reachBan = transform.Find("ReachBan").GetComponent<UISprite>();
+            lab_remain = transform.Find("lab_remain").GetComponent<UILabel>();
 
             isInit = true;
         }

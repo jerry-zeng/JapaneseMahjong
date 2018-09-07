@@ -33,7 +33,7 @@ public class HouUI : UIObject
         if(isInit == false){
             lineParents = new List<Transform>(Max_Lines);
             for( int i = 0; i < Max_Lines; i++ ) {
-                Transform line = transform.FindChild("Line_" + (i+1));
+                Transform line = transform.Find("Line_" + (i+1));
                 if(line != null){
                     lineParents.Add(line);
                 }

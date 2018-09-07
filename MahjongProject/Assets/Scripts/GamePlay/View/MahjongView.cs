@@ -121,8 +121,8 @@ public class MahjongView : UIObject, IObserver
             string dir = panelNames[i];
             float eulerAngleZ = eulerAngles[i];
 
-            Transform dirParent = transform.FindChild(dir);
-            Transform uiTran = dirParent.FindChild("PlayerUI");
+            Transform dirParent = transform.Find(dir);
+            Transform uiTran = dirParent.Find("PlayerUI");
             if( uiTran == null ){
                 uiTran = ResManager.CreatePlayerUIObject().transform;
                 uiTran.parent = dirParent;
@@ -140,7 +140,7 @@ public class MahjongView : UIObject, IObserver
             //Debug.LogWarningFormat("PlayerUI: {0} {1}", i, dir);
         }
 
-        gameInfo = transform.FindChild("Info_Panel/GameInfo").GetComponent<GameInfoUI>();
+        gameInfo = transform.Find("Info_Panel/GameInfo").GetComponent<GameInfoUI>();
 
         ResManager.SetPoolRoot( mahjongPoolRoot );
 
